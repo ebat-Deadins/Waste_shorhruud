@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0e0e0e;
+    color: #f0ede6;
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.35;
+  }
+
+  header {
+    position: relative; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem 3rem;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  .logo {
+    font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .logo-dot { width: 10px; height: 10px; background: #b5f250; border-radius: 50%; display: inline-block; }
+
+  nav { display: flex; gap: 2rem; font-size: 0.85rem; font-family: 'DM Mono', monospace; color: #888; }
+  nav a { color: #888; text-decoration: none; transition: color 0.2s; cursor: pointer; }
+  nav a:hover { color: #f0ede6; }
+
+  .hero {
+    position: relative; z-index: 10;
+    padding: 6rem 3rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: #b5f250;
+    border: 1px solid #b5f250;
+    padding: 0.3rem 0.75rem;
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 span { color: #b5f250; }
+
+  .hero-sub {
+    font-size: 1.05rem; color: #888; max-width: 480px;
+    font-weight: 400; line-height: 1.6;
+    margin-bottom: 3rem;
+  }
+
+  .sort-section {
+    position: relative; z-index: 10;
+    padding: 0 3rem 5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1.5rem;
+  }
+
+  .drop-zone {
+    border: 2px dashed #2e2e2e;
+    border-radius: 8px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: border-color 0.3s, background 0.3s;
+    cursor: pointer;
+    margin-bottom: 2.5rem;
+    background: #141414;
+  }
+
+  .drop-zone.drag-over {
+    border-color: #b5f250;
+    background: rgba(181,242,80,0.04);
+  }
+
+  .drop-zone-icon {
+    font-size: 2.5rem; margin-bottom: 1rem;
+  }
+
+  .drop-zone-text {
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem;
+  }
+
+  .drop-zone-sub {
+    font-size: 0.85rem; color: #555; font-family: 'DM Mono', monospace;
+  }
+
+  .item-input-row {
+    display: flex; gap: 1rem; margin-bottom: 2rem;
+  }
+
+  .item-input {
+    flex: 1;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    color: #f0ede6;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .item-input:focus { border-color: #b5f250; }
+  .item-input::placeholder { color: #444; }
+
+  .sort-btn {
+    background: #b5f250;
+    color: #0e0e0e;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.9rem 1.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .sort-btn:hover { background: #c8fa60; }
+  .sort-btn:active { transform: scale(0.97); }
+
+  .bins-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1rem;
+  }
+
+  .bin {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 1.4rem;
+    transition: border-color 0.3s;
+    min-height: 180px;
+  }
+
+  .bin.highlight { border-color: var(--bin-color); }
+
+  .bin-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .bin-icon {
+    width: 36px; height: 36px;
+    background: var(--bin-color);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .bin-name {
+    font-size: 0.9rem; font-weight: 700; letter-spacing: -0.01em;
+  }
+
+  .bin-sub {
+    font-size: 0.7rem; color: #555;
+    font-family: 'DM Mono', monospace;
+    margin-top: 0.15rem;
+  }
+
+  .bin-items { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .bin-item {
+    background: #1c1c1c;
+    border-radius: 4px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.82rem;
+    color: #ccc;
+    display: flex; justify-content: space-between; align-items: center;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .remove-item {
+    color: #444; cursor: pointer; font-size: 0.9rem;
+    background: none; border: none; padding: 0 0 0 8px;
+    transition: color 0.2s;
+  }
+  .remove-item:hover { color: #888; }
+
+  .result-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .result-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bin-color);
+    flex-shrink: 0;
+  }
+
+  .result-item-name { font-weight: 700; font-size: 0.95rem; }
+  .result-bin { font-size: 0.8rem; color: #888; font-family: 'DM Mono', monospace; }
+
+  .result-tip {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #555;
+    max-width: 200px;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 1.2rem;
+    text-align: center;
+  }
+
+  .stat-number { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; }
+  .stat-label { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: #555; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .empty-state { color: #333; font-size: 0.82rem; font-family: 'DM Mono', monospace; padding: 0.5rem 0; }
+
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: #1c1c1c;
+    border: 1px solid #b5f250;
+    color: #f0ede6;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<header>
+  <div class="logo"><span class="logo-dot"></span>sortly.</div>
+  <nav>
+    <a>how it works</a>
+    <a>guides</a>
+    <a>local rules</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">waste sorting made simple</div>
+  <h1>Sort your<br><span>trash</span> right,<br>every time.</h1>
+  <p class="hero-sub">Type any household item and we'll tell you exactly which bin it belongs in — no guessing, no googling.</p>
+</div>
+
+<div class="sort-section">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-number" id="total-sorted">0</div><div class="stat-label">items sorted</div></div>
+    <div class="stat-card"><div class="stat-number" id="recycled-count" style="color:#4fc3f7">0</div><div class="stat-label">recycled</div></div>
+    <div class="stat-card"><div class="stat-number" id="compost-count" style="color:#b5f250">0</div><div class="stat-label">composted</div></div>
+    <div class="stat-card"><div class="stat-number" id="landfill-count" style="color:#ff6b6b">0</div><div class="stat-label">landfill</div></div>
+  </div>
+
+  <div class="section-label">// sort an item</div>
+  <div class="item-input-row">
+    <input class="item-input" id="item-input" type="text" placeholder="e.g. plastic bottle, banana peel, old phone..." />
+    <button class="sort-btn" onclick="sortItem()">sort it</button>
+  </div>
+
+  <div class="bins-grid">
+    <div class="bin" id="bin-recycle" style="--bin-color:#4fc3f7">
+      <div class="bin-header">
+        <div class="bin-icon">♻</div>
+        <div><div class="bin-name">Recycling</div><div class="bin-sub">blue bin</div></div>
+      </div>
+      <div class="bin-items" id="items-recycle">
+        <div class="empty-state">nothing yet</div>
+      </div>
+    </div>
+    <div class="bin" id="bin-compost" style="--bin-color:#b5f250">
+      <div class="bin-header">
+        <div class="bin-icon">🌿</div>
+        <div><div class="bin-name">Compost</div><div class="bin-sub">green bin</div></div>
+      </div>
+      <div class="bin-items" id="items-compost">
+        <div class="empty-state">nothing yet</div>
+      </div>
+    </div>
+    <div class="bin" id="bin-landfill" style="--bin-color:#ff6b6b">
+      <div class="bin-header">
+        <div class="bin-icon">🗑</div>
+        <div><div class="bin-name">Landfill</div><div class="bin-sub">black bin</div></div>
+      </div>
+      <div class="bin-items" id="items-landfill">
+        <div class="empty-state">nothing yet</div>
+      </div>
+    </div>
+    <div class="bin" id="bin-hazard" style="--bin-color:#f5a623">
+      <div class="bin-header">
+        <div class="bin-icon">⚠</div>
+        <div><div class="bin-name">Hazardous</div><div class="bin-sub">special disposal</div></div>
+      </div>
+      <div class="bin-items" id="items-hazard">
+        <div class="empty-state">nothing yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const rules = [
+  { keywords: ['plastic bottle','water bottle','soda bottle','shampoo bottle','detergent bottle','plastic container','yogurt','milk jug','juice bottle','conditioner'], bin: 'recycle', tip: 'Rinse before recycling.' },
+  { keywords: ['cardboard','pizza box','cereal box','newspaper','magazine','paper','book','envelope','cardboard box'], bin: 'recycle', tip: 'Keep it dry and flat.' },
+  { keywords: ['glass bottle','glass jar','wine bottle','beer bottle','glass'], bin: 'recycle', tip: 'Lids off, please!' },
+  { keywords: ['tin can','aluminum can','steel can','soup can','beer can','soda can','tuna can','metal lid','foil'], bin: 'recycle', tip: 'Crush to save space.' },
+  { keywords: ['banana peel','apple core','vegetable','fruit','coffee ground','tea bag','eggshell','food scraps','leftovers','salad','bread','cooked food','rice','pasta','onion','carrot','potato','tomato'], bin: 'compost', tip: 'Great for your garden!' },
+  { keywords: ['grass clipping','leaves','garden waste','plant','flower','branch','hedge','weed'], bin: 'compost', tip: 'Chop larger pieces up.' },
+  { keywords: ['battery','batteries'], bin: 'hazard', tip: 'Drop at your local hardware store.' },
+  { keywords: ['paint','motor oil','oil','pesticide','herbicide','chemical','bleach','fertilizer','insecticide'], bin: 'hazard', tip: 'Check local hazardous waste drop-offs.' },
+  { keywords: ['phone','mobile','laptop','computer','tablet','tv','television','monitor','printer','charger','electronics','wire','cable'], bin: 'hazard', tip: 'Take to an e-waste facility.' },
+  { keywords: ['light bulb','fluorescent','cfl','led bulb'], bin: 'hazard', tip: 'CFL bulbs contain mercury — handle with care.' },
+  { keywords: ['diaper','nappy','sanitary','cotton pad','cotton ball','tissue','napkin','paper towel','chip bag','crisp bag','candy wrapper','straw','plastic bag','cling wrap','plastic wrap','styrofoam'], bin: 'landfill', tip: 'Unfortunately not recyclable.' },
+  { keywords: ['clothes','shirt','trousers','jeans','shoes'], bin: 'landfill', tip: 'Donate if still wearable!' },
+];
+
+const binColors = { recycle: '#4fc3f7', compost: '#b5f250', landfill: '#ff6b6b', hazard: '#f5a623' };
+const binData = { recycle: [], compost: [], landfill: [], hazard: [] };
+let counts = { recycle: 0, compost: 0, landfill: 0, hazard: 0 };
+
+function sortItem() {
+  const input = document.getElementById('item-input');
+  const val = input.value.trim();
+  if (!val) return;
+
+  const lower = val.toLowerCase();
+  let matched = null;
+
+  for (const rule of rules) {
+    for (const kw of rule.keywords) {
+      if (lower.includes(kw)) { matched = rule; break; }
+    }
+    if (matched) break;
+  }
+
+  if (!matched) {
+    showToast(`Not sure about "${val}" — try being more specific.`);
+    return;
+  }
+
+  const bin = matched.bin;
+  binData[bin].push({ name: val, tip: matched.tip });
+  counts[bin]++;
+  input.value = '';
+  renderBins();
+  updateStats();
+  highlightBin(bin);
+  showToast(`✓ "${val}" → ${bin}`);
+}
+
+function renderBins() {
+  for (const [bin, items] of Object.entries(binData)) {
+    const el = document.getElementById('items-' + bin);
+    if (items.length === 0) {
+      el.innerHTML = '<div class="empty-state">nothing yet</div>';
+      return;
+    }
+    el.innerHTML = items.map((it, i) =>
+      `<div class="bin-item"><span>${it.name}</span><button class="remove-item" onclick="removeItem('${bin}',${i})">✕</button></div>`
+    ).join('');
+  }
+}
+
+function removeItem(bin, idx) {
+  binData[bin].splice(idx, 1);
+  counts[bin] = Math.max(0, counts[bin] - 1);
+  renderBins();
+  updateStats();
+}
+
+function updateStats() {
+  const total = counts.recycle + counts.compost + counts.landfill + counts.hazard;
+  document.getElementById('total-sorted').textContent = total;
+  document.getElementById('recycled-count').textContent = counts.recycle;
+  document.getElementById('compost-count').textContent = counts.compost;
+  document.getElementById('landfill-count').textContent = counts.landfill;
+}
+
+function highlightBin(bin) {
+  const el = document.getElementById('bin-' + bin);
+  el.classList.add('highlight');
+  setTimeout(() => el.classList.remove('highlight'), 1200);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.getElementById('item-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sortItem();
+});
+</script>
+</body>
+</html>
