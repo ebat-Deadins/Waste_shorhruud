@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Хог Ангилах - Монгол</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Noto+Sans+Mongolian&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --surface: #16161f;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --blue: #3b9eff;
+    --blue-dark: #1a6fcc;
+    --blue-glow: rgba(59,158,255,0.18);
+    --green: #2ecc71;
+    --green-dark: #1a8a4a;
+    --green-glow: rgba(46,204,113,0.18);
+    --red: #e74c3c;
+    --red-dark: #a12f24;
+    --red-glow: rgba(231,76,60,0.18);
+    --accent: #f39c12;
+    --r: 12px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--blue-dark); border-radius: 3px; }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    font-size: 1.2rem; font-weight: 900; letter-spacing: 1px;
+    background: linear-gradient(135deg, var(--blue), var(--green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.82rem;
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 0.4rem 0.8rem; border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover { color: var(--blue); background: var(--blue-glow); }
+  .nav-popup-btn {
+    background: linear-gradient(135deg, var(--green-dark), var(--blue-dark));
+    color: white; border: none; padding: 0.45rem 1rem;
+    border-radius: 6px; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.5px; transition: opacity 0.2s;
+  }
+  .nav-popup-btn:hover { opacity: 0.85; }
+
+  /* ===== HERO ===== */
+  #home {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding-top: 64px;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(59,158,255,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 70%, rgba(46,204,113,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 20%, rgba(231,76,60,0.06) 0%, transparent 50%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: linear-gradient(var(--blue) 1px, transparent 1px),
+      linear-gradient(90deg, var(--blue) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-content {
+    position: relative; z-index: 1;
+    text-align: center; max-width: 800px; padding: 2rem;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: var(--blue-glow); border: 1px solid var(--blue);
+    color: var(--blue); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 0.35rem 1rem; border-radius: 50px; margin-bottom: 1.5rem;
+    animation: fadeDown 0.6s ease both;
+  }
+  .hero-title {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900; line-height: 1.05;
+    margin-bottom: 1.2rem;
+    animation: fadeDown 0.7s 0.1s ease both;
+  }
+  .hero-title span { background: linear-gradient(135deg, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub {
+    font-size: 1.05rem; color: var(--text2); line-height: 1.7; max-width: 560px; margin: 0 auto 2.5rem;
+    animation: fadeDown 0.7s 0.2s ease both;
+  }
+  .hero-btns {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeDown 0.7s 0.3s ease both;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: white; border: none; padding: 0.85rem 2rem;
+    border-radius: var(--r); font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; text-decoration: none; display: inline-block;
+    box-shadow: 0 8px 30px rgba(59,158,255,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(59,158,255,0.45); }
+  .btn-secondary {
+    background: transparent; color: var(--text); border: 1px solid var(--border);
+    padding: 0.85rem 2rem; border-radius: var(--r); font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; text-decoration: none; display: inline-block;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+  .hero-cards {
+    display: flex; gap: 1rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+  .hero-card {
+    padding: 1rem 1.5rem; border-radius: var(--r);
+    border: 1px solid; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px;
+  }
+  .hc-blue { border-color: var(--blue); color: var(--blue); background: var(--blue-glow); }
+  .hc-green { border-color: var(--green); color: var(--green); background: var(--green-glow); }
+  .hc-red { border-color: var(--red); color: var(--red); background: var(--red-glow); }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 5rem 2rem; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 0.8rem;
+  }
+  .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; margin-bottom: 1rem; }
+  .section-desc { color: var(--text2); line-height: 1.7; max-width: 600px; margin-bottom: 3rem; }
+
+  /* ===== WASTE CATEGORIES ===== */
+  #classification { background: var(--bg2); }
+  .waste-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .waste-card {
+    background: var(--surface); border-radius: 16px;
+    border: 1px solid var(--border); overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .waste-card:hover { transform: translateY(-5px); }
+  .wc-blue:hover { box-shadow: 0 20px 60px rgba(59,158,255,0.2); border-color: var(--blue); }
+  .wc-green:hover { box-shadow: 0 20px 60px rgba(46,204,113,0.2); border-color: var(--green); }
+  .wc-red:hover { box-shadow: 0 20px 60px rgba(231,76,60,0.2); border-color: var(--red); }
+  .waste-card-header {
+    padding: 1.8rem 1.8rem 1.2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .wc-icon {
+    width: 56px; height: 56px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; flex-shrink: 0;
+  }
+  .wc-blue .wc-icon { background: var(--blue-glow); }
+  .wc-green .wc-icon { background: var(--green-glow); }
+  .wc-red .wc-icon { background: var(--red-glow); }
+  .waste-card-header h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.25rem; }
+  .wc-blue h3 { color: var(--blue); }
+  .wc-green h3 { color: var(--green); }
+  .wc-red h3 { color: var(--red); }
+  .waste-card-header p { font-size: 0.82rem; color: var(--text2); }
+  .waste-card-body { padding: 0 1.8rem 1.8rem; }
+  .wc-divider { height: 1px; background: var(--border); margin-bottom: 1.2rem; }
+  .wc-items { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .wc-items li {
+    font-size: 0.85rem; color: var(--text2); padding: 0.4rem 0.7rem;
+    border-radius: 6px; display: flex; align-items: flex-start; gap: 0.5rem;
+    background: rgba(255,255,255,0.02);
+  }
+  .wc-items li span { font-weight: 700; flex-shrink: 0; }
+  .wc-blue .wc-items li span { color: var(--blue); }
+  .wc-green .wc-items li span { color: var(--green); }
+  .wc-red .wc-items li span { color: var(--red); }
+  .wc-rule {
+    margin-top: 1rem; padding: 0.8rem 1rem; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600; line-height: 1.5;
+  }
+  .wc-blue .wc-rule { background: var(--blue-glow); color: var(--blue); border: 1px solid rgba(59,158,255,0.2); }
+  .wc-green .wc-rule { background: var(--green-glow); color: var(--green); border: 1px solid rgba(46,204,113,0.2); }
+  .wc-red .wc-rule { background: var(--red-glow); color: var(--red); border: 1px solid rgba(231,76,60,0.2); }
+
+  /* Quick table */
+  .quick-table-wrap { margin-top: 3rem; overflow-x: auto; }
+  .quick-table {
+    width: 100%; border-collapse: collapse; font-size: 0.88rem;
+  }
+  .quick-table th {
+    background: var(--surface); color: var(--text2); font-weight: 700;
+    padding: 0.9rem 1.2rem; text-align: left; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .quick-table td { padding: 0.8rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .quick-table tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block; padding: 0.25rem 0.8rem; border-radius: 50px;
+    font-size: 0.78rem; font-weight: 700;
+  }
+  .badge-blue { background: var(--blue-glow); color: var(--blue); border: 1px solid rgba(59,158,255,0.3); }
+  .badge-green { background: var(--green-glow); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+  .badge-red { background: var(--red-glow); color: var(--red); border: 1px solid rgba(231,76,60,0.3); }
+
+  /* ===== NEWS / STATS SECTION ===== */
+  #news { background: var(--bg); }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 1.5rem; text-align: center;
+    transition: transform 0.3s;
+  }
+  .stat-card:hover { transform: translateY(-3px); }
+  .stat-num { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.3rem; }
+  .stat-num.blue { color: var(--blue); }
+  .stat-num.green { color: var(--green); }
+  .stat-num.red { color: var(--red); }
+  .stat-num.accent { color: var(--accent); }
+  .stat-label { font-size: 0.82rem; color: var(--text2); line-height: 1.4; }
+  .news-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+  .news-link {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 1.3rem 1.5rem;
+    text-decoration: none; color: inherit;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; transition: all 0.2s;
+  }
+  .news-link:hover { border-color: var(--blue); background: var(--blue-glow); }
+  .news-link-text { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+  .news-link-sub { font-size: 0.75rem; color: var(--text2); margin-top: 0.2rem; }
+  .news-link-arr { color: var(--blue); font-size: 1.2rem; flex-shrink: 0; }
+  .bar-chart { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 2rem; }
+  .bar-row { display: flex; align-items: center; gap: 1rem; }
+  .bar-label { font-size: 0.8rem; color: var(--text2); min-width: 130px; text-align: right; }
+  .bar-track { flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 14px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; animation: barGrow 1.2s ease both; }
+  .bar-val { font-size: 0.8rem; font-weight: 700; min-width: 50px; }
+  @keyframes barGrow { from { width: 0 !important; } }
+
+  /* ===== HAZARDOUS ===== */
+  #hazardous { background: var(--bg2); }
+  .haz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .haz-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.6rem; transition: border-color 0.3s;
+  }
+  .haz-card:hover { border-color: var(--red); }
+  .haz-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+  .haz-card h3 { font-size: 1rem; font-weight: 800; color: var(--red); margin-bottom: 0.5rem; }
+  .haz-card p { font-size: 0.82rem; color: var(--text2); line-height: 1.6; margin-bottom: 0.8rem; }
+  .haz-where { font-size: 0.8rem; background: var(--red-glow); color: var(--red); border: 1px solid rgba(231,76,60,0.2); border-radius: 6px; padding: 0.5rem 0.8rem; }
+  .methods-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+  .method-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.4rem; border-left: 3px solid var(--red);
+  }
+  .method-card h4 { font-size: 0.95rem; font-weight: 700; color: var(--red); margin-bottom: 0.5rem; }
+  .method-card p { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+  .warning-box {
+    background: var(--red-glow); border: 1px solid rgba(231,76,60,0.3);
+    border-radius: 12px; padding: 1.4rem; margin-top: 2rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .warning-box .wi { font-size: 1.5rem; flex-shrink: 0; }
+  .warning-box p { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+  .warning-box strong { color: var(--red); }
+
+  /* ===== GAME SECTION ===== */
+  #game { background: var(--bg); }
+  #gameCanvas {
+    border: 2px solid var(--border); border-radius: 12px;
+    display: block; margin: 0 auto; cursor: crosshair;
+    background: #0d0d18;
+    image-rendering: pixelated;
+    max-width: 100%;
+  }
+  .game-ui {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+  #gameCanvas {
+  width: 900px;
+  height: 580px;
+  }
+  .game-stat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.6rem 1.2rem; text-align: center;
+  }
+  .game-stat .gs-label { font-size: 0.7rem; color: var(--text2); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .game-stat .gs-val { font-size: 1.4rem; font-weight: 900; }
+  .game-stat .gs-val.score { color: var(--accent); }
+  .game-stat .gs-val.lives { color: var(--red); }
+  .game-stat .gs-val.level { color: var(--blue); }
+  .game-controls {
+    display: flex; gap: 0.8rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;
+  }
+  .btn-game {
+    padding: 0.65rem 1.6rem; border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-game-start { background: linear-gradient(135deg, var(--green-dark), var(--green)); color: white; }
+  .btn-game-start:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-game-stop { background: var(--surface); color: var(--red); border: 1px solid var(--red); }
+  .game-legend {
+    display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+    margin-top: 1.2rem; font-size: 0.82rem; color: var(--text2);
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.4rem; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+  /* ===== CONTACT ===== */
+  #contact { background: var(--bg2); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+  @media(max-width:680px){ .contact-grid { grid-template-columns: 1fr; } }
+  .contact-info h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.8rem; }
+  .contact-info p { color: var(--text2); font-size: 0.88rem; line-height: 1.7; margin-bottom: 1.2rem; }
+  .contact-mail {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: var(--blue-glow); border: 1px solid var(--blue);
+    color: var(--blue); border-radius: 8px; padding: 0.7rem 1.2rem;
+    font-size: 0.88rem; font-weight: 600; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .contact-mail:hover { background: var(--blue); color: white; }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-group label { font-size: 0.78rem; font-weight: 700; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; display: block; margin-bottom: 0.35rem; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 0.7rem 1rem; font-size: 0.88rem;
+    font-family: inherit; outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--blue); }
+  .form-group textarea { height: 120px; resize: vertical; }
+  .form-group select option { background: var(--bg2); }
+  .btn-send {
+    background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+    color: white; border: none; padding: 0.8rem 2rem;
+    border-radius: 8px; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; align-self: flex-start; transition: opacity 0.2s;
+  }
+  .btn-send:hover { opacity: 0.88; }
+  .form-success {
+    background: var(--green-glow); border: 1px solid var(--green);
+    color: var(--green); border-radius: 8px; padding: 0.9rem 1.2rem;
+    font-size: 0.88rem; font-weight: 600; display: none;
+  }
+
+  /* ===== POPUP ===== */
+  .popup-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .popup-overlay.active { display: flex; }
+  .popup-box {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2.5rem; max-width: 480px; width: 100%;
+    position: relative; animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .popup-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(255,255,255,0.06); border: none; color: var(--text2);
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .popup-close:hover { background: var(--red-glow); color: var(--red); }
+  .popup-box h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.5rem; }
+  .popup-box p { font-size: 0.85rem; color: var(--text2); line-height: 1.7; margin-bottom: 1rem; }
+  .popup-fact {
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem; margin-bottom: 0.8rem;
+    font-size: 0.83rem; color: var(--text2); line-height: 1.6;
+  }
+  .popup-fact strong { color: var(--text); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 2.5rem 2rem; text-align: center;
+    color: var(--text2); font-size: 0.82rem;
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== ANIMS ===== */
+  @keyframes fadeDown { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes popIn { from { opacity:0; transform: scale(0.85); } to { opacity:1; transform: scale(1); } }
+
+  @media(max-width:600px){
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .hero-title { font-size: 2.2rem; }
+    section { padding: 3.5rem 1.2rem; }
+  }
+body {
+  background: #040C1A;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* center биш */
+  min-height: 100vh;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+
+  cursor: crosshair;   /* ← FIX */
+  overflow-y: auto;    /* ← FIX */
+}
+
+#gameCanvas {
+  display: block;
+  margin-top: 40px; /* бага зай */
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">♻ ХОГ АНГИЛАХ</div>
+  <div class="nav-links">
+    <a href="#classification">Ангилал</a>
+    <a href="#news">Мэдээлэл</a>
+    <a href="#hazardous">Аюултай хог</a>
+    <a href="#game">Тоглоом</a>
+    <a href="#contact">Санал бодол</a>
+  </div>
+  <button class="nav-popup-btn" onclick="openPopup()">🇲🇳 Монголын мэдэгдэл</button>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🌿 Байгаль орчны боловсрол</div>
+    <h1 class="hero-title">Хог хаягдал гэж<br><span>юу вэ, хэрхэн ангилдаг вэ?</span></h1>
+    <p class="hero-sub">Хог ангилах нь байгаль орчноо хамгаалах хамгийн энгийн, хамгийн үр дүнтэй арга. Энэ сайтаар дамжуулан зөв ангилж, тоглоомоор дадалжиж, ирээдүйд хувь нэмрээ оруулаарай.</p>
+    <div class="hero-btns">
+      <a href="#classification" class="btn-primary">Ангилал судлах →</a>
+      <a href="#game" class="btn-secondary">🎮 Тоглоом эхлүүлэх</a>
+    </div>
+    <div class="hero-cards">
+      <div class="hero-card hc-blue">🔵 Дахивар хог</div>
+      <div class="hero-card hc-green">🟢 Энгийн хог</div>
+      <div class="hero-card hc-red">🔴 Аюултай хог</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASSIFICATION -->
+<section id="classification">
+  <div class="section-inner">
+    <div class="section-label">📚 Үндсэн мэдлэг</div>
+    <h2 class="section-title">Хог ангилах систем</h2>
+    <p class="section-desc">Монголд хог хаягдлыг 3 үндсэн ангилалд хуваадаг. Зөв ангилах нь байгаль орчноо хамгаалж, дахин боловсруулах боломжийг бүрдүүлдэг.</p>
+
+    <div class="waste-grid">
+      <!-- BLUE -->
+      <div class="waste-card wc-blue">
+        <div class="waste-card-header">
+          <div class="wc-icon">♻️</div>
+          <div>
+            <h3>🔵 ЦЭНХЭР САГС</h3>
+            <p>Дахивар хог — Мөнгө болох хог</p>
+          </div>
+        </div>
+        <div class="waste-card-body">
+          <div class="wc-divider"></div>
+          <ul class="wc-items">
+            <li><span>🧴</span> <div><strong>Хуванцар:</strong> Ундааны сав (PET), шампунь, угаалгын бодисын сав (HDPE)</div></li>
+            <li><span>📄</span> <div><strong>Цаас:</strong> Бичгийн цаас, картон хайрцаг, сэтгүүл, дэвтэр</div></li>
+            <li><span>🥫</span> <div><strong>Металл:</strong> Ундааны лааз, консервны төмөр сав</div></li>
+            <li><span>🍶</span> <div><strong>Шил:</strong> Бүх төрлийн шилэн лонх, архи, пивоны шил</div></li>
+          </ul>
+          <div class="wc-rule">💡 Хамгийн чухал дүрэм: <strong>Цэвэрхэн, хоосон, хуурай</strong> байх ёстой. Дотор нь үлдэгдэлтэй бол тухайн хог дахиварт ордоггүй!</div>
+        </div>
+      </div>
+
+      <!-- GREEN -->
+      <div class="waste-card wc-green">
+        <div class="waste-card-header">
+          <div class="wc-icon">🌱</div>
+          <div>
+            <h3>🟢 НОГООН САГС</h3>
+            <p>Энгийн хог — Байгальд шингэх хог</p>
+          </div>
+        </div>
+        <div class="waste-card-body">
+          <div class="wc-divider"></div>
+          <ul class="wc-items">
+            <li><span>🍖</span> <div><strong>Хоолны үлдэгдэл:</strong> Мах, ногоо, жимсний хальс, цайны шаар, яс</div></li>
+            <li><span>🌿</span> <div><strong>Навч, өвс:</strong> Цэцэг, ургамлын үлдэгдэл, зүлэгний өвс</div></li>
+            <li><span>🧻</span> <div><strong>Хэрэглэсэн цаас:</strong> Ариун цэврийн цаас, амны цаас (салфетка)</div></li>
+          </ul>
+          <div class="wc-rule">💡 Энэ хог маш хурдан муудаж бусад дахиварыг бохирдуулдаг тул <strong>заавал тусад нь</strong> ангилаарай!</div>
+        </div>
+      </div>
+
+      <!-- RED -->
+      <div class="waste-card wc-red">
+        <div class="waste-card-header">
+          <div class="wc-icon">⚠️</div>
+          <div>
+            <h3>🔴 УЛААН САГС</h3>
+            <p>Дахивар биш & Аюултай хог</p>
+          </div>
+        </div>
+        <div class="waste-card-body">
+          <div class="wc-divider"></div>
+          <ul class="wc-items">
+            <li><span>🛍️</span> <div><strong>Дахивар биш:</strong> Нимгэн гялгар уут, чипсний уут, тамхины иш, живх</div></li>
+            <li><span>🔋</span> <div><strong>Аюултай:</strong> Зай (батерей), чийдэн, термометр (мөнгөн ус), эмний үлдэгдэл</div></li>
+            <li><span>🧪</span> <div><strong>Химийн бодис:</strong> Будаг, тосны сав, химийн бодисын сав</div></li>
+          </ul>
+          <div class="wc-rule">💡 Батерей, гэрлийн шил зэргийг <strong>Номин, И-Март</strong> дэлгүүрүүдийн тусгай хайрцагт хийж өгөөрэй!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick table -->
+    <div class="quick-table-wrap">
+      <div class="section-label" style="margin-top:3rem;">⚡ Хурдан шалгах хүснэгт</div>
+      <table class="quick-table">
+        <thead>
+          <tr>
+            <th>Хогны төрөл</th>
+            <th>Сагсны өнгө</th>
+            <th>Хялбар тайлбар</th>
+            <th>Хаашаа явдаг вэ?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Цаас, Шил, Хуванцар, Металл</td>
+            <td><span class="badge badge-blue">🔵 Цэнхэр</span></td>
+            <td>Дахиад шинэ юм болно (Цэвэрхэн байх ёстой)</td>
+            <td>Дахин боловсруулах үйлдвэр → шинэ сав, цаас болно</td>
+          </tr>
+          <tr>
+            <td>Хоолны үлдэгдэл, Навч, Ялзардаг зүйлс</td>
+            <td><span class="badge badge-green">🟢 Ногоон</span></td>
+            <td>Байгаль өөрөө уусгадаг зүйлс</td>
+            <td>Зарим газарт бордоо болдог / хогийн цэгт булагддаг</td>
+          </tr>
+          <tr>
+            <td>Живх, Тамхи, Батерей, Химийн бодис</td>
+            <td><span class="badge badge-red">🔴 Улаан</span></td>
+            <td>Юу ч болдоггүй, маш хортой</td>
+            <td>Тусгайлан устгах / гүн булагдана</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Summary -->
+    <div style="margin-top:2rem; padding:1.5rem; background:var(--surface); border-radius:14px; border:1px solid var(--border); text-align:center;">
+      <p style="font-size:1.1rem; font-weight:800;">🔵 Цэнхэр = <span style="color:var(--blue)">Баялаг</span> &nbsp;|&nbsp; 🟢 Ногоон = <span style="color:var(--green)">Бордоо</span> &nbsp;|&nbsp; 🔴 Улаан = <span style="color:var(--red)">Хор</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS / STATS -->
+<section id="news">
+  <div class="section-inner">
+    <div class="section-label">📊 Өнөөгийн байдал</div>
+    <h2 class="section-title">Монголын хог хаягдлын мэдээлэл</h2>
+    <p class="section-desc">Монгол улс хог хаягдлын асуудалтай байнга тулгардаг. Доор тоон мэдээлэл болон хэрэгтэй нөөц сайтуудыг үзнэ үү.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num blue">~1.5M</div>
+        <div class="stat-label">тонн хог хаягдал жилд Улаанбаатарт үүсдэг</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num accent">~3–4 кг</div>
+        <div class="stat-label">хог хүн тутмаас өдөрт үүсдэг (хотын дундаж)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num green">15–20%</div>
+        <div class="stat-label">л хог хаягдал одоогоор дахин боловсруулагддаг</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num red">80%+</div>
+        <div class="stat-label">хог хаягдал шороогоор булагдах замаар устгагддаг</div>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.8rem; margin-bottom:2.5rem;">
+      <h3 style="font-size:1rem; font-weight:800; margin-bottom:1.5rem; color:var(--text);">📈 Хогийн бүрэлдэхүүн (Улаанбаатар хот, ойролцоогоор)</h3>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Органик хог</div>
+          <div class="bar-track"><div class="bar-fill" style="width:42%; background:linear-gradient(90deg,var(--green-dark),var(--green));"></div></div>
+          <div class="bar-val" style="color:var(--green);">42%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Хуванцар</div>
+          <div class="bar-track"><div class="bar-fill" style="width:25%; background:linear-gradient(90deg,var(--blue-dark),var(--blue));"></div></div>
+          <div class="bar-val" style="color:var(--blue);">25%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Цаас, Картон</div>
+          <div class="bar-track"><div class="bar-fill" style="width:12%; background:linear-gradient(90deg,#8b5a00,var(--accent));"></div></div>
+          <div class="bar-val" style="color:var(--accent);">12%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Металл</div>
+          <div class="bar-track"><div class="bar-fill" style="width:8%; background:linear-gradient(90deg,#555,#999);"></div></div>
+          <div class="bar-val" style="color:#999;">8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Шил</div>
+          <div class="bar-track"><div class="bar-fill" style="width:6%; background:linear-gradient(90deg,#2a5a7a,#5ab3d5);"></div></div>
+          <div class="bar-val" style="color:#5ab3d5;">6%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Бусад</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7%; background:linear-gradient(90deg,var(--red-dark),var(--red));"></div></div>
+          <div class="bar-val" style="color:var(--red);">7%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">🔗 Хэрэгтэй эх сурвалжууд</div>
+    <div class="news-links">
+      <a class="news-link" href="https://legalinfo.mn/mn/detail?lawId=12644" target="_blank">
+        <div>
+          <div class="news-link-text">⚖️ Legalinfo.mn — Хог хаягдлын тухай хууль</div>
+          <div class="news-link-sub">Хог хаягдлыг хэрхэн ангилах, устгах хуулийн заалтууд</div>
+        </div>
+        <div class="news-link-arr">↗</div>
+      </a>
+      <a class="news-link" href="https://met.gov.mn/" target="_blank">
+        <div>
+          <div class="news-link-text">🏛️ Байгаль орчин, уур амьсгалын яам</div>
+          <div class="news-link-sub">Аюултай хог хаягдлын зөвшөөрөл, хяналт</div>
+        </div>
+        <div class="news-link-arr">↗</div>
+      </a>
+      <a class="news-link" href="https://element.mn/" target="_blank">
+        <div>
+          <div class="news-link-text">🔬 Element.mn — Аюултай хог устгал</div>
+          <div class="news-link-sub">Мэргэжлийн аюултай хог хаягдал устгах үйлчилгээ</div>
+        </div>
+        <div class="news-link-arr">↗</div>
+      </a>
+      <a class="news-link" href="https://legalinfo.mn/mn/detail?lawId=13271" target="_blank">
+        <div>
+          <div class="news-link-text">📋 Засгийн газрын 116 тогтоол (2018)</div>
+          <div class="news-link-sub">Аюултай хог хаягдлын жагсаалт батлах тогтоол</div>
+        </div>
+        <div class="news-link-arr">↗</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HAZARDOUS -->
+<section id="hazardous">
+  <div class="section-inner">
+    <div class="section-label">⚠️ Анхаарал шаардлагатай</div>
+    <h2 class="section-title" style="color:var(--red);">Аюултай хортой хог хаягдлыг хэрхэн устгах вэ?</h2>
+    <p class="section-desc">Аюултай хог хаягдал гэдэгт хүний эрүүл мэнд, байгаль орчинд шууд хор хөнөөл учруулах шинж чанартай (тэсрэмтгий, шатамхай, идэмхий, хортой) бодисуудыг хэлнэ.</p>
+
+    <div class="haz-grid">
+      <div class="haz-card">
+        <div class="haz-icon">🔋</div>
+        <h3>Зай, Батерей (E-waste)</h3>
+        <p>Зай нь мөнгөн ус, кадми, хар тугалга агуулдаг тул хөрсөнд хаяж болохгүй. Хөрсөнд орохоороо хорт хавдар үүсгэх хэмжээний хорыг ялгаруулдаг.</p>
+        <div class="haz-where">📍 Хаашаа өгөх: "Номин", "И-Март" сүлжээ дэлгүүрүүд болон "Төрийн банк"-ны салбаруудад байдаг тусгай хайрцагт хийх</div>
+      </div>
+      <div class="haz-card">
+        <div class="haz-icon">💊</div>
+        <h3>Эмнэлгийн болон эмийн хог</h3>
+        <p>Хугацаа нь дууссан эм, тариур, эмнэлгийн хэрэгсэл. Эдгээрийг энгийн хогийн цэгт хаяж болохгүй.</p>
+        <div class="haz-where">📍 Хаашаа өгөх: Ойролцоох эмийн санд буцааж өгөх эсвэл "Элемент ХХК"-д хандах (element.mn)</div>
+      </div>
+      <div class="haz-card">
+        <div class="haz-icon">🚗</div>
+        <h3>Автомашины аккумлятор</h3>
+        <p>Хар тугалга, хүхрийн хүчил агуулсан маш аюултай хог. Зөвхөн мэргэжлийн байгууллагад өгөх ёстой.</p>
+        <div class="haz-where">📍 Хаашаа өгөх: "Монгол Аккумлятор" үйлдвэр болон дахивар авдаг тусгай цэгүүд</div>
+      </div>
+      <div class="haz-card">
+        <div class="haz-icon">🛢️</div>
+        <h3>Ашигласан мотор тос</h3>
+        <p>Ашигласан мотор тос хөрсөнд шингэхэд урт удаан хугацааны газрын усны бохирдол үүсгэдэг.</p>
+        <div class="haz-where">📍 Хаашаа өгөх: "Шингэн шавшлага" ХХК болон бусад мэргэжлийн байгууллага цуглуулж дахин боловсруулдаг</div>
+      </div>
+      <div class="haz-card">
+        <div class="haz-icon">💡</div>
+        <h3>Гэрлийн шил (чийдэн)</h3>
+        <p>Тодорхой төрлийн чийдэн мөнгөн ус агуулдаг. Хугарахад агаарт хорт хий ялгардаг.</p>
+        <div class="haz-where">📍 Хаашаа өгөх: Тусгай хог цуглуулах цэгүүдэд өгөх, байхгүй бол аймгийн БОАЖГ-т хандах</div>
+      </div>
+      <div class="haz-card">
+        <div class="haz-icon">🧪</div>
+        <h3>Будаг, химийн бодис</h3>
+        <p>Ил задгай газар хаяхад хөрс, ус бохирдуулдаг. Зарим будаг агаарт ууршихдаа хортой хий ялгаруулдаг.</p>
+        <div class="haz-where">📍 Хаашаа өгөх: Бүрэн хатаасны дараа хатуу хог болгож устгах эсвэл "Элемент-Орчин ХХК"-д хандах</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2.5rem;">
+      <div class="section-label">🔥 Устгах үндсэн аргууд</div>
+      <div class="methods-grid">
+        <div class="method-card">
+          <h4>⚗️ Физик-Химийн арга</h4>
+          <p>Саармагжуулах, исэлдүүлэх замаар хоргүй болгох. Жишээ нь: Хүчил, шүлтийг саармагжуулах аргаар тусгай байгууллагуудад устгадаг.</p>
+        </div>
+        <div class="method-card">
+          <h4>🔥 Дулааны арга (Шатаах)</h4>
+          <p>1000°C-ээс дээш хэмд тусгай шүүлтүүртэй зууханд шатааж, хорт хийг агаарт гаргахгүйгээр устгадаг. Эмнэлгийн хог, зарим химийн бодисыг ингэж устгадаг.</p>
+        </div>
+        <div class="method-card">
+          <h4>🪨 Гүн булшлах арга</h4>
+          <p>Ус нэвтэрдэггүй, тусгай хамгаалалттай бетон болон полимер доторлогоотой цэгт хадгалж булшлах. Цөмийн болон хамгийн аюултай хогт хэрэглэдэг.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning-box">
+      <div class="wi">⛔</div>
+      <p><strong>ЧУХАЛ АНХААРУУЛГА:</strong> Хэрвээ та химийн бодис эсвэл үл мэдэгдэх шингэн зүйлийг устгах шаардлагатай бол <strong>хэзээ ч суваг шуудуу, жорлонд асгаж болохгүй.</strong> Энэ нь цэвэрлэх байгууламжийг зогсоох эсвэл хөрсийг нөхөн сэргээх боломжгүйгээр хордуулдаг. Байгаль орчин, уур амьсгалын яаманд (МЕТ) эсвэл "Элемент ХХК"-д хандаарай.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game">
+  <div class="section-inner">
+    <div class="section-label">🎮 Тоглоом</div>
+    <h2 class="section-title">Хог ангилах тоглоом</h2>
+    <p class="section-desc">Газарт үүссэн хогийг crosshair-аар чирж тохирох хогийн саванд хийгээрэй. 3 амьтай — буруу ангилах бүрт амь хасагдана. Хогийн тоо хязгаараас хэтэрвэл хожигдоно!</p>
+
+    <div class="game-ui">
+      <div class="game-stat">
+        <div class="gs-label">Оноо</div>
+        <div class="gs-val score" id="scoreDisplay">0</div>
+      </div>
+      <div class="game-stat">
+        <div class="gs-label">Амь</div>
+        <div class="gs-val lives" id="livesDisplay">❤❤❤</div>
+      </div>
+      <div class="game-stat">
+        <div class="gs-label">Түвшин</div>
+        <div class="gs-val level" id="levelDisplay">1</div>
+      </div>
+      <div class="game-stat">
+        <div class="gs-label">Хог</div>
+        <div class="gs-val" id="trashDisplay" style="color:var(--text2);">0 / 8</div>
+      </div>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <div class="game-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--blue);"></div> Дахивар хог (Цэнхэр сагс)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green);"></div> Энгийн хог (Ногоон сагс)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red);"></div> Аюултай хог (Улаан сагс)</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-label">✉️ Холбоо барих</div>
+    <h2 class="section-title">Санал бодлоо илгээх</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Таны санал бодол чухал!</h3>
+        <p>Энэ сайтыг сайжруулахад туслах санал, хүсэлт, алдаа мэдэгдэл болон хог ангилахтай холбоотой асуусан зүйлсийг илгээгээрэй.</p>
+        <p>Бид хариуг 1–3 ажлын өдрийн дотор өгч чадна.</p>
+        <a class="contact-mail" href="mailto:amarbat0327@gmail.com">📧 amarbat0327@gmail.com</a>
+        <div style="margin-top:1.5rem; padding:1rem; background:var(--surface); border:1px solid var(--border); border-radius:10px;">
+          <div style="font-size:0.8rem; color:var(--text2); line-height:1.7;">
+            <strong style="color:var(--text);">Асуух боломжтой сэдвүүд:</strong><br>
+            • Хог ангилах дүрэм, зөвлөгөө<br>
+            • Ойролцоох дахивар цуглуулах цэг хайх<br>
+            • Байгаль орчны санаачилгад оролцох<br>
+            • Сайтын алдаа мэдэгдэл
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="contact-form" id="contactForm">
+          <div class="form-group">
+            <label>Таны нэр</label>
+            <input type="text" id="nameInput" placeholder="Жишээ нь: Баатар">
+          </div>
+          <div class="form-group">
+            <label>И-мэйл хаяг</label>
+            <input type="email" id="emailInput" placeholder="email@example.com">
+          </div>
+          <div class="form-group">
+            <label>Сэдэв</label>
+            <select id="subjectInput">
+              <option value="">Сэдэв сонгоно уу...</option>
+              <option>Санал, зөвлөмж</option>
+              <option>Хог ангилах асуулт</option>
+              <option>Алдаа мэдэгдэх</option>
+              <option>Бусад</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Санал бодол</label>
+            <textarea id="msgInput" placeholder="Энд бичнэ үү..."></textarea>
+          </div>
+          <button class="btn-send" onclick="sendForm()">📤 Илгээх</button>
+          <div class="form-success" id="formSuccess">✅ Таны санал амжилттай хүлээж авлаа! Баярлалаа.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>♻ <strong>Хог Ангилах</strong> — Монгол байгаль орчны боловсролын сайт</p>
+  <p style="margin-top:0.5rem;">Эх сурвалж: <a href="https://legalinfo.mn" target="_blank">Legalinfo.mn</a> · <a href="https://met.gov.mn" target="_blank">МЕТ</a> · <a href="https://element.mn" target="_blank">Element.mn</a></p>
+  <p style="margin-top:0.5rem; color:#555;">© 2025 Зохиогчийн эрх хамгаалагдсан</p>
+</footer>
+
+<!-- POPUP -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">✕</button>
+    <h2>🇲🇳 Монголын хог хаягдал</h2>
+    <p>Монгол улс хог хаягдлын асуудалтай байнга тулгардаг. Доор хэдэн чухал баримтыг харна уу:</p>
+    <div class="popup-fact"><strong>🏙️ Улаанбаатар хот:</strong> Жилд 1.5 сая тонн гаруй хог хаягдал үүсгэдэг бөгөөд үүний зөвхөн 15–20% нь дахин боловсруулагддаг.</div>
+    <div class="popup-fact"><strong>🌊 Усны бохирдол:</strong> Улаанбаатарын ойролцоох голуудад хог хаягдлаас үүдэлтэй бохирдол жил ирэх тусам ихэсч байна.</div>
+    <div class="popup-fact"><strong>♻️ Дахин боловсруулалт:</strong> Нийт хог хаягдлын 42% нь органик хог бөгөөд энийг зөв ангилбал бордоо болж ашиглаж болно.</div>
+    <div class="popup-fact"><strong>⚡ Та хийж чадах зүйл:</strong> Гэрийн хогоо 3 ангилалд хийж эхлэхэд л томоохон хувь нэмэр оруулж болно. Хүн тутмын жижиг үйлдэл нийлэхэд том өөрчлөлт гарна!</div>
+    <button class="btn-primary" onclick="closePopup()" style="margin-top:1rem; width:100%;">Ойлголоо, хаах</button>
+  </div>
+</div>
+<canvas id="gameCanvas"></canvas>
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  ХОГ АНГИЛАХ ТОГЛООМ  ·  Waste Sorting Game  ·  Улаанбаатар
+// ══════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+canvas.width  = 900;
+canvas.height = 580;
+const W = canvas.width, H = canvas.height;
+ctx.imageSmoothingEnabled = false;
+
+// ── Pixel unit ────────────────────────────────────────────────────
+const P = 5; // 1 pixel-art unit = 5 real pixels
+
+// ── Layout constants ─────────────────────────────────────────────
+const HUD_H    = 52;
+const GROUND_Y = H - 175;   // ground surface Y
+const BIN_Y    = GROUND_Y + 10;
+const BIN_H    = 155;
+const BIN_W    = 130;
+
+// ── Bin positions ─────────────────────────────────────────────────
+const RECYCLE   = 'recycle';
+const GENERAL   = 'general';
+const HAZARDOUS = 'hazardous';
+
+const BINS = [
+  { type:RECYCLE,   label:'ДАХИВАР',    sub:'Recyclable',
+    x:60,      y:BIN_Y, w:BIN_W, h:BIN_H,
+    dark:'#0A2A6E', mid:'#1155CC', light:'#3D8FFF',
+    lid:'#0D3688', slot:'#081F54', glow:'rgba(61,143,255,0.35)' },
+  { type:GENERAL,   label:'ЭНГИЙН ХОГ', sub:'General Waste',
+    x:W/2-65,  y:BIN_Y, w:BIN_W, h:BIN_H,
+    dark:'#0D4020', mid:'#2E7D32', light:'#60B767',
+    lid:'#1B5E20', slot:'#0A3018', glow:'rgba(96,183,103,0.35)' },
+  { type:HAZARDOUS, label:'АЮУЛТАЙ',    sub:'Hazardous',
+    x:W-190,   y:BIN_Y, w:BIN_W, h:BIN_H,
+    dark:'#5C0000', mid:'#B71C1C', light:'#FF5252',
+    lid:'#7F0000', slot:'#3D0000', glow:'rgba(255,82,82,0.35)' },
+];
+
+// ── Waste definitions ─────────────────────────────────────────────
+const WASTE_DEFS = [
+  { id:'plastic_bottle', name:'Хуванцар сав',       bin:RECYCLE,
+    fact:'Хуванцар савыг 10 дахин хүртэл дахин боловсруулж болно!' },
+  { id:'newspaper',      name:'Сонин хэвлэл',       bin:RECYCLE,
+    fact:'Цаасыг 7 удаа дахин боловсруулж болдог.' },
+  { id:'metal_can',      name:'Металл лааз',         bin:RECYCLE,
+    fact:'Хөнгөн цагааныг дахин боловсруулах нь 95% эрчим хүч хэмнэнэ!' },
+  { id:'cardboard',      name:'Зузаан цаас',         bin:RECYCLE,
+    fact:'Картон хайрцгийг дахивар цуглуулах цэгт өгнө.' },
+  { id:'glass_bottle',   name:'Шилэн сав',           bin:RECYCLE,
+    fact:'Шилийг 100% дахин боловсруулж болно.' },
+  { id:'food_waste',     name:'Хоолны үлдэгдэл',    bin:GENERAL,
+    fact:'Хоолны хогийг компост болгож, хөрсний бордоо болгоно.' },
+  { id:'tissue',         name:'Нэг удаагийн цаас',  bin:GENERAL,
+    fact:'Ашигласан цаасны алчуурыг энгийн хогонд хийнэ.' },
+  { id:'cigarette',      name:'Тамхины иш',          bin:GENERAL,
+    fact:'Тамхины ишийг энгийн хогонд хийнэ.' },
+  { id:'plastic_bag',    name:'Хуванцар уут',        bin:GENERAL,
+    fact:'Нэг удаагийн уутны оронд даавуун уут хэрэглэцгээе!' },
+  { id:'broken_ceramic', name:'Хагарсан шаазан',     bin:GENERAL,
+    fact:'Хагарсан шааздайг энгийн хогонд болгоомжтой хийнэ.' },
+  { id:'battery',        name:'Зай батерей',         bin:HAZARDOUS,
+    fact:'⚠ Зай нь хүнцэл, хар тугалга агуулна. Тусгай цэгт өгнө!' },
+  { id:'medicine',       name:'Хуучирсан эм',        bin:HAZARDOUS,
+    fact:'⚠ Хуучирсан эмийг ойр дахь эмийн санд буцааж өгнө.' },
+  { id:'paint_can',      name:'Будгийн хуучин сав',  bin:HAZARDOUS,
+    fact:'⚠ Будаг нь химийн бодис агуулна. Тусгай устгалт хэрэгтэй.' },
+  { id:'motor_oil',      name:'Машины хуучин тос',   bin:HAZARDOUS,
+    fact:'⚠ Машины тос хортой. Автосервист буцааж өгнө.' },
+  { id:'fluor_lamp',     name:'Флюресцент чийдэн',  bin:HAZARDOUS,
+    fact:'⚠ Мөнгөн ус агуулна! Тусгай цуглуулах цэгт өгнө.' },
+];
+
+// ── Waste pixel art sizes (in P-units) ───────────────────────────
+const WSIZES = {
+  plastic_bottle:{ w:6,  h:10 }, newspaper:      { w:7,  h:8  },
+  metal_can:     { w:6,  h:9  }, cardboard:      { w:7,  h:6  },
+  glass_bottle:  { w:6,  h:11 }, food_waste:     { w:7,  h:8  },
+  tissue:        { w:7,  h:5  }, cigarette:      { w:11, h:4  },
+  plastic_bag:   { w:6,  h:8  }, broken_ceramic: { w:7,  h:7  },
+  battery:       { w:7,  h:10 }, medicine:       { w:6,  h:9  },
+  paint_can:     { w:6,  h:10 }, motor_oil:      { w:6,  h:11 },
+  fluor_lamp:    { w:12, h:6  },
+};
+
+// ─── Pixel block helper ───────────────────────────────────────────
+function pb(c, rx, ry, rw, rh, ox, oy) {
+  ctx.fillStyle = c;
+  ctx.fillRect(Math.round(ox+rx*P), Math.round(oy+ry*P), Math.round(rw*P), Math.round(rh*P));
+}
+
+// ── Waste pixel art functions ─────────────────────────────────────
+const ART = {
+  plastic_bottle(ox,oy){ 
+    pb('#1565C0',2,0,2,1,ox,oy);       // cap
+    pb('#90CAF9',1.5,1,3,1,ox,oy);     // neck
+    pb('#5B9BD5',0,2,6,7,ox,oy);       // body
+    pb('#90CAF9',0.5,2.5,5,6,ox,oy);   // body mid
+    pb('#1565C0',0.5,4,5,1,ox,oy);     // label
+    pb('#1976D2',0.5,5.5,5,.5,ox,oy);  // label2
+    pb('#BBDEFB',1,2.5,1,6,ox,oy);     // highlight
+    pb('#42A5F5',0.5,9,5,.5,ox,oy);    // bottom
+    pb('#0D47A1',0.5,9.5,5,.5,ox,oy);
+  },
+  newspaper(ox,oy){
+    pb('#ECEFF1',0,0,7,8,ox,oy);
+    pb('#37474F',0.5,.5,6,1.2,ox,oy);  // headline
+    pb('#90A4AE',0.5,2.2,6,.4,ox,oy);
+    pb('#90A4AE',0.5,3.2,6,.4,ox,oy);
+    pb('#90A4AE',0.5,4.2,6,.4,ox,oy);
+    pb('#90A4AE',0.5,5.2,4,.4,ox,oy);
+    pb('#90A4AE',0.5,6.2,5,.4,ox,oy);
+    pb('#546E7A',0,0,7,.4,ox,oy);
+    pb('#546E7A',0,7.6,7,.4,ox,oy);
+    pb('#546E7A',0,0,.4,8,ox,oy);
+    pb('#546E7A',6.6,0,.4,8,ox,oy);
+  },
+  metal_can(ox,oy){
+    pb('#78909C',1,0,4,.5,ox,oy);
+    pb('#B0BEC5',0,.5,6,8,ox,oy);
+    pb('#CFD8DC',.5,.5,5,8,ox,oy);
+    pb('#ECEFF1',1,.5,4,8,ox,oy);
+    pb('#78909C',0,2,6,.4,ox,oy);
+    pb('#78909C',0,7,6,.4,ox,oy);
+    pb('#FFFFFF',1.5,.5,1.5,7.5,ox,oy);
+    pb('#78909C',1,8.5,4,.5,ox,oy);
+    pb('#546E7A',0,0,6,.5,ox,oy);
+  },
+  cardboard(ox,oy){
+    pb('#6D4C41',0,0,7,6,ox,oy);
+    pb('#8D6E63',.5,.5,6,5,ox,oy);
+    pb('#BCAAA4',1,1,5,4,ox,oy);
+    pb('#5D4037',0,2.8,7,.4,ox,oy);
+    pb('#5D4037',3.5,0,.4,6,ox,oy);
+    pb('#FFF9C4',2,0,3,.7,ox,oy);
+  },
+  glass_bottle(ox,oy){
+    pb('#1B5E20',2,0,2,1,ox,oy);
+    pb('#2E7D32',1.5,1,3,2,ox,oy);
+    pb('#388E3C',0,3,6,7,ox,oy);
+    pb('#43A047',.5,3.5,5,6,ox,oy);
+    pb('#4CAF50',1,4,4,5.5,ox,oy);
+    pb('#A5D6A7',1,4,1.2,5,ox,oy);
+    pb('#1B5E20',.5,10,5,.5,ox,oy);
+  },
+  food_waste(ox,oy){
+    pb('#4E342E',0,4,7,4,ox,oy);
+    pb('#6D4C41',.5,4.5,6,3.5,ox,oy);
+    pb('#8BC34A',.5,1.5,2.5,3,ox,oy);
+    pb('#FF8F00',2,1,2.5,3.5,ox,oy);
+    pb('#795548',4,2,2.5,3,ox,oy);
+    pb('#558B2F',1,0,2,2,ox,oy);
+    pb('#F44336',4,.5,2,2,ox,oy);
+    pb('#FDD835',1.5,2,1,1,ox,oy);
+  },
+  tissue(ox,oy){
+    pb('#F5F5F5',0,0,7,5,ox,oy);
+    pb('#FAFAFA',.5,.5,6,4,ox,oy);
+    pb('#E0E0E0',1,2.2,5,.4,ox,oy);
+    pb('#E8E8E8',2,.5,.4,4,ox,oy);
+    pb('#E8E8E8',4.6,.5,.4,4,ox,oy);
+    pb('#EEEEEE',0,4.3,7,.7,ox,oy);
+  },
+  cigarette(ox,oy){
+    pb('#FF8F00',0,1,2,2,ox,oy);
+    pb('#FAFAFA',2,1,7,2,ox,oy);
+    pb('#FF7043',9,.5,1.5,1.5,ox,oy);
+    pb('#9E9E9E',8.5,1,1.5,2,ox,oy);
+    pb('#E0E0E0',2,1,.4,2,ox,oy);
+    pb('#E0E0E0',4.5,1,.4,2,ox,oy);
+    pb('#E0E0E0',7,1,.4,2,ox,oy);
+  },
+  plastic_bag(ox,oy){
+    pb('#CE93D8',1,0,1,2,ox,oy);
+    pb('#CE93D8',4,0,1,2,ox,oy);
+    pb('#CE93D8',0,2,6,6,ox,oy);
+    pb('#E1BEE7',.5,2.5,5,5.5,ox,oy);
+    pb('#AB47BC',2,1.5,2,1,ox,oy);
+    pb('#BA68C8',2,3.5,2,.4,ox,oy);
+  },
+  broken_ceramic(ox,oy){
+    pb('#FFAB91',0,3,4,4,ox,oy);
+    pb('#FFAB91',.5,2,3,2,ox,oy);
+    pb('#FF7043',.5,2,3,.8,ox,oy);
+    pb('#FF8A65',4,4,3,3,ox,oy);
+    pb('#FF7043',4,4,3,.7,ox,oy);
+    pb('#BF360C',2,2,.4,5,ox,oy);
+    pb('#BF360C',4,4,.4,3,ox,oy);
+  },
+  battery(ox,oy){
+    pb('#FFD54F',2,0,3,1,ox,oy);
+    pb('#FFD54F',3,0,1,2,ox,oy);
+    pb('#212121',0,1,7,9,ox,oy);
+    pb('#424242',.5,1.5,6,8,ox,oy);
+    pb('#FFEB3B',1,2,1,5.5,ox,oy);
+    pb('#FFEB3B',3,2,1,5.5,ox,oy);
+    pb('#FFEB3B',5,2,1,5.5,ox,oy);
+    pb('#FFD54F',1.5,3.5,4,2,ox,oy);
+    pb('#1A1A1A',2,4,3,1,ox,oy);
+    pb('#FFD54F',0,9.5,7,.5,ox,oy);
+  },
+  medicine(ox,oy){
+    pb('#E91E63',1.5,0,3,.5,ox,oy);
+    pb('#EF9A9A',1,.5,4,1.2,ox,oy);
+    pb('#FFCDD2',0,1.7,6,7,ox,oy);
+    pb('#EF9A9A',.5,2.2,5,6,ox,oy);
+    pb('#C62828',2.5,3,1,3.5,ox,oy);
+    pb('#C62828',1.5,4,3,1,ox,oy);
+    pb('#B71C1C',1,2.2,4,.6,ox,oy);
+    pb('#C62828',0,8.7,6,.4,ox,oy);
+  },
+  paint_can(ox,oy){
+    pb('#795548',1,0,1,1,ox,oy);
+    pb('#795548',4,0,1,1,ox,oy);
+    pb('#795548',1.5,0,3,.4,ox,oy);
+    pb('#BF360C',0,1,6,.7,ox,oy);
+    pb('#E64A19',0,1.7,6,8,ox,oy);
+    pb('#FF7043',.5,2.2,5,7,ox,oy);
+    pb('#FF8A65',1,2.5,4,6,ox,oy);
+    pb('#FF5722',1,3,1,5.5,ox,oy);
+    pb('#FFC107',3,2.5,1,5,ox,oy);
+    pb('#F44336',5,4,.5,5,ox,oy);
+  },
+  motor_oil(ox,oy){
+    pb('#3E2723',2,0,2,1,ox,oy);
+    pb('#4E342E',1.5,1,3,1,ox,oy);
+    pb('#3E2723',0,2,6,8,ox,oy);
+    pb('#4E342E',.5,2.5,5,7,ox,oy);
+    pb('#FF5722',1,3.5,4,2.5,ox,oy);
+    pb('#FFEB3B',2,4,2,1,ox,oy);
+    pb('#212121',2.5,10,1,1.5,ox,oy);
+    pb('#212121',2,11,2,.5,ox,oy);
+  },
+  fluor_lamp(ox,oy){
+    pb('#E0E0E0',0,1,12,4,ox,oy);
+    pb('#B39DDB',.5,1.5,11,3,ox,oy);
+    pb('#E8EAF6',1,1.5,10,1.2,ox,oy);
+    pb('#546E7A',0,1,1,4,ox,oy);
+    pb('#546E7A',11,1,1,4,ox,oy);
+    pb('#6200EA',5,3.5,2,.5,ox,oy);
+    pb('#7C4DFF',4.5,2.5,.5,.5,ox,oy);
+    pb('#7C4DFF',7,2.5,.5,.5,ox,oy);
+  },
+};
+
+// ── Audio ──────────────────────────────────────────────────────────
+let _actx = null;
+function act() {
+  if (!_actx) _actx = new (window.AudioContext||window.webkitAudioContext)();
+  return _actx;
+}
+function tone(f1,f2,dur,type='square',vol=0.14){
+  try{
+    const ac=act(), o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type=type; o.frequency.value=f1;
+    if(f2) o.frequency.linearRampToValueAtTime(f2, ac.currentTime+dur*0.6);
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+    o.start(); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function sfxPickup(){ tone(480,560,0.08,'square',0.1); }
+function sfxDrag(type){
+  if(type===HAZARDOUS) tone(120,100,0.12,'sawtooth',0.06);
+  else if(type===RECYCLE) tone(380,420,0.08,'square',0.06);
+  else tone(260,280,0.08,'triangle',0.06);
+}
+function sfxDrop(){ tone(300,260,0.12,'square',0.08); }
+function sfxCorrect(){
+  tone(523,523,0.08,'square',0.14);
+  setTimeout(()=>tone(659,659,0.08,'square',0.12),100);
+  setTimeout(()=>tone(784,784,0.15,'square',0.1),200);
+}
+function sfxWrong(){
+  tone(200,160,0.18,'sawtooth',0.2);
+  setTimeout(()=>tone(140,110,0.25,'sawtooth',0.18),180);
+}
+function sfxSpawn(){ tone(330,440,0.06,'sine',0.05); }
+
+// ── Game state ────────────────────────────────────────────────────
+const MAXWASTES = 8;
+let G = {};
+function resetGame(){
+  G = {
+    screen:'title',       // 'title'|'playing'|'gameover'|'info'
+    lives:3, score:0,
+    correct:0, wrong:0,
+    wastes:[], dragging:null,
+    mx:W/2, my:H/2,
+    hover:-1,
+    effects:[],
+    lastSpawn:0,
+    spawnInt:5000,
+    gameOverReason:'',
+    lastDragSfx:0,
+    fact:'', factTimer:0,
+    nid:0,
+  };
+}
+resetGame();
+
+// ── Spawn ─────────────────────────────────────────────────────────
+function spawnWaste(){
+  if(G.wastes.length >= MAXWASTES) return;
+  const def = WASTE_DEFS[Math.floor(Math.random()*WASTE_DEFS.length)];
+  const sz  = WSIZES[def.id];
+  const pw  = sz.w*P, ph = sz.h*P;
+  const margin = 55;
+  // avoid middle area if bins are there
+  let x = margin + Math.random()*(W-2*margin-pw);
+  // keep x away from bins (bottom area not spawn area anyway)
+  const yMin = HUD_H + 20;
+  const yMax = GROUND_Y - ph - 10;
+  const y = yMin + Math.random()*(yMax-yMin);
+  G.wastes.push({ id:G.nid++, def, x, y, sz, spawnTime:Date.now() });
+  sfxSpawn();
+}
+
+// ── Hit tests ─────────────────────────────────────────────────────
+function wasteAt(mx,my){
+  for(let i=G.wastes.length-1;i>=0;i--){
+    const w=G.wastes[i];
+    if(mx>=w.x && mx<=w.x+w.sz.w*P && my>=w.y && my<=w.y+w.sz.h*P) return i;
+  }
+  return -1;
+}
+function binAt(mx,my){
+  for(let i=0;i<BINS.length;i++){
+    const b=BINS[i];
+    if(mx>=b.x && mx<=b.x+b.w && my>=b.y && my<=b.y+b.h) return i;
+  }
+  return -1;
+}
+function stopBtnHit(mx,my){ return mx>=8&&mx<=92&&my>=10&&my<=42; }
+function startBtnHit(mx,my){ return mx>=W/2-120&&mx<=W/2+120&&my>=482&&my<=534; }
+function infoBtnHit(mx,my){ return mx>=W-145&&mx<=W-5&&my>=H-60&&my<=H-15; }
+function restartBtnHit(mx,my){ return mx>=W/2-145&&mx<=W/2-5&&my>=494&&my<=540; }
+function goInfoBtnHit(mx,my){ return mx>=W/2+5&&mx<=W/2+145&&my>=494&&my<=540; }
+function backBtnHit(mx,my){ return mx>=W/2-90&&mx<=W/2+90&&my>=H-60&&my<=H-12; }
+
+// ── Input ──────────────────────────────────────────────────────────
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+
+  const scaleX = canvas.width / r.width;
+  const scaleY = canvas.height / r.height;
+
+  G.mx = (e.clientX - r.left) * scaleX;
+  G.my = (e.clientY - r.top) * scaleY;
+
+  if (G.screen === 'playing' && G.dragging === null) {
+    G.hover = wasteAt(G.mx, G.my);
+  }
+});
+
+canvas.addEventListener('mousedown', e=>{
+  const r=canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width);
+  const my=(e.clientY-r.top)*(H/r.height);
+  try{ act(); }catch(ex){}
+
+  if(G.screen==='title'){
+    if(startBtnHit(mx,my)) startGame();
+    if(infoBtnHit(mx,my)) G.screen='info';
+    return;
+  }
+  if(G.screen==='gameover'){
+    if(restartBtnHit(mx,my)) startGame();
+    if(goInfoBtnHit(mx,my)) G.screen='info';
+    return;
+  }
+  if(G.screen==='info'){
+    if(backBtnHit(mx,my)) G.screen = G.gameOver ? 'gameover':'title';
+    return;
+  }
+  if(G.screen==='playing'){
+    if(stopBtnHit(mx,my)){ G.screen='title'; return; }
+    const idx = wasteAt(mx,my);
+    if(idx>=0){
+      const w=G.wastes[idx];
+      G.dragging = { idx, offX:mx-w.x, offY:my-w.y };
+      G.hover=-1;
+      sfxPickup();
+    }
+  }
+});
+
+canvas.addEventListener('mouseup', e=>{
+  if(G.screen!=='playing' || G.dragging===null) return;
+  const r=canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width);
+  const my=(e.clientY-r.top)*(H/r.height);
+
+  const w = G.wastes[G.dragging.idx];
+  if(!w){ G.dragging=null; return; }
+
+  const cx = mx - G.dragging.offX + w.sz.w*P/2;
+  const cy = my - G.dragging.offY + w.sz.h*P/2;
+  const bi = binAt(cx, cy);
+
+  if(bi>=0){
+    const bin=BINS[bi];
+    if(bin.type===w.def.bin){
+      sfxCorrect();
+      G.score += 10;
+      G.correct++;
+      fx(cx, BIN_Y-20, '+10', '#69F0AE');
+      fx(cx, BIN_Y+10, '✓ ЗӨВЛӨВ!', '#A5D6A7');
+      G.fact = w.def.fact;
+      G.factTimer = 220;
+      G.wastes.splice(G.dragging.idx, 1);
+    } else {
+      sfxWrong();
+      G.lives--;
+      G.wrong++;
+      fx(cx, BIN_Y-20, '-1 ♥', '#FF5252');
+      fx(cx, BIN_Y+10, '✗ БУРУУ!', '#EF9A9A');
+      // put waste back on ground
+      w.x = Math.max(10, Math.min(W-w.sz.w*P-10, mx-G.dragging.offX));
+      w.y = GROUND_Y - w.sz.h*P - 4;
+      if(G.lives<=0){ endGame('Амьд дуусав!'); G.dragging=null; return; }
+    }
+  } else {
+    sfxDrop();
+    w.x = Math.max(10, Math.min(W-w.sz.w*P-10, mx-G.dragging.offX));
+    w.y = Math.max(HUD_H+5, Math.min(GROUND_Y - w.sz.h*P - 4, my-G.dragging.offY));
+  }
+  G.dragging=null;
+});
+
+// ── Effects ───────────────────────────────────────────────────────
+function fx(x,y,text,color){
+  G.effects.push({ x,y,text,color, life:70, vy:-1.2 });
+}
+function updateFx(){
+  G.effects = G.effects.filter(e=>e.life>0);
+  G.effects.forEach(e=>{ e.life--; e.y+=e.vy; });
+  if(G.factTimer>0) G.factTimer--;
+}
+function drawFx(){
+  G.effects.forEach(e=>{
+    const a = e.life/70;
+    ctx.globalAlpha=a;
+    ctx.fillStyle=e.color;
+    ctx.font=`bold ${P*2.2}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(e.text, e.x, e.y);
+  });
+  ctx.globalAlpha=1;
+}
+
+// ── Game flow ─────────────────────────────────────────────────────
+function startGame(){
+  G.lives=3; G.score=0; G.correct=0; G.wrong=0;
+  G.wastes=[]; G.dragging=null; G.effects=[];
+  G.lastSpawn=Date.now()-4000;
+  G.spawnInt=5000; G.gameOverReason='';
+  G.fact=''; G.factTimer=0; G.hover=-1;
+  G.screen='playing';
+  G.gameOver=false;
+  G.nid=0;
+}
+function endGame(reason){
+  G.gameOver=true; G.screen='gameover';
+  G.gameOverReason=reason; G.dragging=null;
+}
+
+// ── Drawing: Background ───────────────────────────────────────────
+const STARS = [];
+for(let i=0;i<60;i++) STARS.push([Math.random()*W, HUD_H+Math.random()*(GROUND_Y-HUD_H-60), Math.random()*2+1]);
+
+function drawBg(){
+  // Sky
+  const sk = ctx.createLinearGradient(0,HUD_H,0,GROUND_Y);
+  sk.addColorStop(0,'#060D1F');
+  sk.addColorStop(0.4,'#0F2545');
+  sk.addColorStop(1,'#1A3F75');
+  ctx.fillStyle=sk; ctx.fillRect(0,HUD_H,W,GROUND_Y-HUD_H);
+
+  // Stars twinkle
+  const t = Date.now()/1000;
+  STARS.forEach(([sx,sy,sr])=>{
+    const bright = 0.4+0.6*Math.abs(Math.sin(t*0.7+sx));
+    ctx.globalAlpha = bright;
+    ctx.fillStyle = '#E8F4FD';
+    ctx.fillRect(sx,sy,sr,sr);
+  });
+  ctx.globalAlpha=1;
+
+  // Moon
+  drawMoon(820, 85);
+
+  // City buildings (silhouette)
+  drawCity();
+
+  // Ground strip
+  ctx.fillStyle='#1C1208';
+  ctx.fillRect(0,GROUND_Y,W,H-GROUND_Y);
+  ctx.fillStyle='#CEC9B8'; // snow
+  ctx.fillRect(0,GROUND_Y,W,9);
+  ctx.fillStyle='#A9A394';
+  ctx.fillRect(0,GROUND_Y+9,W,5);
+  // road lines
+  ctx.fillStyle='#5A5040';
+  for(let rx=90;rx<W;rx+=130) ctx.fillRect(rx,GROUND_Y+20,70,4);
+}
+
+function drawMoon(mx,my){
+  const pixels=[[2,0],[3,0],[1,1],[2,1],[3,1],[4,1],[0,2],[1,2],[2,2],[3,2],[4,2],
+    [0,3],[1,3],[2,3],[3,3],[4,3],[1,4],[2,4],[3,4],[2,5]];
+  ctx.fillStyle='#FFF9C4';
+  pixels.forEach(([px,py])=>ctx.fillRect(mx+px*5,my+py*5,5,5));
+  // moon glow
+  const mg=ctx.createRadialGradient(mx+17,my+18,0,mx+17,my+18,40);
+  mg.addColorStop(0,'rgba(255,249,196,0.12)');
+  mg.addColorStop(1,'rgba(255,249,196,0)');
+  ctx.fillStyle=mg; ctx.fillRect(mx-25,my-25,90,90);
+}
+
+const BLDG=[
+  {x:0,   w:75, h:175, win:[[10,20],[42,20],[10,55],[42,55],[10,90],[42,90],[10,125],[42,125],[10,155],[42,155]]},
+  {x:83,  w:55, h:115, win:[[10,20],[33,20],[10,50],[33,50],[10,80],[33,80]]},
+  {x:148, w:95, h:195, win:[[10,20],[38,20],[65,20],[10,55],[38,55],[65,55],[10,90],[38,90],[65,90],[10,125],[38,125],[65,125],[10,155],[38,155],[65,155]]},
+  {x:252, w:65, h:130, win:[[10,20],[38,20],[10,50],[38,50],[10,80],[38,80],[10,110],[38,110]]},
+  {x:325, w:50, h:90,  win:[[10,20],[30,20],[10,50],[30,50],[10,70],[30,70]]},
+  // gap 375-535 (play zone)
+  {x:540, w:75, h:155, win:[[10,20],[45,20],[10,55],[45,55],[10,90],[45,90],[10,125],[45,125]]},
+  {x:623, w:55, h:100, win:[[10,20],[33,20],[10,50],[33,50],[10,75],[33,75]]},
+  {x:686, w:85, h:175, win:[[10,20],[40,20],[62,20],[10,55],[40,55],[62,55],[10,90],[40,90],[62,90],[10,125],[40,125],[62,125],[10,152],[40,152]]},
+  {x:779, w:70, h:140, win:[[10,20],[43,20],[10,50],[43,50],[10,80],[43,80],[10,110],[43,110]]},
+  {x:857, w:43, h:110, win:[[8,20],[27,20],[8,50],[27,50],[8,78],[27,78]]},
+];
+
+const _winState = new Map();
+function getBldgColor(bx){ return ['#0D1829','#121E30','#0F1A2B'][bx%3]; }
+
+function drawCity(){
+  const t=Date.now()/2500;
+  BLDG.forEach((b,bi)=>{
+    const by=GROUND_Y-b.h;
+    ctx.fillStyle=getBldgColor(bi);
+    ctx.fillRect(b.x,by,b.w,b.h);
+    // pixel scanlines
+    ctx.fillStyle='rgba(0,0,0,0.25)';
+    for(let gy=0;gy<b.h;gy+=8) ctx.fillRect(b.x,by+gy,b.w,1);
+    // roof detail
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    ctx.fillRect(b.x,by,b.w,3);
+    // windows
+    b.win.forEach(([wx,wy])=>{
+      const key=`${bi}_${wx}_${wy}`;
+      if(!_winState.has(key)) _winState.set(key,Math.random());
+      const seed=_winState.get(key);
+      const lit = Math.sin(t+seed*10) > -0.3;
+      ctx.fillStyle = lit ? '#FFD54F' : '#081220';
+      ctx.fillRect(b.x+wx, by+wy, 13, 10);
+      if(lit){
+        ctx.fillStyle='rgba(255,213,79,0.25)';
+        ctx.fillRect(b.x+wx-2,by+wy-2,17,14);
+      }
+    });
+  });
+}
+
+// ── Drawing: Bins ────────────────────────────────────────────────
+function drawBins(){
+  BINS.forEach((b,i)=>{
+    const {x,y,w,h}=b;
+
+    // glow
+    const rg=ctx.createRadialGradient(x+w/2,y+h/2,10,x+w/2,y+h/2,w*0.9);
+    rg.addColorStop(0,b.glow);
+    rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg; ctx.fillRect(x-20,y-20,w+40,h+40);
+
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(x+5,y+5,w,h);
+
+    // body
+    ctx.fillStyle=b.dark; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=b.mid;  ctx.fillRect(x+3,y+3,w-6,h-6);
+
+    // horizontal texture lines
+    for(let ly=y+6;ly<y+h-3;ly+=14){
+      ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(x+3,ly,w-6,2);
+    }
+
+    // highlight side
+    ctx.fillStyle='rgba(255,255,255,0.07)';
+    ctx.fillRect(x+3,y+3,6,h-6);
+
+    // lid
+    ctx.fillStyle=b.lid; ctx.fillRect(x,y,w,26);
+    ctx.fillStyle=b.mid; ctx.fillRect(x+3,y+4,w-6,18);
+
+    // slot
+    ctx.fillStyle=b.slot; ctx.fillRect(x+w/2-22,y+7,44,12);
+    // slot shine
+    ctx.fillStyle='rgba(255,255,255,0.08)'; ctx.fillRect(x+w/2-20,y+8,44,4);
+
+    // pixel border
+    ctx.fillStyle=b.light;
+    ctx.fillRect(x,y,2,h);
+    ctx.fillRect(x+w-2,y,2,h);
+    ctx.fillRect(x,y,w,2);
+    ctx.fillRect(x,y+h-2,w,2);
+
+    // icon
+    drawBinIcon(b, x+w/2, y+60);
+
+    // label
+    ctx.textAlign='center';
+    ctx.font=`bold ${P*1.7}px 'Press Start 2P',monospace`;
+    ctx.fillStyle='rgba(0,0,0,0.8)';
+    ctx.fillText(b.label, x+w/2+1, y+h-12+1);
+    ctx.fillStyle='#FFFFFF';
+    ctx.fillText(b.label, Math.round(x+w/2), Math.round(y+h-12));
+  });
+}
+function drawText(txt, x, y){
+  ctx.fillText(txt, Math.round(x), Math.round(y));
+}
+function drawBinIcon(b,cx,cy){
+  const c=b.light;
+  if(b.type===RECYCLE){
+    ctx.fillStyle=c;
+    // simplified recycle arrows (3 bent arrows pixel-art)
+    [[0,-16,20,4],[10,8,-12,16],[-10,8,-8,-20]].forEach(([ax,ay,bx,by])=>{
+      ctx.fillRect(cx+ax-2,cy+ay,8,4);
+      ctx.fillRect(cx+ax,cy+ay,4,8);
+    });
+    ctx.fillStyle=b.light;
+    ctx.strokeStyle=b.light; ctx.lineWidth=3;
+    // draw proper recycle symbol
+    ctx.beginPath();
+    ctx.arc(cx,cy,14,0,Math.PI*2*0.33);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx,cy,14,Math.PI*2/3,Math.PI*4/3);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx,cy,14,Math.PI*4/3,Math.PI*2);
+    ctx.stroke();
+  } else if(b.type===GENERAL){
+    ctx.fillStyle=c;
+    ctx.fillRect(cx-13,cy-8,26,20);
+    ctx.fillRect(cx-16,cy-14,32,8);
+    ctx.fillRect(cx-9,cy-18,18,6);
+    ctx.fillStyle='rgba(0,0,0,0.3)';
+    ctx.fillRect(cx-7,cy-8,5,20);
+    ctx.fillRect(cx+2,cy-8,5,20);
+  } else {
+    // hazard triangle pixel
+    ctx.fillStyle='#FFEB3B';
+    ctx.beginPath();
+    ctx.moveTo(cx,cy-18); ctx.lineTo(cx+18,cy+12); ctx.lineTo(cx-18,cy+12);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#212121';
+    ctx.font=`bold ${P*3}px Arial`;
+    ctx.textAlign='center';
+    ctx.fillText('!',cx,cy+10);
+  }
+}
+
+// ── Drawing: Wastes ───────────────────────────────────────────────
+function drawWastes(){
+  const t=Date.now()/1000;
+  G.wastes.forEach((w,i)=>{
+    if(G.dragging && G.dragging.idx===i) return;
+    const age=(Date.now()-w.spawnTime)/1000;
+    const hov=(G.hover===i);
+
+    // age warning flash
+    if(age>12){
+      const fl=Math.sin(Date.now()/250)>0;
+      if(fl){ ctx.fillStyle='rgba(255,30,30,0.18)';
+        ctx.fillRect(w.x-5,w.y-5,w.sz.w*P+10,w.sz.h*P+10); }
+    }
+
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,0.35)';
+    ctx.fillRect(w.x+4,w.y+5,w.sz.w*P,w.sz.h*P);
+
+    // draw pixel art
+    if(ART[w.def.id]) ART[w.def.id](w.x,w.y);
+
+    // hover outline
+    if(hov){
+      ctx.strokeStyle='#FFD700'; ctx.lineWidth=2.5;
+      ctx.strokeRect(w.x-4,w.y-4,w.sz.w*P+8,w.sz.h*P+8);
+      drawTooltip(w.def.name, w.x+w.sz.w*P/2, w.y-14);
+    }
+  });
+
+  // Draw dragged item
+  if(G.dragging!==null){
+    const w=G.wastes[G.dragging.idx];
+    if(w){
+      const dx=G.mx-G.dragging.offX, dy=G.my-G.dragging.offY;
+      ctx.fillStyle='rgba(0,0,0,0.4)';
+      ctx.fillRect(dx+6,dy+7,w.sz.w*P,w.sz.h*P);
+      if(ART[w.def.id]) ART[w.def.id](dx,dy);
+      drawTooltip(w.def.name, dx+w.sz.w*P/2, dy-14);
+
+      // highlight matching bin
+      const cx=dx+w.sz.w*P/2, cy=dy+w.sz.h*P/2;
+      BINS.forEach(b=>{
+        if(b.type===w.def.bin){
+          ctx.strokeStyle=b.light; ctx.lineWidth=3;
+          ctx.setLineDash([6,4]);
+          ctx.strokeRect(b.x-3,b.y-3,b.w+6,b.h+6);
+          ctx.setLineDash([]);
+        }
+      });
+    }
+  }
+}
+
+function drawTooltip(txt,cx,cy){
+  ctx.font=`${P*1.5}px 'Press Start 2P',monospace`;
+  const tw=ctx.measureText(txt).width;
+  const tx=Math.max(5,Math.min(W-tw-14,cx-tw/2-7));
+  const ty=Math.max(HUD_H+5,cy-26);
+  ctx.fillStyle='rgba(5,15,35,0.92)'; ctx.fillRect(tx,ty,tw+14,24);
+  ctx.fillStyle='#D4A017'; ctx.fillRect(tx,ty,tw+14,2);
+  ctx.fillStyle='#FFFFFF'; ctx.textAlign='left';
+  ctx.fillText(txt,tx+7,ty+17);
+  ctx.textAlign='center';
+}
+
+// ── Drawing: HUD ─────────────────────────────────────────────────
+function drawHUD(){
+  // bar
+  ctx.fillStyle='rgba(4,12,26,0.96)'; ctx.fillRect(0,0,W,HUD_H);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(0,HUD_H-2,W,2);
+
+  // stop button
+  ctx.fillStyle='#4A0000'; ctx.fillRect(8,9,86,34);
+  ctx.fillStyle='#7F0000'; ctx.fillRect(10,11,82,30);
+  ctx.fillStyle='#C62828'; ctx.fillRect(10,11,82,13);
+  ctx.fillStyle='#FFFFFF';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.textAlign='center';
+  ctx.fillText('■ ЗОГСООХ',51,32);
+
+  // lives
+  ctx.font=`${P*1.4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#D4A017'; ctx.textAlign='left';
+  ctx.fillText('АМЬД:',115,30);
+  for(let i=0;i<3;i++) drawHeart(220+i*30,16, i<G.lives ? '#FF1744':'#3A1A1A');
+
+  // score
+  ctx.fillStyle='#D4A017';
+  ctx.font=`${P*1.6}px 'Press Start 2P',monospace`;
+  ctx.textAlign='right';
+  ctx.fillText(`${G.score} ОН`,W-10,31);
+
+  // waste count bar
+  const wc=G.wastes.length;
+  if(wc>=5){
+    const fl=Math.sin(Date.now()/350)>0;
+    ctx.fillStyle=fl?'#FF1744':'#E53935';
+    ctx.font=`${P*1.2}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(`⚠ ХОГ: ${wc}/${MAXWASTES}  – ХЭТ ОЛОН!`,W/2,HUD_H-6);
+  }
+
+  // fact banner
+  if(G.factTimer>0){
+    const a=Math.min(1,G.factTimer/30);
+    ctx.globalAlpha=a;
+    ctx.fillStyle='rgba(0,30,10,0.88)'; ctx.fillRect(0,GROUND_Y-38,W,38);
+    ctx.fillStyle='#69F0AE';
+    ctx.font=`${P*1.2}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(G.fact, W/2, GROUND_Y-14);
+    ctx.globalAlpha=1;
+  }
+}
+
+function drawHeart(cx,cy,color){
+  const s=4;
+  const px=[[1,0],[2,0],[4,0],[5,0],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],
+    [0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[1,3],[2,3],[3,3],[4,3],[5,3],
+    [2,4],[3,4],[4,4],[3,5]];
+  ctx.fillStyle=color;
+  px.forEach(([x,y])=>ctx.fillRect(cx-10+x*s,cy+y*s,s,s));
+}
+
+// ── Drawing: Crosshair ────────────────────────────────────────────
+function drawCrosshair(){
+  const {mx,my}=G, size=10, gap=4;
+
+  ctx.strokeStyle='#FF1744';
+  ctx.lineWidth=1.5;
+
+  ctx.beginPath(); ctx.arc(mx,my,8,0,Math.PI*2); ctx.stroke();
+
+  ctx.beginPath(); ctx.moveTo(mx,my-gap); ctx.lineTo(mx,my-size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx,my+gap); ctx.lineTo(mx,my+size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx-gap,my); ctx.lineTo(mx-size,my); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx+gap,my); ctx.lineTo(mx+size,my); ctx.stroke();
+}
+
+// ── Drawing: Screens ──────────────────────────────────────────────
+function drawTitleScreen(){
+  ctx.fillStyle='rgba(4,10,24,0.88)'; ctx.fillRect(0,0,W,H);
+
+  // Panel
+  ctx.fillStyle='rgba(12,28,60,0.9)'; ctx.fillRect(W/2-320,80,640,400);
+  ctx.strokeStyle='#C9820A'; ctx.lineWidth=3;
+  ctx.strokeRect(W/2-320,80,640,400);
+  ctx.strokeStyle='#1A3A7A'; ctx.lineWidth=1;
+  ctx.strokeRect(W/2-315,85,630,390);
+
+  // Title
+  ctx.textAlign='center';
+  ctx.font=`bold ${P*3.8}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#C9820A'; ctx.fillText('ХОГ АНГИЛАХ',W/2+2,148);
+  ctx.fillStyle='#FFFFFF';  ctx.fillText('ХОГ АНГИЛАХ',W/2,146);
+  ctx.font=`bold ${P*2.8}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#C9820A'; ctx.fillText('ТОГЛООМ',W/2+2,198);
+  drawText('ТОГЛООМ', W/2, 196);
+
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#5B8DD9';
+  ctx.fillText('Waste Sorting Game · Улаанбаатар хот',W/2,225);
+
+  // Bin preview
+  const bprev=[{c:'#1155CC',t:'ДАХИВАР',s:'Recyclable'},{c:'#2E7D32',t:'ЭНГИЙН',s:'General'},{c:'#B71C1C',t:'АЮУЛТАЙ',s:'Hazardous'}];
+  bprev.forEach((b,i)=>{
+    const bx=W/2-165+i*120, by=245, bw=110, bh=55;
+    ctx.fillStyle=b.c; ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.fillRect(bx,by,bw,16);
+    ctx.fillStyle='#FFFFFF';
+    ctx.font=`bold ${P*1.3}px 'Press Start 2P',monospace`;
+    ctx.fillText(b.t, bx+bw/2, by+22);
+    ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+    ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.fillText(b.s, bx+bw/2, by+40);
+  });
+
+  // Instructions
+  ctx.fillStyle='#CFD8DC';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillText('Хогийг зохих саванд чирж ангилаарай',W/2,335);
+  ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#78909C';
+  ctx.fillText('♥ ♥ ♥  Буруу хийх бүрд 1 амьд хасагдана',W/2,360);
+  ctx.fillText(`${MAXWASTES} ба дээш хог хуримтлагдвал тоглоом дуусна`,W/2,382);
+
+  // Start button
+  const pulse=Math.sin(Date.now()/600)*4;
+  ctx.fillStyle='#7B5200'; ctx.fillRect(W/2-121+pulse/2,482-pulse/2,242-pulse,54+pulse);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(W/2-119+pulse/2,484-pulse/2,238-pulse,50+pulse);
+  ctx.fillStyle='#0A1628';
+  ctx.font=`bold ${P*2}px 'Press Start 2P',monospace`;
+  ctx.fillText('▶  ТОГЛООМ ЭХЛЭХ',W/2,515);
+
+  // Info button
+  ctx.fillStyle='#0D3688'; ctx.fillRect(W-145,H-62,140,47);
+  ctx.fillStyle='#1565C0'; ctx.fillRect(W-143,H-60,136,43);
+  ctx.fillStyle='#FFFFFF';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillText('ℹ МЭДЭЭЛЭЛ',W-75,H-32);
+}
+
+function drawGameOver(){
+  ctx.fillStyle='rgba(4,10,24,0.92)'; ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='rgba(40,0,0,0.8)'; ctx.fillRect(W/2-320,70,640,200);
+  ctx.strokeStyle='#FF1744'; ctx.lineWidth=2; ctx.strokeRect(W/2-320,70,640,200);
+
+  ctx.textAlign='center';
+  ctx.font=`bold ${P*4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#FF1744';
+  ctx.fillText('ТОГЛООМ',W/2,140);
+  ctx.fillText('ДУУСЛАА',W/2,195);
+
+  ctx.font=`${P*1.5}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#EF9A9A';
+  ctx.fillText(G.gameOverReason,W/2,238);
+
+  // Stats panel
+  ctx.fillStyle='rgba(12,28,60,0.85)'; ctx.fillRect(W/2-280,280,560,110);
+  ctx.strokeStyle='#C9820A'; ctx.lineWidth=2; ctx.strokeRect(W/2-280,280,560,110);
+
+  ctx.font=`${P*2}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#FFD700';
+  ctx.fillText(`ОНОО: ${G.score}`,W/2,315);
+  ctx.font=`${P*1.4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#69F0AE';
+  ctx.fillText(`✓ Зөв ангилсан: ${G.correct}`,W/2,348);
+  ctx.fillStyle='#FF5252';
+  ctx.fillText(`✗ Буруу ангилсан: ${G.wrong}`,W/2,374);
+
+  // Hazardous info banner
+  ctx.fillStyle='rgba(50,25,0,0.85)'; ctx.fillRect(W/2-330,410,660,80);
+  ctx.strokeStyle='#FF8F00'; ctx.lineWidth=1.5; ctx.strokeRect(W/2-330,410,660,80);
+  ctx.fillStyle='#FFB300';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillText('⚠  АЮУЛТАЙ ХОГ ТУХАЙ',W/2,435);
+  ctx.fillStyle='#ECEFF1';
+  ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+  ctx.fillText('Тэсрэмтгий, шатамхай, хортой бодисыг тусгай',W/2,458);
+  ctx.fillText('зөвшөөрөл бүхий байгууллагаар устгуулна.',W/2,476);
+
+  // Buttons
+  ctx.fillStyle='#7B5200'; ctx.fillRect(W/2-145,494,140,48);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(W/2-143,496,136,44);
+  ctx.fillStyle='#0A1628';
+  ctx.font=`${P*1.5}px 'Press Start 2P',monospace`;
+  ctx.fillText('↺  ДАХИН',W/2-75,525);
+
+  ctx.fillStyle='#0A2A6E'; ctx.fillRect(W/2+5,494,140,48);
+  ctx.fillStyle='#1155CC'; ctx.fillRect(W/2+7,496,136,44);
+  ctx.fillStyle='#FFFFFF';
+  ctx.fillText('ℹ  МЭДЭЭЛЭЛ',W/2+75,525);
+}
+
+function drawInfo(){
+  ctx.fillStyle='rgba(4,10,24,0.97)'; ctx.fillRect(0,0,W,H);
+
+  ctx.textAlign='center';
+  ctx.font=`bold ${P*2.4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#FF5722';
+  ctx.fillText('⚠  АЮУЛТАЙ ХОГ ХАЯГДАЛ',W/2,55);
+
+  const rows=[
+    {t:'Аюултай хог гэж юу вэ?', c:'#FFB300', sz:1.8, bold:true},
+    {t:'Хүний эрүүл мэнд, байгаль орчинд хор хөнөөл',   c:'#ECEFF1',sz:1.25},
+    {t:'учруулдаг бодисуудыг хэлнэ:',   c:'#ECEFF1',sz:1.25},
+    {t:'• Тэсрэмтгий  • Шатамхай  • Идэмхий',  c:'#FF8A65',sz:1.25},
+    {t:'• Исэлдүүлэгч  • Хортой бодисууд',      c:'#FF8A65',sz:1.25},
+    {t:'Хаана өгөх вэ?', c:'#FFB300',sz:1.8,bold:true},
+    {t:'► Зай батерей  →  Дэлгүүр, цэнэглэх газрын цэг', c:'#A5D6A7',sz:1.2},
+    {t:'► Хуучин эм  →  Эмийн санд буцааж өгнө',          c:'#A5D6A7',sz:1.2},
+    {t:'► Будаг, химийн бодис  →  Тусгай цуглуулах цэг',  c:'#A5D6A7',sz:1.2},
+    {t:'► Машины тос  →  Автосервис, тусгай цэгт',          c:'#A5D6A7',sz:1.2},
+    {t:'► Флюресцент чийдэн  →  Тусгай цуглуулах цэгт',   c:'#A5D6A7',sz:1.2},
+    {t:'Монгол Улсад аюултай хогийг устгах тусгай', c:'#90CAF9',sz:1.15},
+    {t:'журам, зөвшөөрөл бүхий байгууллагууд ажилладаг.',c:'#90CAF9',sz:1.15},
+    {t:'УБЦТС / Хотын хог хаягдлын удирдлагын газар', c:'#B39DDB',sz:1.15},
+    {t:'Утас: 7011-7007  ·  1800-ХОГХАЯГ',               c:'#B39DDB',sz:1.15},
+  ];
+
+  let ry=90;
+  rows.forEach(r=>{
+    ctx.fillStyle=r.c;
+    ctx.font=`${r.bold?'bold ':''} ${P*r.sz}px 'Press Start 2P',monospace`;
+    ctx.fillText(r.t,W/2,ry);
+    ry += r.bold ? 36 : 24;
+  });
+
+  // Bin key
+  const bkeys=[{c:'#1155CC',t:'ДАХИВАР'},{c:'#2E7D32',t:'ЭНГИЙН'},{c:'#B71C1C',t:'АЮУЛТАЙ'}];
+  bkeys.forEach((b,i)=>{
+    ctx.fillStyle=b.c; ctx.fillRect(W/2-175+i*120,H-90,110,28);
+    ctx.fillStyle='#FFF';
+    ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+    ctx.fillText(b.t,W/2-120+i*120,H-70);
+  });
+
+  // back button
+  ctx.fillStyle='#7B5200'; ctx.fillRect(W/2-90,H-52,180,44);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(W/2-88,H-50,176,40);
+  ctx.fillStyle='#0A1628';
+  ctx.font = `${Math.round(P*1.7)}px 'Press Start 2P', monospace`;
+  ctx.fillText('← БУЦАХ',W/2,H-22);
+}
+
+// ── Main loop ─────────────────────────────────────────────────────
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  drawBg();
+
+  if(G.screen==='title'){
+    drawTitleScreen();
+  } else if(G.screen==='playing'){
+    // spawn logic
+    const now=Date.now();
+    if(now-G.lastSpawn > G.spawnInt){
+      G.lastSpawn=now;
+      if(G.wastes.length < MAXWASTES) spawnWaste();
+      else endGame('Хог хэтэрхий хуримтлагдлаа!');
+      G.spawnInt = Math.max(2200, G.spawnInt - 80);
+    }
+    drawBins();
+    drawWastes();
+    updateFx(); drawFx();
+    drawHUD();
+  } else if(G.screen==='gameover'){
+    drawGameOver();
+  } else if(G.screen==='info'){
+    drawInfo();
+  }
+
+  drawCrosshair();
+  requestAnimationFrame(loop);
+}
+  requestAnimationFrame(loop);
+</script>
+</body>
+</html>
