@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nature Saving Eagles — Байгалийг Хамгаалагчид</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#a8e063; --acid:#c6ff00; --dark:#080810;
+  --gray:#111118; --mid:#1a1a28; --border:#2a2a3e;
+  --white:#f0ece2; --red:#ff4444; --blue:#4fc3f7;
+  --amber:#f5a623; --organic:#7bc67e; --purple:#b06cff;
+  --teal:#00e5cc;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--dark);color:var(--white);font-family:'Outfit',sans-serif;cursor:none;overflow-x:hidden}
+
+/* ===== CUSTOM CURSOR ===== */
+#cur{width:12px;height:12px;background:var(--acid);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s,box-shadow .2s;box-shadow:0 0 20px var(--acid)}
+#cur2{width:44px;height:44px;border:1.5px solid rgba(198,255,0,.5);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .12s ease}
+body:has(a:hover) #cur,body:has(button:hover) #cur,.clickable:hover ~ #cur{width:28px;height:28px;background:#fff;mix-blend-mode:difference;box-shadow:0 0 0 var(--acid)}
+
+/* ===== PROGRESS BAR ===== */
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--green),var(--acid),var(--teal));z-index:9997;width:0;transition:width .05s;box-shadow:0 0 12px var(--acid)}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 3rem;height:68px;display:flex;align-items:center;justify-content:space-between;transition:all .5s}
+nav.scrolled{background:rgba(8,8,16,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;text-decoration:none;color:var(--white);display:flex;align-items:center;gap:10px}
+.logo-eagle{font-size:1.6rem;animation:eagleFloat 3s ease-in-out infinite}
+@keyframes eagleFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-5px) rotate(5deg)}}
+.logo em{color:var(--acid);font-style:normal}
+.navlinks{display:flex;gap:.2rem;list-style:none}
+.navlinks a{color:rgba(240,236,226,.6);text-decoration:none;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.45rem .9rem;border-radius:4px;transition:all .25s}
+.navlinks a:hover,.navlinks a.active-link{color:var(--acid)}
+.navlinks a:hover{background:rgba(198,255,0,.07)}
+.nav-cta{background:var(--acid)!important;color:var(--dark)!important;font-weight:700!important;border-radius:4px!important}
+.nav-cta:hover{background:#d8ff20!important;transform:scale(1.05)}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:10}
+.ham span{width:22px;height:2px;background:var(--white);border-radius:2px;transition:all .3s}
+.ham.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.ham.open span:nth-child(2){opacity:0}
+.ham.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobmenu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(8,8,16,.97);backdrop-filter:blur(20px);padding:1.5rem;border-bottom:1px solid var(--border);z-index:999}
+.mobmenu.open{display:block;animation:fadeDown .3s forwards}
+.mobmenu a{display:block;color:var(--white);text-decoration:none;padding:.85rem 0;border-bottom:1px solid var(--border);font-size:1rem;font-weight:500;transition:color .2s,padding-left .2s}
+.mobmenu a:hover{color:var(--acid);padding-left:.5rem}
+
+/* ===== HERO ===== */
+.hero{position:relative;width:100vw;height:100vh;display:flex;overflow:hidden}
+.split{flex:1;display:flex;align-items:center;justify-content:center;position:relative;text-align:center;color:white;overflow:hidden;transition:flex .9s cubic-bezier(.2,1,.3,1),filter .6s ease;cursor:none}
+.left{background:linear-gradient(rgba(0,0,0,.25),rgba(0,0,0,.25)),url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1400&q=80') center/cover}
+.right{background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=1400&q=80') center/cover}
+.hero:hover .split{filter:blur(6px) brightness(.4)}
+.split:hover{flex:2.5!important;filter:none!important;z-index:2}
+.left:hover{filter:blur(0) brightness(1.2)!important}
+.right:hover{filter:blur(0) grayscale(60%) brightness(.4)!important}
+.split-content{position:relative;z-index:2;padding:2rem}
+.split-content h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,7rem);letter-spacing:6px;margin-bottom:1rem;opacity:0;transform:translateY(30px);animation:up .9s forwards .3s;line-height:.95}
+.split-content p{font-size:1.05rem;letter-spacing:.08em;opacity:0;animation:up .9s forwards .6s;color:rgba(255,255,255,.8);margin-bottom:2rem;transform:translateY(10px)}
+.split:hover .split-content h1{letter-spacing:10px;transition:letter-spacing .4s}
+@keyframes up{to{opacity:1;transform:translateY(0)}}
+.hero-btn{display:inline-block;padding:14px 40px;border:1.5px solid rgba(255,255,255,.6);color:white;text-decoration:none;font-size:.88rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;transition:all .3s;opacity:0;animation:up .9s forwards .9s;border-radius:3px}
+.hero-btn:hover{background:white;color:black;transform:scale(1.05)}
+.left .hero-btn{border-color:var(--acid);color:var(--acid);box-shadow:0 0 30px rgba(198,255,0,.2)}
+.left .hero-btn:hover{background:var(--acid);color:#000;box-shadow:0 0 50px rgba(198,255,0,.5)}
+.hero-divider{position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(transparent,rgba(198,255,0,.5),rgba(198,255,0,.5),transparent);z-index:5;pointer-events:none}
+.hero-divider::after{content:'🦅';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;animation:eagleFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 20px var(--acid))}
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:up 1s forwards 1.5s;z-index:10}
+.scroll-hint span{font-size:.6rem;letter-spacing:.25em;color:rgba(255,255,255,.4);text-transform:uppercase}
+.scroll-line{width:1px;height:50px;background:linear-gradient(var(--acid),transparent);animation:scrollPulse 2s infinite}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Floating particles in hero */
+.hero-particle{position:absolute;pointer-events:none;opacity:0;font-size:1.2rem;animation:floatUp 8s infinite linear}
+@keyframes floatUp{0%{opacity:0;transform:translateY(100vh) rotate(0deg)}10%{opacity:.6}90%{opacity:.3}100%{opacity:0;transform:translateY(-100px) rotate(720deg)}}
+
+/* ===== NATURE TIP POP-UP / AD ===== */
+#natureTip{position:fixed;bottom:2rem;left:2rem;width:340px;background:linear-gradient(135deg,#0d1a0d,#1a2a1a);border:1px solid rgba(168,224,99,.4);border-radius:16px;padding:1.4rem;z-index:8000;animation:tipSlideIn .6s ease forwards;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(198,255,0,.1) inset}
+@keyframes tipSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#natureTip.hidden{display:none}
+.tip-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.tip-badge{background:var(--acid);color:#000;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .6rem;border-radius:3px}
+.tip-close{background:none;border:none;color:rgba(240,236,226,.4);cursor:pointer;font-size:1.1rem;transition:color .2s;padding:0}
+.tip-close:hover{color:var(--white)}
+.tip-icon{font-size:2rem;margin-bottom:.5rem;display:block;text-align:center}
+.tip-text{font-size:.85rem;color:rgba(240,236,226,.75);line-height:1.7;text-align:center;margin-bottom:.8rem}
+.tip-counter{font-size:.68rem;color:rgba(198,255,0,.5);text-align:center;letter-spacing:.1em}
+.tip-dots{display:flex;justify-content:center;gap:.4rem;margin-top:.6rem}
+.tip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .3s}
+.tip-dot.active{background:var(--acid)}
+
+/* ===== STATS STRIP ===== */
+.stats-strip{background:#0a0a14;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 4rem;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center}
+.stat-item{position:relative}
+.stat-item .num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:-1px;color:var(--acid);display:block;text-shadow:0 0 30px rgba(198,255,0,.4)}
+.stat-item .lbl{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(240,236,226,.4);margin-top:.25rem}
+.stat-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(198,255,0,.04) 0%,transparent 70%);pointer-events:none;opacity:0;transition:opacity .5s}
+.stat-item:hover .stat-glow{opacity:1}
+
+/* ===== GENERIC SECTIONS ===== */
+.sec{padding:7rem 4rem;max-width:1260px;margin:0 auto}
+.sec.fw{max-width:100%;padding-left:0;padding-right:0}
+.bg-alt{background:#0a0a14}
+.bg-deep{background:linear-gradient(180deg,#080810 0%,#0d1220 50%,#080810 100%)}
+.tag{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--acid);display:flex;align-items:center;gap:.75rem;margin-bottom:.9rem}
+.tag::before{content:'';width:28px;height:1px;background:var(--acid)}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5.5vw,5rem);letter-spacing:3px;line-height:.95;margin-bottom:1.5rem}
+.stitle .hl{color:var(--acid);text-shadow:0 0 40px rgba(198,255,0,.3)}
+.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,var(--border),transparent)}
+.rv{opacity:0;transform:translateY(32px);transition:opacity .7s,transform .7s}
+.rv.visible{opacity:1;transform:translateY(0)}
+.rv2{opacity:0;transform:translateX(-32px);transition:opacity .7s,transform .7s}
+.rv2.visible{opacity:1;transform:translateX(0)}
+.rv3{opacity:0;transform:scale(.95);transition:opacity .6s,transform .6s}
+.rv3.visible{opacity:1;transform:scale(1)}
+
+/* ===== WASTE TYPES — CLICK-TO-EXPAND MODAL ===== */
+.waste-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:3rem}
+.waste-card-btn{position:relative;height:420px;border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .5s cubic-bezier(.2,1,.3,1),box-shadow .5s,border-color .3s;border:1px solid rgba(255,255,255,.06)}
+.waste-card-btn:hover{transform:scale(1.04) translateY(-8px);z-index:2}
+.waste-card-btn:nth-child(1):hover{box-shadow:0 30px 80px rgba(123,198,126,.25);border-color:rgba(123,198,126,.3)}
+.waste-card-btn:nth-child(2):hover{box-shadow:0 30px 80px rgba(79,195,247,.25);border-color:rgba(79,195,247,.3)}
+.waste-card-btn:nth-child(3):hover{box-shadow:0 30px 80px rgba(255,68,68,.25);border-color:rgba(255,68,68,.3)}
+.waste-card-btn:nth-child(4):hover{box-shadow:0 30px 80px rgba(245,166,35,.25);border-color:rgba(245,166,35,.3)}
+.wcb-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .6s,filter .5s;filter:brightness(.55) saturate(.8)}
+.waste-card-btn:hover .wcb-bg{transform:scale(1.1);filter:brightness(.25) saturate(.5)}
+.wcb-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,transparent 60%)}
+.wcb-front{position:absolute;bottom:0;left:0;right:0;padding:1.8rem;transition:transform .4s}
+.wcb-front-icon{font-size:2.5rem;display:block;margin-bottom:.5rem;filter:drop-shadow(0 0 10px rgba(255,255,255,.3))}
+.wcb-front h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;margin-bottom:.4rem}
+.wcb-front p{font-size:.8rem;color:rgba(240,236,226,.6);line-height:1.5}
+.waste-card-btn:hover .wcb-front{transform:translateY(130%)}
+.wcb-back{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;opacity:0;transform:translateY(20px);transition:all .4s .1s;text-align:center}
+.waste-card-btn:hover .wcb-back{opacity:1;transform:translateY(0)}
+.wcb-imgs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem;width:100%}
+.wcb-imgs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.15);transition:transform .3s}
+.wcb-imgs img:hover{transform:scale(1.05)}
+.wcb-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;margin-bottom:.5rem}
+.wcb-list{list-style:none;font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.9;text-align:left;width:100%}
+.wcb-list li::before{content:'→ ';color:inherit;opacity:.7}
+.wcb-click-hint{position:absolute;top:1rem;right:1rem;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .5rem;border-radius:3px;transition:opacity .3s}
+.waste-card-btn:hover .wcb-click-hint{opacity:0}
+.wcb-colorbar{position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--wc);transform:scaleX(0);transform-origin:left;transition:transform .6s .1s;border-radius:0 0 4px 4px}
+.waste-card-btn:hover .wcb-colorbar{transform:scaleX(1)}
+
+/* ===== MODAL (click expand) ===== */
+#modal{position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(20px);opacity:0;pointer-events:none;transition:opacity .4s}
+#modal.open{opacity:1;pointer-events:all}
+.modal-box{background:linear-gradient(135deg,#111120,#1a1a2e);border:1px solid rgba(255,255,255,.1);border-radius:24px;max-width:840px;width:92%;max-height:90vh;overflow-y:auto;padding:2.5rem;position:relative;transform:scale(.9);transition:transform .4s;box-shadow:0 50px 120px rgba(0,0,0,.8)}
+#modal.open .modal-box{transform:scale(1)}
+.modal-close{position:absolute;top:1.2rem;right:1.2rem;background:rgba(255,255,255,.1);border:none;color:var(--white);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.modal-close:hover{background:rgba(255,68,68,.4)}
+.modal-header{display:flex;align-items:center;gap:1.2rem;margin-bottom:2rem}
+.modal-icon{width:70px;height:70px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:3px;line-height:1}
+.modal-subtitle{font-size:.85rem;color:rgba(240,236,226,.5);margin-top:.25rem}
+.modal-imgs{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.5rem}
+.modal-imgs img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;transition:transform .3s}
+.modal-imgs img:hover{transform:scale(1.04)}
+.modal-info{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.modal-section h4{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acid);margin-bottom:.75rem}
+.modal-list{list-style:none}
+.modal-list li{font-size:.9rem;color:rgba(240,236,226,.75);padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:.6rem}
+.modal-list li .mi{font-size:1.1rem}
+.modal-fact{background:rgba(198,255,0,.06);border:1px solid rgba(198,255,0,.15);border-radius:10px;padding:1rem;margin-top:1.5rem}
+.modal-fact p{font-size:.85rem;color:rgba(240,236,226,.7);line-height:1.7}
+.modal-fact strong{color:var(--acid)}
+
+/* ===== RECYCLING PROCESS TIMELINE ===== */
+.recycle-timeline{margin-top:4rem;position:relative}
+.rtl-connector{position:absolute;top:50px;left:calc(50% - 1px);height:calc(100% - 100px);width:2px;background:linear-gradient(var(--acid),transparent);display:none}
+.rtl-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:3rem}
+.rtl-step{text-align:center;position:relative;cursor:pointer;transition:transform .3s}
+.rtl-step:hover{transform:translateY(-8px)}
+.rtl-step-icon{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem;border:2px solid;position:relative;transition:box-shadow .3s}
+.rtl-step:hover .rtl-step-icon{box-shadow:0 0 40px currentColor}
+.rtl-step-arrow{position:absolute;top:40px;right:-12px;color:rgba(255,255,255,.2);font-size:1.2rem;z-index:1}
+.rtl-step:last-child .rtl-step-arrow{display:none}
+.rtl-step h4{font-size:.88rem;font-weight:700;margin-bottom:.3rem}
+.rtl-step p{font-size:.72rem;color:rgba(240,236,226,.45);line-height:1.5}
+.rtl-detail{background:var(--mid);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-top:2rem;display:none;animation:fadeup .4s forwards}
+@keyframes fadeup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.rtl-detail.active{display:block}
+.rtl-detail-grid{display:grid;grid-template-columns:1fr 2fr;gap:2rem;align-items:start}
+.rtl-detail img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+.rtl-detail h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;color:var(--acid);margin-bottom:.75rem}
+.rtl-detail p{font-size:.88rem;color:rgba(240,236,226,.65);line-height:1.8}
+.rtl-detail .rtl-stats{display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap}
+.rtl-stat-chip{background:rgba(198,255,0,.08);border:1px solid rgba(198,255,0,.2);border-radius:8px;padding:.5rem 1rem}
+.rtl-stat-chip span{display:block;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--acid)}
+.rtl-stat-chip small{font-size:.65rem;color:rgba(240,236,226,.45);text-transform:uppercase;letter-spacing:.1em}
+
+/* ===== PROCESS CARDS ===== */
+.process-track{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem}
+.process-card{background:var(--mid);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;position:relative;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,1,.3,1),box-shadow .4s,border-color .3s;border-top:3px solid var(--pc);opacity:0;transform:translateY(40px)}
+.process-card.visible{animation:card3d .7s forwards}
+@keyframes card3d{to{opacity:1;transform:translateY(0)}}
+.process-card:nth-child(2){animation-delay:.1s}.process-card:nth-child(3){animation-delay:.2s}.process-card:nth-child(4){animation-delay:.3s}
+.process-card:hover{transform:translateY(-12px) rotateX(-3deg) rotateY(3deg);box-shadow:0 30px 70px rgba(0,0,0,.5);border-color:var(--pc)}
+.process-card .picon{width:60px;height:60px;background:rgba(255,255,255,.05);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1.2rem;border:1px solid rgba(255,255,255,.08);transition:all .3s;box-shadow:0 0 0 var(--pc)}
+.process-card:hover .picon{box-shadow:0 0 30px var(--pc);border-color:var(--pc)}
+.process-card h3{font-size:1rem;font-weight:700;margin-bottom:.75rem}
+.process-card ul{list-style:none;text-align:left}
+.process-card ul li{font-size:.8rem;color:rgba(240,236,226,.55);padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:.5rem}
+.process-card ul li::before{content:'›';color:var(--pc);flex-shrink:0;font-size:1rem}
+.process-card .pc-badge{position:absolute;top:1rem;right:1rem;background:var(--pc);color:#000;font-size:.6rem;font-weight:700;padding:.2rem .5rem;border-radius:3px;letter-spacing:.1em;text-transform:uppercase}
+
+/* ===== PHOTO GALLERY ===== */
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}
+.gallery-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:border-color .3s}
+.gallery-item:hover{border-color:rgba(198,255,0,.3)}
+.gallery-item.wide{grid-column:span 2}
+.gallery-item.tall{grid-row:span 2}
+.gallery-item img{width:100%;height:100%;object-fit:cover;filter:saturate(.6) brightness(.7);transition:filter .5s,transform .5s;display:block}
+.gallery-item:hover img{filter:saturate(1) brightness(1);transform:scale(1.06)}
+.gallery-caption{position:absolute;bottom:0;left:0;right:0;padding:1rem 1.2rem;background:linear-gradient(transparent,rgba(0,0,0,.88));font-size:.78rem;color:rgba(255,255,255,.8);transform:translateY(100%);transition:transform .35s;line-height:1.5}
+.gallery-item:hover .gallery-caption{transform:translateY(0)}
+.gallery-tag{position:absolute;top:.75rem;left:.75rem;background:var(--acid);color:#000;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px}
+.gallery-zoom{position:absolute;top:.75rem;right:.75rem;background:rgba(0,0,0,.6);color:rgba(255,255,255,.5);font-size:.75rem;padding:.2rem .5rem;border-radius:3px;opacity:0;transition:opacity .3s}
+.gallery-item:hover .gallery-zoom{opacity:1}
+
+/* ===== IMPACT COUNTER RINGS ===== */
+.impact-rings{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem}
+.impact-ring{text-align:center;position:relative;cursor:pointer}
+.ring-svg{width:160px;height:160px;transform:rotate(-90deg);margin:0 auto 1rem;display:block}
+.ring-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:8}
+.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;transition:stroke-dashoffset 2s ease}
+.ring-fill.animate{stroke-dashoffset:var(--offset)}
+.ring-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-58%);text-align:center;pointer-events:none}
+.ring-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1}
+.ring-unit{font-size:.65rem;color:rgba(240,236,226,.4);letter-spacing:.1em;text-transform:uppercase}
+.ring-desc{font-size:.82rem;color:rgba(240,236,226,.6);line-height:1.6}
+.ring-title{font-weight:700;margin-bottom:.25rem}
+
+/* ===== NEWS ===== */
+.news-mosaic{display:grid;grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:auto auto;gap:1.2rem;margin-top:3rem}
+.nc{background:var(--mid);border-radius:14px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .35s,border-color .35s,box-shadow .35s;opacity:0;transform:translateY(24px)}
+.nc.visible{animation:fadeup .5s forwards}
+.nc:nth-child(2){animation-delay:.1s}.nc:nth-child(3){animation-delay:.2s}.nc:nth-child(4){animation-delay:.3s}.nc:nth-child(5){animation-delay:.4s}
+.nc:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.5);border-color:rgba(168,224,99,.3)}
+.nc.feat{grid-row:1/3}
+.nc img{width:100%;object-fit:cover;filter:saturate(.6) brightness(.8);transition:filter .4s,transform .4s;display:block}
+.nc.feat img{aspect-ratio:3/4;height:100%;object-fit:cover}
+.nc:not(.feat) img{aspect-ratio:16/9}
+.nc:hover img{filter:saturate(1) brightness(1);transform:scale(1.03)}
+.nc-body{padding:1.3rem}
+.nc-tag{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acid);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.nc-tag::before{content:'●';font-size:.4rem}
+.nc-body h3{font-size:.95rem;font-weight:700;line-height:1.45;margin-bottom:.4rem}
+.nc.feat .nc-body h3{font-size:1.25rem}
+.nc-body p{font-size:.78rem;color:rgba(240,236,226,.45);line-height:1.6}
+.nc-date{font-size:.63rem;color:rgba(240,236,226,.25);margin-top:.7rem;display:block}
+.nc-read{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--acid);margin-top:.5rem;font-weight:600;letter-spacing:.05em}
+
+/* ===== HAZARD STEPS ===== */
+.hsteps{display:flex;flex-direction:column;gap:0;margin-top:3rem;position:relative}
+.hsteps::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:1px;background:linear-gradient(var(--acid),rgba(168,224,99,.05))}
+.hstep{display:flex;gap:2rem;align-items:flex-start;padding:1.8rem 0;opacity:0;transform:translateX(-24px);transition:opacity .5s,transform .5s;cursor:pointer}
+.hstep.visible{opacity:1;transform:translateX(0)}
+.hstep:nth-child(2){transition-delay:.1s}.hstep:nth-child(3){transition-delay:.2s}.hstep:nth-child(4){transition-delay:.3s}.hstep:nth-child(5){transition-delay:.4s}
+.hnum{width:50px;height:50px;background:var(--dark);border:1.5px solid var(--acid);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--acid);flex-shrink:0;position:relative;z-index:1;transition:all .3s}
+.hstep:hover .hnum{background:var(--acid);color:#000;transform:scale(1.15);box-shadow:0 0 30px rgba(198,255,0,.4)}
+.hcontent h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;padding-top:.6rem}
+.hcontent p{font-size:.85rem;color:rgba(240,236,226,.5);line-height:1.8;max-width:600px}
+.hwarn{margin-top:2.5rem;background:rgba(255,68,68,.06);border:1px solid rgba(255,68,68,.2);border-radius:10px;padding:1.2rem 1.5rem;display:flex;gap:1rem;align-items:flex-start}
+.hwarn p{font-size:.83rem;color:rgba(255,180,180,.75);line-height:1.7}
+
+/* ===== HAZARD GALLERY ===== */
+.hazard-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:3rem}
+.hgal-item{position:relative;border-radius:10px;overflow:hidden;cursor:pointer}
+.hgal-item img{width:100%;aspect-ratio:4/3;object-fit:cover;filter:saturate(.7) brightness(.6);transition:all .5s;display:block}
+.hgal-item:hover img{filter:saturate(1) brightness(.9);transform:scale(1.05)}
+.hgal-label{position:absolute;bottom:.7rem;left:.7rem;right:.7rem;background:rgba(0,0,0,.7);border-radius:4px;padding:.4rem .7rem;font-size:.72rem;color:rgba(255,255,255,.8);transition:opacity .3s}
+.hgal-warn{position:absolute;top:.6rem;left:.6rem;background:var(--red);color:#fff;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .5rem;border-radius:2px}
+
+/* ===== FEEDBACK ===== */
+.fb-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:3rem}
+.fb-info p{font-size:1rem;color:rgba(240,236,226,.6);line-height:1.9;margin-bottom:2rem}
+.ci{display:flex;gap:.75rem;align-items:center;margin-bottom:1rem;font-size:.85rem;color:rgba(240,236,226,.45)}
+.cicon{width:36px;height:36px;background:var(--mid);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;border:1px solid var(--border)}
+.fform{display:flex;flex-direction:column;gap:1.2rem}
+.fg{display:flex;flex-direction:column;gap:.45rem}
+.fg label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,236,226,.45)}
+.fg input,.fg textarea,.fg select{background:var(--mid);border:1px solid var(--border);color:var(--white);font-family:'Outfit',sans-serif;font-size:.9rem;padding:.85rem 1rem;border-radius:8px;outline:none;transition:border-color .25s,box-shadow .25s;-webkit-appearance:none}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--acid);box-shadow:0 0 0 3px rgba(198,255,0,.08)}
+.fg textarea{resize:vertical;min-height:130px}
+.fg select option{background:#1a1a28}
+.sbtn{background:var(--acid);color:#000;border:none;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.05em;padding:1rem 2rem;border-radius:8px;cursor:pointer;transition:all .25s;width:100%}
+.sbtn:hover{background:#d8ff20;transform:translateY(-2px);box-shadow:0 10px 30px rgba(198,255,0,.3)}
+
+/* ===== GAME SECTION ===== */
+.game-wrap{padding:7rem 4rem;background:linear-gradient(180deg,#080810 0%,#0d1a07 50%,#080810 100%);position:relative;overflow:hidden}
+.game-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(168,224,99,.05) 0%,transparent 70%);pointer-events:none;animation:bgPulse 4s ease-in-out infinite}
+@keyframes bgPulse{0%,100%{opacity:.5}50%{opacity:1}}
+.game-inner{max-width:1000px;margin:0 auto}
+.game-header{text-align:center;margin-bottom:2rem}
+.game-score-row{display:flex;justify-content:center;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.gscore{background:var(--mid);border:1px solid var(--border);border-radius:12px;padding:.75rem 1.5rem;text-align:center;min-width:110px;transition:border-color .3s}
+.gscore:hover{border-color:rgba(198,255,0,.3)}
+.gscore .gnum{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--acid);display:block;line-height:1;text-shadow:0 0 20px rgba(198,255,0,.4)}
+.gscore .glbl{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,226,.4);margin-top:.2rem}
+#gameCanvas{display:block;margin:0 auto;border-radius:16px;border:1px solid var(--border);cursor:crosshair;max-width:100%;box-shadow:0 0 60px rgba(0,0,0,.8),0 0 0 1px rgba(198,255,0,.05) inset}
+.game-controls-row{display:flex;justify-content:center;gap:1rem;margin-top:1.2rem;flex-wrap:wrap}
+.gbtn{background:var(--acid);color:#000;border:none;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.05em;padding:.8rem 2rem;border-radius:8px;cursor:pointer;transition:all .2s}
+.gbtn:hover{background:#d8ff20;transform:translateY(-3px);box-shadow:0 10px 30px rgba(198,255,0,.3)}
+.gbtn.ghost{background:transparent;color:var(--white);border:1px solid var(--border)}
+.gbtn.ghost:hover{border-color:var(--acid);color:var(--acid);background:rgba(198,255,0,.06)}
+.game-legend-row{display:flex;justify-content:center;gap:2rem;margin-top:1.2rem;flex-wrap:wrap}
+.game-legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:rgba(240,236,226,.5)}
+.legend-swatch{width:16px;height:16px;border-radius:4px}
+.game-result{display:none;text-align:center;padding:3rem;background:var(--mid);border-radius:20px;border:1px solid var(--border);margin-top:1.5rem}
+.game-result.show{display:block;animation:fadeup .5s forwards}
+.result-grade{font-family:'Bebas Neue',sans-serif;font-size:7rem;letter-spacing:-2px;line-height:1;margin-bottom:.5rem;text-shadow:0 0 60px currentColor}
+.result-msg{font-size:1.2rem;color:rgba(240,236,226,.65);margin-bottom:2rem}
+.restart-btn{background:var(--acid);color:#000;border:none;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;padding:1rem 2.5rem;border-radius:10px;cursor:pointer;transition:all .25s}
+.restart-btn:hover{background:#d8ff20;transform:scale(1.04);box-shadow:0 10px 40px rgba(198,255,0,.4)}
+.game-tip{background:rgba(198,255,0,.06);border:1px solid rgba(198,255,0,.15);border-radius:10px;padding:1rem;margin-top:1.5rem;font-size:.82rem;color:rgba(240,236,226,.6);line-height:1.7;text-align:center}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--mid);border:1px solid rgba(198,255,0,.3);color:var(--white);padding:1rem 1.5rem;border-radius:10px;font-size:.85rem;z-index:9900;opacity:0;transform:translateY(10px);transition:all .35s;pointer-events:none;max-width:320px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:rgba(123,198,126,.4)}
+.toast.error{border-color:rgba(255,68,68,.4)}
+
+/* ===== FOOTER ===== */
+footer{background:#050508;border-top:1px solid var(--border);padding:3rem 4rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;align-items:start}
+.footer-brand .flogo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;margin-bottom:.5rem}
+.footer-brand .flogo em{color:var(--acid);font-style:normal}
+.footer-brand p{font-size:.8rem;color:rgba(240,236,226,.3);line-height:1.7}
+.footer-links h5{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,236,226,.3);margin-bottom:1rem}
+.footer-links a{display:block;color:rgba(240,236,226,.45);text-decoration:none;font-size:.82rem;margin-bottom:.5rem;transition:color .2s}
+.footer-links a:hover{color:var(--acid)}
+.footer-eco{text-align:right}
+.footer-eco p{font-size:.75rem;color:rgba(240,236,226,.25);line-height:1.8}
+.footer-eco .eco-badge{display:inline-block;background:rgba(198,255,0,.08);border:1px solid rgba(198,255,0,.2);color:var(--acid);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .75rem;border-radius:4px;margin-bottom:.75rem}
+
+/* ===== RESPONSIBLE RECYCLING SECTION ===== */
+.responsible-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3rem}
+.resp-card{background:var(--mid);border:1px solid var(--border);border-radius:16px;padding:1.8rem;cursor:pointer;transition:all .4s;position:relative;overflow:hidden}
+.resp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--rc);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.resp-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.resp-card:hover::before{transform:scaleX(1)}
+.resp-card-icon{font-size:2.5rem;margin-bottom:1rem;display:block;transition:transform .3s}
+.resp-card:hover .resp-card-icon{transform:scale(1.15) rotate(-5deg)}
+.resp-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.6rem}
+.resp-card p{font-size:.83rem;color:rgba(240,236,226,.55);line-height:1.7}
+.resp-card .resp-badge{position:absolute;top:1.2rem;right:1.2rem;background:var(--rc);color:#000;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .5rem;border-radius:3px}
+
+/* ===== COMPARE / DID YOU KNOW ===== */
+.did-you-know{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+.dyk-card{background:linear-gradient(135deg,var(--mid),rgba(30,30,44,.6));border:1px solid var(--border);border-radius:14px;padding:1.5rem;cursor:default;transition:all .35s;position:relative}
+.dyk-card:hover{transform:translateY(-5px);border-color:rgba(198,255,0,.2);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.dyk-num{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:rgba(198,255,0,.15);position:absolute;top:.5rem;right:1rem;line-height:1}
+.dyk-icon{font-size:1.8rem;margin-bottom:.8rem;display:block}
+.dyk-card h4{font-size:.9rem;font-weight:700;margin-bottom:.5rem;color:var(--acid)}
+.dyk-card p{font-size:.8rem;color:rgba(240,236,226,.55);line-height:1.7}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:rgba(198,255,0,.3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(198,255,0,.5)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .waste-grid{grid-template-columns:repeat(2,1fr)}
+  .rtl-steps{grid-template-columns:repeat(3,1fr)}
+  .impact-rings{grid-template-columns:repeat(2,1fr)}
+  .news-mosaic{grid-template-columns:1fr 1fr}
+  .nc.feat{grid-row:auto}
+  footer{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  nav{padding:0 1.5rem}
+  .navlinks{display:none}
+  .ham{display:flex}
+  .sec{padding:4.5rem 1.5rem}
+  .game-wrap{padding:4.5rem 1.5rem}
+  .process-track{grid-template-columns:1fr 1fr}
+  .gallery-grid{grid-template-columns:1fr 1fr}
+  .gallery-item.wide{grid-column:auto}
+  .stats-strip{grid-template-columns:1fr 1fr;padding:2rem}
+  .responsible-grid{grid-template-columns:1fr}
+  .fb-grid{grid-template-columns:1fr;gap:2.5rem}
+  .modal-info{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr;text-align:center}
+  .footer-eco{text-align:center}
+}
+@media(max-width:640px){
+  .waste-grid{grid-template-columns:1fr}
+  .process-track{grid-template-columns:1fr}
+  .rtl-steps{grid-template-columns:1fr 1fr}
+  .did-you-know{grid-template-columns:1fr}
+  .gallery-grid{grid-template-columns:1fr}
+  .news-mosaic{grid-template-columns:1fr}
+  .impact-rings{grid-template-columns:1fr}
+  .hazard-gallery{grid-template-columns:1fr}
+  #natureTip{width:calc(100vw - 2rem);left:1rem;right:1rem}
+  .modal-imgs{grid-template-columns:1fr 1fr}
+  .rtl-detail-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+<div id="prog"></div>
+
+<!-- ===== NATURE TIP POP-UP ===== -->
+<div id="natureTip">
+  <div class="tip-header">
+    <span class="tip-badge">🌿 Nature Tip</span>
+    <button class="tip-close" onclick="closeTip()">✕</button>
+  </div>
+  <span class="tip-icon" id="tipIcon">🌍</span>
+  <p class="tip-text" id="tipText">Завсарлагаа авч байна...</p>
+  <div class="tip-counter" id="tipCounter">1 / 8</div>
+  <div class="tip-dots" id="tipDots"></div>
+</div>
+
+<!-- ===== NAV ===== -->
+<nav id="nav">
+  <a class="logo" href="#home"><span class="logo-eagle">🦅</span> <em>Nature</em>&nbsp;Saving&nbsp;Eagles</a>
+  <ul class="navlinks">
+    <li><a href="#home">Нүүр</a></li>
+    <li><a href="#waste">Хог төрлүүд</a></li>
+    <li><a href="#recycle">Дахин боловсруулалт</a></li>
+    <li><a href="#impact">Нөлөөлөл</a></li>
+    <li><a href="#hazard">Аюултай хог</a></li>
+    <li><a href="#game">Тоглоом</a></li>
+    <li><a href="#feedback" class="nav-cta">Санал</a></li>
+  </ul>
+  <div class="ham" id="ham"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobmenu" id="mob">
+  <a href="#home" onclick="closeMob()">🏠 Нүүр</a>
+  <a href="#waste" onclick="closeMob()">🗑️ Хог төрлүүд</a>
+  <a href="#recycle" onclick="closeMob()">♻️ Дахин боловсруулалт</a>
+  <a href="#impact" onclick="closeMob()">📊 Нөлөөлөл</a>
+  <a href="#hazard" onclick="closeMob()">⚠️ Аюултай хог</a>
+  <a href="#game" onclick="closeMob()">🎮 Тоглоом</a>
+  <a href="#feedback" onclick="closeMob()">💬 Санал</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<div id="home" class="hero">
+  <div class="split left">
+    <div class="split-content">
+      <h1>ЦЭВЭР<br>МОНГОЛ</h1>
+      <p>Байгалийг хамгаалах ирээдүй</p>
+      <a href="#waste" class="hero-btn">Хогийн мэдлэг →</a>
+    </div>
+  </div>
+  <div class="hero-divider"></div>
+  <div class="split right">
+    <div class="split-content">
+      <h1>ХОГТОЙ<br>МОНГОЛ</h1>
+      <p>Бидний үлдээж буй ул мөр</p>
+      <a href="#game" class="hero-btn">Тоглоом эхлэх →</a>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>scroll</span><div class="scroll-line"></div></div>
+  <!-- Floating particles -->
+  <div class="hero-particle" style="left:10%;animation-delay:0s;animation-duration:9s">🌿</div>
+  <div class="hero-particle" style="left:25%;animation-delay:2s;animation-duration:7s">♻️</div>
+  <div class="hero-particle" style="left:45%;animation-delay:1s;animation-duration:11s">🌱</div>
+  <div class="hero-particle" style="left:65%;animation-delay:3s;animation-duration:8s">🦋</div>
+  <div class="hero-particle" style="left:80%;animation-delay:.5s;animation-duration:10s">🌍</div>
+  <div class="hero-particle" style="left:90%;animation-delay:4s;animation-duration:7s">⭐</div>
+</div>
+
+<!-- ===== STATS ===== -->
+<div class="stats-strip">
+  <div class="stat-item rv3">
+    <div class="stat-glow"></div>
+    <span class="num" data-target="1200000">0</span>
+    <div class="lbl">тонн/жил хог үүснэ</div>
+  </div>
+  <div class="stat-item rv3" style="transition-delay:.1s">
+    <div class="stat-glow"></div>
+    <span class="num" data-target="20">0</span>
+    <div class="lbl">% нь боловсруулагдана</div>
+  </div>
+  <div class="stat-item rv3" style="transition-delay:.2s">
+    <div class="stat-glow"></div>
+    <span class="num" data-target="500">0</span>
+    <div class="lbl">жил задрана хуванцар</div>
+  </div>
+  <div class="stat-item rv3" style="transition-delay:.3s">
+    <div class="stat-glow"></div>
+    <span class="num" data-target="300000">0</span>
+    <div class="lbl">тонн шинэ хүчин чадал</div>
+  </div>
+</div>
+
+<!-- ===== WASTE TYPES SECTION ===== -->
+<div id="waste">
+<div class="sec">
+  <div class="tag rv">01 — Хогийн төрлүүд</div>
+  <h2 class="stitle rv">ХОГ ХАЯГДЛЫН<br><span class="hl">АНГИЛАЛ</span></h2>
+  <p class="rv" style="max-width:650px;color:rgba(240,236,226,.6);line-height:1.9;font-size:1rem;margin-bottom:.5rem">Хог хаягдал нь 4 үндсэн ангилалд хуваагдана. Доорх картны аль нэгэнд <strong style="color:var(--acid)">дарж</strong> тухайн хогийн дэлгэрэнгүй мэдээлэл, зураг, арга хэмжээг харна уу.</p>
+
+  <div class="waste-grid rv">
+    <!-- ORGANIC -->
+    <div class="waste-card-btn" style="--wc:var(--organic)" onclick="openModal('organic')" tabindex="0">
+      <div class="wcb-bg" style="background-image:url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=700&q=80')"></div>
+      <div class="wcb-overlay"></div>
+      <div class="wcb-colorbar"></div>
+      <span class="wcb-click-hint">Дарж нэмэлт мэдээлэл харах ↗</span>
+      <div class="wcb-front">
+        <span class="wcb-front-icon">🌱</span>
+        <h3 style="color:var(--organic)">Органик хог</h3>
+        <p>Хоол хүнс, навч, модны хог — бордоо болох боломжтой</p>
+      </div>
+      <div class="wcb-back">
+        <div class="wcb-imgs">
+          <img src="https://images.unsplash.com/photo-1601004890657-6b6ee8e57b89?auto=format&fit=crop&w=250&q=70" alt="organic1" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=250&q=70" alt="compost" loading="lazy">
+        </div>
+        <div class="wcb-title" style="color:var(--organic)">ОРГАНИК ХОГ</div>
+        <ul class="wcb-list">
+          <li>🍌 Жимс ногооны хальс</li>
+          <li>☕ Кофены ширхэг</li>
+          <li>🍚 Хоол хүнсний үлдэгдэл</li>
+          <li>🍂 Навч, цэцэг, ургамал</li>
+          <li>🥚 Өндөгний бүрхүүл</li>
+        </ul>
+      </div>
+    </div>
+    <!-- RECYCLE -->
+    <div class="waste-card-btn" style="--wc:var(--blue)" onclick="openModal('recycle')" tabindex="0">
+      <div class="wcb-bg" style="background-image:url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=700&q=80')"></div>
+      <div class="wcb-overlay"></div>
+      <div class="wcb-colorbar"></div>
+      <span class="wcb-click-hint">Дарж нэмэлт мэдээлэл харах ↗</span>
+      <div class="wcb-front">
+        <span class="wcb-front-icon">♻️</span>
+        <h3 style="color:var(--blue)">Дахин боловсруулах</h3>
+        <p>Цаас, хуванцар, шил, металл — шинэ бүтээгдэхүүн болно</p>
+      </div>
+      <div class="wcb-back">
+        <div class="wcb-imgs">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=250&q=70" alt="recycle1" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=250&q=70" alt="plastic" loading="lazy">
+        </div>
+        <div class="wcb-title" style="color:var(--blue)">ДАХИН БОЛОВСРУУЛАЛТ</div>
+        <ul class="wcb-list">
+          <li>🍶 Хуванцар лонх, сав</li>
+          <li>📦 Картон, цаас</li>
+          <li>🫙 Шил, лонх</li>
+          <li>🥫 Металл лааз, фольга</li>
+          <li>📰 Сонин, ном дэвтэр</li>
+        </ul>
+      </div>
+    </div>
+    <!-- GENERAL -->
+    <div class="waste-card-btn" style="--wc:var(--red)" onclick="openModal('general')" tabindex="0">
+      <div class="wcb-bg" style="background-image:url('https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=700&q=80')"></div>
+      <div class="wcb-overlay"></div>
+      <div class="wcb-colorbar"></div>
+      <span class="wcb-click-hint">Дарж нэмэлт мэдээлэл харах ↗</span>
+      <div class="wcb-front">
+        <span class="wcb-front-icon">🗑️</span>
+        <h3 style="color:var(--red)">Нийтийн хог</h3>
+        <p>Дахин боловсруулах боломжгүй — хогийн цэгт явна</p>
+      </div>
+      <div class="wcb-back">
+        <div class="wcb-imgs">
+          <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=250&q=70" alt="general1" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=250&q=70" alt="landfill" loading="lazy">
+        </div>
+        <div class="wcb-title" style="color:var(--red)">НИЙТИЙН ХОГ</div>
+        <ul class="wcb-list">
+          <li>🛍️ Хуванцар уут</li>
+          <li>🍟 Хоолны савлагаа</li>
+          <li>🧻 Памперс, эрүүл ахуй</li>
+          <li>🧊 Styrofoam савлагаа</li>
+          <li>🍬 Чихэрний боодол</li>
+        </ul>
+      </div>
+    </div>
+    <!-- HAZARDOUS -->
+    <div class="waste-card-btn" style="--wc:var(--amber)" onclick="openModal('hazard')" tabindex="0">
+      <div class="wcb-bg" style="background-image:url('https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=700&q=80')"></div>
+      <div class="wcb-overlay"></div>
+      <div class="wcb-colorbar"></div>
+      <span class="wcb-click-hint">Дарж нэмэлт мэдээлэл харах ↗</span>
+      <div class="wcb-front">
+        <span class="wcb-front-icon">⚠️</span>
+        <h3 style="color:var(--amber)">Аюултай хог</h3>
+        <p>Тусгай боловсруулалт — буруу хаявал байгаль орчинд аюул</p>
+      </div>
+      <div class="wcb-back">
+        <div class="wcb-imgs">
+          <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=250&q=70" alt="battery" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=250&q=70" alt="ewaste" loading="lazy">
+        </div>
+        <div class="wcb-title" style="color:var(--amber)">АЮУЛТАЙ ХОГ</div>
+        <ul class="wcb-list">
+          <li>🔋 Батарей, акумлятор</li>
+          <li>🎨 Будаг, хар тугалга</li>
+          <li>💊 Эм тариа, химийн бодис</li>
+          <li>💻 Электрон хэрэгсэл</li>
+          <li>💡 Чийдэн, гэрлийн хоолой</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== DID YOU KNOW ===== -->
+<div class="bg-alt">
+<div class="sec">
+  <div class="tag rv">Мэдэх үү?</div>
+  <h2 class="stitle rv">СОНИРХОЛТОЙ<br><span class="hl">БАРИМТУУД</span></h2>
+  <div class="did-you-know">
+    <div class="dyk-card rv" style="transition-delay:.05s">
+      <span class="dyk-num">01</span>
+      <span class="dyk-icon">🐢</span>
+      <h4>Хуванцарын аюул</h4>
+      <p>Нэг хуванцар уут задарахад <strong style="color:var(--acid)">400–500 жил</strong> шаардагдана. Тэр хугацаанд олон үе залгамжлана.</p>
+    </div>
+    <div class="dyk-card rv" style="transition-delay:.1s">
+      <span class="dyk-num">02</span>
+      <span class="dyk-icon">💡</span>
+      <h4>Цахилгааны хэмнэлт</h4>
+      <p>Хөнгөн цагаан хайлуулж дахин ашиглах нь шинээр үйлдвэрлэхтэй харьцуулахад <strong style="color:var(--acid)">95%</strong> цахилгаан хэмнэнэ.</p>
+    </div>
+    <div class="dyk-card rv" style="transition-delay:.15s">
+      <span class="dyk-num">03</span>
+      <span class="dyk-icon">🌊</span>
+      <h4>Далайн бохирдол</h4>
+      <p>Жил бүр <strong style="color:var(--acid)">8 сая тонн</strong> хуванцар далайд ордог. Энэ нь далайн амьтдыг устгах аюул юм.</p>
+    </div>
+    <div class="dyk-card rv" style="transition-delay:.2s">
+      <span class="dyk-num">04</span>
+      <span class="dyk-icon">🌳</span>
+      <h4>Цаасны хэмнэлт</h4>
+      <p>1 тонн цаас дахин боловсруулах нь <strong style="color:var(--acid)">17 мод</strong>, 7,000 литр ус хэмнэнэ. Мод тариулж байгаатай адил.</p>
+    </div>
+    <div class="dyk-card rv" style="transition-delay:.25s">
+      <span class="dyk-num">05</span>
+      <span class="dyk-icon">🥫</span>
+      <h4>Лааз дахин боловсруулалт</h4>
+      <p>Металл лааз задарахад <strong style="color:var(--acid)">80–100 жил</strong> болдог. Гэхдээ дахин ашиглавал 60 хоногийн дотор дэлгүүрт эргэж ирнэ.</p>
+    </div>
+    <div class="dyk-card rv" style="transition-delay:.3s">
+      <span class="dyk-num">06</span>
+      <span class="dyk-icon">🍌</span>
+      <h4>Органик бордоо</h4>
+      <p>Хоолны хогоо зөвөөр ангилсанаар <strong style="color:var(--acid)">байгалийн бордоо</strong> болно — хими бордооноос хамаагүй дээр.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== RECYCLING PROCESS ===== -->
+<div id="recycle">
+<div class="sec">
+  <div class="tag rv">02 — Дахин боловсруулалт</div>
+  <h2 class="stitle rv">ДАХИН БОЛОВСРУУЛАЛТЫН<br><span class="hl">ПРОЦЕСС</span></h2>
+  <p class="rv" style="max-width:600px;color:rgba(240,236,226,.6);line-height:1.9;font-size:.95rem;margin-bottom:.5rem">Хог хэрхэн шинэ бүтээгдэхүүн болж хувирдаг талаар <strong style="color:var(--acid)">алхам бүрийг дарж</strong> дэлгэрэнгүй мэдэж авна уу.</p>
+
+  <div class="recycle-timeline rv">
+    <div class="rtl-steps" id="rtlSteps">
+      <div class="rtl-step" onclick="showRtlDetail(0)" data-active="0">
+        <div class="rtl-step-icon" style="background:rgba(79,195,247,.1);border-color:var(--blue);color:var(--blue)">🗂️</div>
+        <span class="rtl-step-arrow">→</span>
+        <h4>1. Цуглуулах</h4>
+        <p>Хогийн сав, машин</p>
+      </div>
+      <div class="rtl-step" onclick="showRtlDetail(1)">
+        <div class="rtl-step-icon" style="background:rgba(198,255,0,.1);border-color:var(--acid);color:var(--acid)">🔍</div>
+        <span class="rtl-step-arrow">→</span>
+        <h4>2. Ангилах</h4>
+        <p>Автомат болон гараар</p>
+      </div>
+      <div class="rtl-step" onclick="showRtlDetail(2)">
+        <div class="rtl-step-icon" style="background:rgba(123,198,126,.1);border-color:var(--organic);color:var(--organic)">🔧</div>
+        <span class="rtl-step-arrow">→</span>
+        <h4>3. Цэвэрлэх</h4>
+        <p>Угаах, хуваалт</p>
+      </div>
+      <div class="rtl-step" onclick="showRtlDetail(3)">
+        <div class="rtl-step-icon" style="background:rgba(245,166,35,.1);border-color:var(--amber);color:var(--amber)">⚙️</div>
+        <span class="rtl-step-arrow">→</span>
+        <h4>4. Боловсруулах</h4>
+        <p>Хайлуулах, нунтаглах</p>
+      </div>
+      <div class="rtl-step" onclick="showRtlDetail(4)">
+        <div class="rtl-step-icon" style="background:rgba(176,108,255,.1);border-color:var(--purple);color:var(--purple)">✨</div>
+        <h4>5. Бүтээгдэхүүн</h4>
+        <p>Шинэ бараа болно</p>
+      </div>
+    </div>
+
+    <div class="rtl-detail active" id="rtlDetail">
+      <div class="rtl-detail-grid">
+        <img id="rtlImg" src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=500&q=80" alt="process" loading="lazy">
+        <div>
+          <h3 id="rtlTitle">1. ЦУГЛУУЛАХ — Хогийг эх үүсвэрт авах</h3>
+          <p id="rtlDesc">Дахин боловсруулах хогийн анхны алхам нь цуглуулалт юм. Тусгайлсан хогийн савнуудаар, орон сууц болон байгууллагуудаас тогтмол цуглуулна. Улаанбаатар хотод одоогоор 200 гаруй цэг ажиллаж байна. Дахин боловсруулах хогийг нийтийн хогоос тусад нь авч явдаг тусгай машин хэрэглэнэ.</p>
+          <div class="rtl-stats" id="rtlStats">
+            <div class="rtl-stat-chip"><span>200+</span><small>цуглуулах цэг</small></div>
+            <div class="rtl-stat-chip"><span>7 хоног</span><small>бүр цуглуулна</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sort bins visual -->
+  <div class="process-track" style="margin-top:4rem">
+    <div class="process-card rv" style="--pc:#7bc67e">
+      <span class="pc-badge">НОГООН</span>
+      <div class="picon">🌱</div>
+      <h3>Органик хогийн сав</h3>
+      <ul><li>Хоолны үлдэгдэл</li><li>Жимс ногооны хальс</li><li>Кофе, цай</li><li>Навч, ургамал</li><li>Өндөгний бүрхүүл</li></ul>
+    </div>
+    <div class="process-card rv" style="--pc:#4fc3f7;transition-delay:.1s">
+      <span class="pc-badge">ЦЭНХЭР</span>
+      <div class="picon">♻</div>
+      <h3>Дахивар хогийн сав</h3>
+      <ul><li>Хуванцар лонх</li><li>Цаас, картон</li><li>Шил, лонх</li><li>Металл лааз</li><li>Фольга, цагаан тугалга</li></ul>
+    </div>
+    <div class="process-card rv" style="--pc:#ff4444;transition-delay:.2s">
+      <span class="pc-badge">НИЙТИЙН</span>
+      <div class="picon">🗑</div>
+      <h3>Нийтийн хогийн сав</h3>
+      <ul><li>Хуванцар уут</li><li>Памперс, эрүүл ахуй</li><li>Тосолсон цаас</li><li>Styrofoam</li><li>Хольсон хог</li></ul>
+    </div>
+    <div class="process-card rv" style="--pc:#f5a623;transition-delay:.3s">
+      <span class="pc-badge">АЮУЛ</span>
+      <div class="picon">⚠</div>
+      <h3>Аюултай хогийн сав</h3>
+      <ul><li>Батарей, зай</li><li>Будаг, лак</li><li>Эм тариа</li><li>Компьютер, утас</li><li>Мэдрэгч, чийдэн</li></ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== IMPACT / GALLERY ===== -->
+<div id="impact" class="bg-alt">
+<div class="sec">
+  <div class="tag rv">03 — Дэлхийн нөлөө</div>
+  <h2 class="stitle rv">ХОГИЙН НӨЛӨӨЛӨЛ<br><span class="hl">БАЙГАЛЬ ДЭЛХИЙД</span></h2>
+  <p class="rv" style="max-width:600px;color:rgba(240,236,226,.6);line-height:1.9;font-size:.95rem">Зургийг дарж тусгай мэдээлэл харна уу. Хогийг зөвөөр ангилах нь хамгийн энгийн боловч хамгийн чухал арга хэмжээ юм.</p>
+
+  <div class="gallery-grid rv">
+    <div class="gallery-item wide tall" onclick="showToast('🌊 Далайд 150 сая тонн хуванцар хог байна — энэ нь жил бүр нэмэгдсээр байна.',3500)">
+      <span class="gallery-tag">🌊 Далай</span>
+      <span class="gallery-zoom">↗ Дэлгэрэнгүй</span>
+      <img src="https://images.unsplash.com/photo-1606791405792-1004f1718d0c?auto=format&fit=crop&w=800&q=80" alt="ocean" loading="lazy" style="aspect-ratio:unset;height:100%;min-height:400px">
+      <div class="gallery-caption">Далайн хуванцар бохирдол — 150 сая тонн хуванцар далайд хөвж байна. Жилд 8 сая тонн нэмэгдсээр байна.</div>
+    </div>
+    <div class="gallery-item" onclick="showToast('🏔️ Хогийн цэгүүд хөрс болон газрын усыг 50+ жил хордуулдаг.',3000)">
+      <span class="gallery-tag">🏔️ Хогийн цэг</span>
+      <span class="gallery-zoom">↗</span>
+      <img src="https://images.unsplash.com/photo-1627483262268-9c2b5b2834b5?auto=format&fit=crop&w=600&q=80" alt="landfill" loading="lazy">
+      <div class="gallery-caption">Хогийн цэгүүд хөрс, газрын усыг хордуулдаг</div>
+    </div>
+    <div class="gallery-item" onclick="showToast('💨 Агаарын бохирдол — 7 сая хүн жил бүр амьсгалын өвчнөөр нас барна.',3000)">
+      <span class="gallery-tag">💨 Агаар</span>
+      <span class="gallery-zoom">↗</span>
+      <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80" alt="air" loading="lazy">
+      <div class="gallery-caption">Агаарын бохирдол амьсгалын замын өвчин нэмэгдүүлдэг</div>
+    </div>
+    <div class="gallery-item" onclick="showToast('♻️ Дахин боловсруулалт 1 тонн хуванцарт 1.5 тонн CO₂ хэмнэдэг.',3000)">
+      <span class="gallery-tag">♻️ Боловсруулалт</span>
+      <span class="gallery-zoom">↗</span>
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" alt="recycle" loading="lazy">
+      <div class="gallery-caption">Дахин боловсруулах үйлдвэрүүд хогийг шинэ бүтээгдэхүүн болгодог</div>
+    </div>
+    <div class="gallery-item" onclick="showToast('🌳 Мод тарих нь CO₂ шингээж, цэвэр агаар бий болгодог.',2800)">
+      <span class="gallery-tag">🌳 Ой мод</span>
+      <span class="gallery-zoom">↗</span>
+      <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80" alt="forest" loading="lazy">
+      <div class="gallery-caption">Цэвэр байгаль, цэвэр агаар — зөв хогийн ангилалтаас эхэлнэ</div>
+    </div>
+  </div>
+
+  <!-- Impact rings -->
+  <div style="margin-top:5rem">
+    <div class="tag rv">Тоо баримт</div>
+    <h3 class="rv" style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:2px;margin-bottom:0">ДЭЛХИЙН ХОГ ХАЯГДЛЫН СТАТИСТИК</h3>
+  </div>
+  <div class="impact-rings">
+    <div class="impact-ring rv">
+      <svg class="ring-svg" viewBox="0 0 160 160">
+        <circle class="ring-track" cx="80" cy="80" r="70"/>
+        <circle class="ring-fill" cx="80" cy="80" r="70" stroke="var(--blue)" style="--offset:176"/>
+      </svg>
+      <div class="ring-label">
+        <div class="ring-num" style="color:var(--blue)">60%</div>
+        <div class="ring-unit">органик</div>
+      </div>
+      <div class="ring-title">Органик хог</div>
+      <div class="ring-desc">Нийт хогийн 60% нь органик бөгөөд бордоо болж болно</div>
+    </div>
+    <div class="impact-ring rv" style="transition-delay:.15s">
+      <svg class="ring-svg" viewBox="0 0 160 160">
+        <circle class="ring-track" cx="80" cy="80" r="70"/>
+        <circle class="ring-fill" cx="80" cy="80" r="70" stroke="var(--acid)" style="--offset:352"/>
+      </svg>
+      <div class="ring-label">
+        <div class="ring-num" style="color:var(--acid)">20%</div>
+        <div class="ring-unit">боловсруулагдана</div>
+      </div>
+      <div class="ring-title">Боловсруулалтын хувь</div>
+      <div class="ring-desc">Монголд зөвхөн 20% нь дахин боловсруулагдана — энэ нэмэгдэх ёстой</div>
+    </div>
+    <div class="impact-ring rv" style="transition-delay:.3s">
+      <svg class="ring-svg" viewBox="0 0 160 160">
+        <circle class="ring-track" cx="80" cy="80" r="70"/>
+        <circle class="ring-fill" cx="80" cy="80" r="70" stroke="var(--red)" style="--offset:396"/>
+      </svg>
+      <div class="ring-label">
+        <div class="ring-num" style="color:var(--red)">10%</div>
+        <div class="ring-unit">аюултай</div>
+      </div>
+      <div class="ring-title">Аюултай хог</div>
+      <div class="ring-desc">Нийт хогийн 10% нь аюултай — ихэнх нь буруу зайлуулагдана</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== RESPONSIBLE RECYCLING ===== -->
+<div id="responsible">
+<div class="sec">
+  <div class="tag rv">04 — Хариуцлагатай байдал</div>
+  <h2 class="stitle rv">ХАРИУЦЛАГАТАЙ<br><span class="hl">ДАХИН АШИГЛАЛТ</span></h2>
+  <p class="rv" style="max-width:650px;color:rgba(240,236,226,.6);line-height:1.9;font-size:.95rem">Хог хаягдлыг зөвөөр зайлуулахаас гадна амьдралын хэв маягаа өөрчлөх нь илүү чухал. Доорх зарчмуудыг дагавал байгальд маш их тус болно.</p>
+
+  <div class="responsible-grid rv">
+    <div class="resp-card" style="--rc:var(--acid)">
+      <span class="resp-badge">№1</span>
+      <span class="resp-card-icon">🚫</span>
+      <h3>Бүтээлч буцаалт (Refuse)</h3>
+      <p>Хэрэгцээгүй зүйлийг авахаас татгалзах нь хогийн хамгийн эхний шийдэл. Нэг удаагийн хуванцар уутаас татгалзаж, дахин ашиглагдах уутаа авчирна.</p>
+    </div>
+    <div class="resp-card" style="--rc:var(--green)">
+      <span class="resp-badge">№2</span>
+      <span class="resp-card-icon">📦</span>
+      <h3>Хэрэглээг багасгах (Reduce)</h3>
+      <p>Хэрэглэх хэмжээгээ багасгах нь хогийн хамгийн чухал шийдэл. Шаардлагагүй бараа авахгүй, дэлгүүрт оч гэхдээ хэрэгтэй зүйлийн жагсаалт бичиж яв.</p>
+    </div>
+    <div class="resp-card" style="--rc:var(--blue)">
+      <span class="resp-badge">№3</span>
+      <span class="resp-card-icon">🔄</span>
+      <h3>Дахин ашиглах (Reuse)</h3>
+      <p>Хуучин лонх, сав, зориулалтат уутаа дахин ашиглах нь хуванцарын хэрэглээг эрс бууруулна. Нэг ус лонх 500 гаруй удаа ашиглаж болно.</p>
+    </div>
+    <div class="resp-card" style="--rc:var(--organic)">
+      <span class="resp-badge">№4</span>
+      <span class="resp-card-icon">♻️</span>
+      <h3>Дахин боловсруулах (Recycle)</h3>
+      <p>Цаас, хуванцар, металл, шилийг тусад нь хийж дахин боловсруулах төвд хүргэж өгнө. Улаанбаатарт 50 гаруй цэг ажиллаж байна.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== HAZARD SECTION ===== -->
+<div id="hazard" class="bg-alt">
+<div class="sec">
+  <div class="tag rv">05 — Аюултай хог</div>
+  <h2 class="stitle rv">АЮУЛТАЙ ХОГИЙГ<br><span class="hl">ХЭРХЭН УСТГАХ ВЭ?</span></h2>
+
+  <div class="hazard-gallery rv">
+    <div class="hgal-item">
+      <span class="hgal-warn">⚠ Аюул</span>
+      <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=600&q=80" alt="chemical" loading="lazy">
+      <div class="hgal-label">Химийн хог — тусгай саванд хийж устгана</div>
+    </div>
+    <div class="hgal-item">
+      <span class="hgal-warn">🔋 Батарей</span>
+      <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=600&q=80" alt="battery" loading="lazy">
+      <div class="hgal-label">Батарей — мөнгөн ус агуулдаг маш аюултай</div>
+    </div>
+    <div class="hgal-item">
+      <span class="hgal-warn">💻 E-waste</span>
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" alt="ewaste" loading="lazy">
+      <div class="hgal-label">Электрон хог — тусгай цэгт хийх шаардлагатай</div>
+    </div>
+  </div>
+
+  <div class="hsteps">
+    <div class="hstep">
+      <div class="hnum">01</div>
+      <div class="hcontent">
+        <h3>🔍 Таних — Ангилах</h3>
+        <p>Батарей, эм тариа, будаг, химийн бодис, электрон хэрэгслийг бусад хогоос тусад нь хадгалах. Эдгээр бодис нийтийн хогийн саванд хаях ёсгүй. Аюулын тэмдэгийг анхааралтай уншаарай.</p>
+      </div>
+    </div>
+    <div class="hstep">
+      <div class="hnum">02</div>
+      <div class="hcontent">
+        <h3>📦 Зохих саванд хийх</h3>
+        <p>Аюултай хаягдлыг хаалттай, нягт битүүмжилсэн сав баглаанд хийж, гарал үүслийг тэмдэглэн бичих. Задарсан, гэмтсэн савыг ашиглахгүй байх. Нэрлэх хуудас наана.</p>
+      </div>
+    </div>
+    <div class="hstep">
+      <div class="hnum">03</div>
+      <div class="hcontent">
+        <h3>📍 Тусгай цэгт хүргэх</h3>
+        <p>Улаанбаатар хотод 12 байршилд аюултай хаягдал хүлээн авах цэг ажиллаж байна. "Номин", "И-Март" дэлгүүрүүдэд батерей хийх хайрцаг байдаг. Эм дэлгүүрт хуучин эмээ өгнө.</p>
+      </div>
+    </div>
+    <div class="hstep">
+      <div class="hnum">04</div>
+      <div class="hcontent">
+        <h3>👨‍🔬 Мэргэжилтэнд хандах</h3>
+        <p>Том хэмжээний аюултай хаягдлыг (үйлдвэрийн химийн бодис г.м.) зайлуулахдаа тусгай зөвшөөрөл бүхий "Элемент ХХК" байгууллагатай холбогдох — утас: 7011-7007.</p>
+      </div>
+    </div>
+    <div class="hstep">
+      <div class="hnum">05</div>
+      <div class="hcontent">
+        <h3>📋 Баримт бичиг хөтлөх</h3>
+        <p>Аюултай хаягдлыг хаана, хэзээ, хэрхэн зайлуулсан тухай бичиг баримт хадгалах нь хуулийн шаардлага бөгөөд ирээдүйн лавлагаа болно.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hwarn rv">
+    <div style="font-size:1.3rem;flex-shrink:0;margin-top:2px">⚠️</div>
+    <p><strong>Анхааруулга:</strong> Аюултай хаягдлыг буруу зайлуулсан тохиолдолд байгаль орчны ноцтой хохирол учруулахаас гадна Монгол улсын хуулиар торгуулийн арга хэмжээ авна. Хэзээ ч суваг шуудуу, жорлонд асгаж болохгүй.</p>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== NEWS ===== -->
+<div id="news">
+<div class="sec">
+  <div class="tag rv">06 — Мэдээ</div>
+  <h2 class="stitle rv">СҮҮЛИЙН ҮЕИЙН<br><span class="hl">МЭДЭЭ МЭДЭЭЛЭЛ</span></h2>
+  <div class="news-mosaic">
+    <div class="nc feat">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80" alt="" loading="lazy">
+      <div class="nc-body">
+        <div class="nc-tag">Онцлох мэдээ</div>
+        <h3>Улаанбаатар хотын шинэ хог боловсруулах төв 2025 онд нээлтээ хийлээ</h3>
+        <p>Нийслэлийн хог хаягдлын менежментийн шинэ төв байгууламж орчин үеийн технологиор тоноглогдож, жилд 300,000 тонн хог боловсруулах хүчин чадалтай болов. Энэ нь Монголын байгаль орчны томоохон алхам юм.</p>
+        <span class="nc-date">2025 оны 3-р сарын 15</span>
+        <span class="nc-read">Дэлгэрэнгүй унших →</span>
+      </div>
+    </div>
+    <div class="nc">
+      <img src="https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=400&q=80" alt="" loading="lazy">
+      <div class="nc-body">
+        <div class="nc-tag">Дахин боловсруулалт</div>
+        <h3>Хуванцар боловсруулах үйлдвэр Дарханд</h3>
+        <p>БНХАУ-ын хөрөнгө оруулагчидтай хамтарсан төсөл эхэллээ.</p>
+        <span class="nc-date">2025/02/08</span>
+      </div>
+    </div>
+    <div class="nc">
+      <img src="https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=400&q=80" alt="" loading="lazy">
+      <div class="nc-body">
+        <div class="nc-tag">Байгаль орчин</div>
+        <h3>Туул голын эрэгт 50 тонн хог цуглуулав</h3>
+        <p>5000 гаруй сайн дурынхан оролцсон арга хэмжээ амжилттай болов.</p>
+        <span class="nc-date">2025/01/22</span>
+      </div>
+    </div>
+    <div class="nc">
+      <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=400&q=80" alt="" loading="lazy">
+      <div class="nc-body">
+        <div class="nc-tag">Технологи</div>
+        <h3>AI ашиглан хог ангилах туршилт эхэллээ</h3>
+        <p>Robotic sorting технологи Монголд анх удаа нэвтэрч байна.</p>
+        <span class="nc-date">2025/01/05</span>
+      </div>
+    </div>
+    <div class="nc">
+      <img src="https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=400&q=80" alt="" loading="lazy">
+      <div class="nc-body">
+        <div class="nc-tag">Боловсрол</div>
+        <h3>Сургуулиудад хог ангилах хичээл заргдана</h3>
+        <p>Боловсролын яамны шинэ хөтөлбөрийн хүрээнд 500 сургуульд нэвтэрнэ.</p>
+        <span class="nc-date">2024/12/18</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== FEEDBACK ===== -->
+<div id="feedback" class="bg-alt">
+<div class="sec">
+  <div class="tag rv">07 — Санал</div>
+  <h2 class="stitle rv">САНАЛ ХҮСЭЛТ<br><span class="hl">ИЛГЭЭХ</span></h2>
+  <div class="fb-grid">
+    <div class="fb-info rv2">
+      <p>Таны санал бидний хувьд маш чухал. Хог хаягдлын асуудлаар мэдээлэл, зөвлөгөө авах болон сайн туршлагаа хуваалцахдаа бидэнтэй холбогдоорой.</p>
+      <div class="ci"><div class="cicon">📞</div><span>1800-1234 (үнэгүй дугаар)</span></div>
+      <div class="ci"><div class="cicon">📧</div><span>info@nature-eagles.mn</span></div>
+      <div class="ci"><div class="cicon">📍</div><span>Улаанбаатар, Чингэлтэй дүүрэг, 7-р хороо</span></div>
+      <div class="ci"><div class="cicon">🦅</div><span>Nature Saving Eagles NGO</span></div>
+    </div>
+    <div class="fform rv">
+      <div class="fg"><label>Нэр</label><input type="text" placeholder="Таны нэр"></div>
+      <div class="fg"><label>И-мэйл</label><input type="email" placeholder="example@mail.com"></div>
+      <div class="fg"><label>Төрөл</label>
+        <select>
+          <option value="">Сонгоно уу...</option>
+          <option>Мэдээлэл, зөвлөгөө авах</option>
+          <option>Гомдол гаргах</option>
+          <option>Санал оруулах</option>
+          <option>Сайн дурын ажилд бүртгүүлэх</option>
+          <option>Бусад</option>
+        </select>
+      </div>
+      <div class="fg"><label>Мессеж</label><textarea placeholder="Таны санал, хүсэлт..."></textarea></div>
+      <button class="sbtn" onclick="submitFb()">Илгээх →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== GAME SECTION ===== -->
+<div id="game" class="game-wrap">
+  <div class="game-inner">
+    <div class="game-header">
+      <div class="tag rv" style="justify-content:center">08 — Тоглоом</div>
+      <h2 class="stitle rv" style="text-align:center">ХОГ АНГИЛАЛТЫН<br><span class="hl">PIXEL ТОГЛООМ</span></h2>
+      <p class="rv" style="text-align:center;color:rgba(240,236,226,.5);font-size:.9rem;margin-bottom:1.5rem">Хогийг чирж тохирох саванд хий! Нэрийг уншаад аль ангилалд орохыг шийд — 3 амьтай, хогийн тоо хязгараас хэтэрвэл хожигдоно!</p>
+    </div>
+
+    <div class="game-score-row" id="gameHUD">
+      <div class="gscore"><span class="gnum" id="gScore">0</span><div class="glbl">оноо</div></div>
+      <div class="gscore"><span class="gnum" id="gLives" style="color:var(--red)">❤❤❤</span><div class="glbl">амь</div></div>
+      <div class="gscore"><span class="gnum" id="gLevel" style="color:var(--blue)">1</span><div class="glbl">түвшин</div></div>
+      <div class="gscore"><span class="gnum" id="gTrash" style="color:rgba(240,236,226,.5)">0/8</span><div class="glbl">хог</div></div>
+    </div>
+
+    <canvas id="gameCanvas" width="880" height="520"></canvas>
+
+    <div class="game-controls-row">
+      <button class="gbtn" onclick="startPixelGame()">▶ Тоглоом эхлүүлэх</button>
+      <button class="gbtn ghost" onclick="stopPixelGame()">⏹ Зогсоох</button>
+    </div>
+
+    <div class="game-legend-row">
+      <div class="game-legend-item"><div class="legend-swatch" style="background:#4fc3f7;box-shadow:0 0 8px #4fc3f7"></div>Дахивар (цэнхэр)</div>
+      <div class="game-legend-item"><div class="legend-swatch" style="background:#2ecc71;box-shadow:0 0 8px #2ecc71"></div>Органик (ногоон)</div>
+      <div class="game-legend-item"><div class="legend-swatch" style="background:#e74c3c;box-shadow:0 0 8px #e74c3c"></div>Аюултай (улаан)</div>
+    </div>
+
+    <div class="game-tip rv">💡 <strong>Зөвлөгөө:</strong> Хогийн <strong>нэрийг</strong> анхааралтай уш — өнгийг бус агуулгыг уншаарай! Зөв ангилаад оноо цуглуулж, байгалиа хамгаалаарай.</div>
+
+    <div class="game-result" id="gameResult">
+      <div class="result-grade" id="resultGrade">A+</div>
+      <div class="result-msg" id="resultMsg">Гайхалтай!</div>
+      <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:2rem;flex-wrap:wrap">
+        <div class="gscore"><span class="gnum" id="rScore">0</span><div class="glbl">нийт оноо</div></div>
+        <div class="gscore"><span class="gnum" id="rCorrect" style="color:var(--organic)">0</span><div class="glbl">зөв</div></div>
+        <div class="gscore"><span class="gnum" id="rWrong" style="color:var(--red)">0</span><div class="glbl">буруу</div></div>
+      </div>
+      <button class="restart-btn" onclick="startPixelGame()">🔄 Дахин тоглох</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-brand">
+    <div class="flogo"><em>🦅</em> Nature Saving Eagles</div>
+    <p>Монголын байгаль орчныг хамгаалах нийгэмлэг. Хог ангилалтаар цэвэр ирээдүй бүтээцгээе.</p>
+  </div>
+  <div class="footer-links">
+    <h5>Холбоосууд</h5>
+    <a href="#home">Нүүр хуудас</a>
+    <a href="#waste">Хогийн ангилал</a>
+    <a href="#recycle">Дахин боловсруулалт</a>
+    <a href="#hazard">Аюултай хог</a>
+    <a href="#game">Тоглоом</a>
+    <a href="#feedback">Санал хүсэлт</a>
+  </div>
+  <div class="footer-eco">
+    <span class="eco-badge">🌍 Байгаль хамгааллын байгууллага</span>
+    <p>© 2025 Nature Saving Eagles<br>Бүх эрх хуулиар хамгаалагдсан.<br>Монгол улс — Цэвэр ирээдүй 🦅</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- ===== MODAL ===== -->
+<div id="modal" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon" id="mIcon"></div>
+      <div>
+        <div class="modal-title" id="mTitle"></div>
+        <div class="modal-subtitle" id="mSub"></div>
+      </div>
+    </div>
+    <div class="modal-imgs" id="mImgs"></div>
+    <div class="modal-info" id="mInfo"></div>
+    <div class="modal-fact" id="mFact"></div>
+  </div>
+</div>
+
+<script>
+/* ===== CURSOR ===== */
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function tick(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  cur2.style.left=rx+'px';cur2.style.top=ry+'px';
+  requestAnimationFrame(tick);
+})();
+
+/* ===== PROGRESS ===== */
+window.addEventListener('scroll',()=>{
+  const pct=scrollY/(document.documentElement.scrollHeight-innerHeight);
+  document.getElementById('prog').style.width=pct*100+'%';
+});
+
+/* ===== NAV ===== */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60));
+document.getElementById('ham').addEventListener('click',function(){
+  this.classList.toggle('open');document.getElementById('mob').classList.toggle('open');
+});
+function closeMob(){document.getElementById('ham').classList.remove('open');document.getElementById('mob').classList.remove('open')}
+
+/* ===== NAV ACTIVE LINK ===== */
+const sections=['home','waste','recycle','impact','hazard','game','feedback'];
+const links=document.querySelectorAll('.navlinks a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&scrollY>=el.offsetTop-120) cur=id;
+  });
+  links.forEach(a=>{a.classList.toggle('active-link',a.getAttribute('href')==='#'+cur)});
+});
+
+/* ===== COUNTER ANIMATION ===== */
+function animCounter(el,target,dur=2200){
+  const isLarge=target>9999;let start=null;
+  function step(ts){
+    if(!start)start=ts;
+    const p=Math.min((ts-start)/dur,1);
+    const ease=1-Math.pow(1-p,4);
+    const val=Math.floor(ease*target);
+    el.textContent=isLarge?val.toLocaleString():val;
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=isLarge?target.toLocaleString():target;
+  }
+  requestAnimationFrame(step);
+}
+const counterObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.num').forEach(n=>animCounter(n,+n.dataset.target));
+      counterObs.disconnect();
+    }
+  });
+},{threshold:.5});
+counterObs.observe(document.querySelector('.stats-strip'));
+
+/* ===== REVEAL ON SCROLL ===== */
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.08});
+document.querySelectorAll('.rv,.rv2,.rv3,.process-card,.nc,.hstep,.dyk-card,.impact-ring,.resp-card').forEach(el=>revObs.observe(el));
+
+/* ===== RING ANIMATION ===== */
+const ringObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.ring-fill').forEach(r=>r.classList.add('animate'));
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.impact-ring').forEach(el=>ringObs.observe(el));
+
+/* ===== 3D TILT ===== */
+document.querySelectorAll('.process-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`translateY(-12px) rotateX(${-y*16}deg) rotateY(${x*16}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+});
+
+/* ===== NATURE TIPS ===== */
+const TIPS=[
+  {icon:'🌊',text:'Жил бүр 8 сая тонн хуванцар далайд нийлдэг. Нэг хуванцар уут татгалзах нь далайд нэг загасны амийг аврах тай адил.'},
+  {icon:'🌱',text:'Хоолны хогоо бордоо болгоорой! Комост хийж байгалийн бордоо гаргаж авна — хими бордооноос 10 дахин дээр.'},
+  {icon:'💡',text:'Чийдэнгийн ламп LED болгоорой. LED нь уламжлалт чийдэнгээс 75% цахилгаан хэмнэж, 25 дахин удаан ажилладаг.'},
+  {icon:'🛍️',text:'Нэг удаагийн хуванцар уутаас татгалзаарай. Дахин ашиглагдах хөвөн уутаа авчраарай — нэг удаагийн уут 400 жил задардаг.'},
+  {icon:'🚿',text:'Шүдийг угааж байхдаа усны цоргыг хаагаарай. Энэ жижиг зуршил нь жилд 8,000 литр ус хэмнэнэ!'},
+  {icon:'🔋',text:'Хуучин батарейгаа дэлгүүрийн тусгай хайрцагт хийгээрэй. Батарейн нэг химийн бодис 400 литр ус хордуулж чадна.'},
+  {icon:'🌳',text:'Мод тарих нь CO₂ шингээдэг. Нэг мод жилд 22 кг CO₂ шингээдэг — 5 жилд 1 хүний нэг жилийн ул мөртэй тэнцэнэ.'},
+  {icon:'♻️',text:'Хуванцар савнуудаа угааж цэвэрлэн ангилалтын саванд хийгээрэй. Бохир хуванцар боловсруулах боломжгүй болдог.'},
+];
+let tipIdx=0,tipTimer;
+function initTips(){
+  const dots=document.getElementById('tipDots');
+  TIPS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='tip-dot'+(i===0?' active':'');
+    d.onclick=()=>{tipIdx=i;showTip()};
+    dots.appendChild(d);
+  });
+  showTip();
+  tipTimer=setInterval(nextTip,8000);
+}
+function showTip(){
+  const t=TIPS[tipIdx];
+  document.getElementById('tipIcon').textContent=t.icon;
+  document.getElementById('tipText').textContent=t.text;
+  document.getElementById('tipCounter').textContent=(tipIdx+1)+' / '+TIPS.length;
+  document.querySelectorAll('.tip-dot').forEach((d,i)=>d.classList.toggle('active',i===tipIdx));
+}
+function nextTip(){tipIdx=(tipIdx+1)%TIPS.length;showTip();}
+function closeTip(){
+  document.getElementById('natureTip').classList.add('hidden');
+  clearInterval(tipTimer);
+}
+initTips();
+
+/* ===== TOAST ===== */
+function showToast(msg,dur=3000,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
+  clearTimeout(t._to);
+  t._to=setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+/* ===== FEEDBACK ===== */
+function submitFb(){
+  const ins=document.querySelectorAll('.fform input,.fform textarea');
+  let ok=true;
+  ins.forEach(i=>{
+    if(!i.value.trim()){i.style.borderColor='var(--red)';ok=false}
+    else i.style.borderColor='';
+  });
+  if(!ok){showToast('⚠ Бүх талбарыг бөглөнө үү.','','error');return;}
+  ins.forEach(i=>i.value='');
+  document.querySelector('.fform select').selectedIndex=0;
+  showToast('✅ Таны санал амжилттай илгээгдлээ!',3500,'success');
+}
+
+/* ===== MODAL DATA ===== */
+const MODAL_DATA={
+  organic:{
+    icon:'🌱',color:'var(--organic)',title:'ОРГАНИК ХОГ',sub:'Байгалийн мөчлөгт буцдаг хог',
+    imgs:['https://images.unsplash.com/photo-1601004890657-6b6ee8e57b89?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80'],
+    items:['🍌 Жимс ногооны хальс','☕ Кофены ширхэг','🍚 Хоолны үлдэгдэл','🍂 Навч, цэцэг, ургамал','🥚 Өндөгний бүрхүүл','🌿 Цэцэгс, ургамал','🥦 Хүнсний ногооны иш'],
+    process:['Ногоон хогийн саванд хийнэ','Органик хогийн үйлдвэрт явна','Бордоо болгон боловсруулна','Цэцэрлэг, тариаланд ашиглана'],
+    fact:'<strong>Гайхалтай баримт:</strong> Органик хогийг зөвөөр ангилсанаар нийт хогийн хэмжээ <strong style="color:var(--acid)">30%</strong> буурна. Нэг гэр бүл жилд 200–300 кг органик хог үүсгэдэг — бүгдийг бордоо болгож болно!'
+  },
+  recycle:{
+    icon:'♻️',color:'var(--blue)',title:'ДАХИН БОЛОВСРУУЛАХ',sub:'Хогоос шинэ бүтээгдэхүүн гаргана',
+    imgs:['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80'],
+    items:['🍶 Хуванцар лонх, сав','📦 Картон, хайрцаг','🫙 Шил, лонх, аяга','🥫 Металл лааз, фольга','📰 Сонин, ном, дэвтэр','🧴 Савон, шампуны сав','📫 Гялгар бус уут'],
+    process:['Цэнхэр хогийн саванд хийнэ','Цэвэрлэж угаана','Ангилах үйлдвэрт явна','Хайлуулж шинэ бүтээгдэхүүн болно'],
+    fact:'<strong>Мэдэх үү?</strong> Нэг хуванцар лонхыг дахин боловсруулахад шинэ лонх хийхтэй харьцуулахад <strong style="color:var(--acid)">75%</strong> цахилгаан хэмнэнэ. Монголд жилд 50,000 тонн дахин боловсруулах боломжтой хуванцар хогийн цэгт явдаг.'
+  },
+  general:{
+    icon:'🗑️',color:'var(--red)',title:'НИЙТИЙН ХОГ',sub:'Дахин боловсруулах боломжгүй хог',
+    imgs:['https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=400&q=80'],
+    items:['🛍️ Хуванцар уут','🍟 Хоолны савлагаа','🧻 Памперс, эрүүл ахуйн хог','🧊 Styrofoam савлагаа','🍬 Чихэрний боодол, боодол','💔 Хольсон хог (холимог материал)','🪥 Хуучин шүдний сойз'],
+    process:['Нийтийн хогийн саванд хийнэ','Хогийн машинаар цуглуулна','Хогийн цэгт тавина','Ихэнх нь газарт булагдана'],
+    fact:'<strong>Анхааруулга:</strong> Энэ ангиллын хог <strong style="color:var(--acid)">хамгийн аюултай</strong> ба дахин боловсруулах боломжгүй. Тиймд энэ ангилалд хамаарах зүйлийн хэрэглээг аль болох бууруулах нь зөв. Styrofoam 500 жил задардаг!'
+  },
+  hazard:{
+    icon:'⚠️',color:'var(--amber)',title:'АЮУЛТАЙ ХОГ',sub:'Тусгай боловсруулалт шаарддаг',
+    imgs:['https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=400&q=80'],
+    items:['🔋 Батарей, зай, акумлятор','🎨 Будаг, лак, тунгалаг будаг','💊 Хуучин эм тариа','💻 Хуучин компьютер, утас','💡 Флюресцент чийдэн','🧪 Химийн бодис, тосолгооны материал','🌡️ Мөнгөн усны термометр'],
+    process:['Тусгай хаалттай саванд хийнэ','Аюултай хогийн цэгт хүргэнэ','Мэргэжлийн байгууллага хүлээж авна','Тусгай технологиор устгана'],
+    fact:'<strong>Маш чухал!</strong> Батарейн нэг химийн бодис <strong style="color:var(--acid)">400,000 литр</strong> газрын ус хордуулж чадна. УБ хотод 12 байршилд аюултай хог хүлээн авах цэг байна. "Номин", "И-Март" дэлгүүрүүдэд батерей хийх хайрцаг байдаг.'
+  }
+};
+
+function openModal(type){
+  const d=MODAL_DATA[type];
+  document.getElementById('mIcon').style.cssText=`background:${d.color}22;border:2px solid ${d.color};font-size:2.5rem;display:flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:16px`;
+  document.getElementById('mIcon').textContent=d.icon;
+  document.getElementById('mTitle').style.color=d.color;
+  document.getElementById('mTitle').textContent=d.title;
+  document.getElementById('mSub').textContent=d.sub;
+  document.getElementById('mImgs').innerHTML=d.imgs.map(s=>`<img src="${s}" loading="lazy" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px">`).join('');
+  document.getElementById('mInfo').innerHTML=`
+    <div class="modal-section">
+      <h4>Юу багтах вэ?</h4>
+      <ul class="modal-list">${d.items.map(i=>`<li><span class="mi">${i.split(' ')[0]}</span>${i.slice(i.indexOf(' ')+1)}</li>`).join('')}</ul>
+    </div>
+    <div class="modal-section">
+      <h4>Яаж ангилах вэ?</h4>
+      <ul class="modal-list">${d.process.map((p,i)=>`<li><span class="mi" style="color:${d.color};font-weight:700">${i+1}.</span>${p}</li>`).join('')}</ul>
+    </div>`;
+  document.getElementById('mFact').innerHTML=`<p>${d.fact}</p>`;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(e){if(e.target===document.getElementById('modal'))closeModalBtn();}
+function closeModalBtn(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModalBtn();});
+
+/* ===== RECYCLING TIMELINE ===== */
+const RTL_DATA=[
+  {title:'1. ЦУГЛУУЛАХ — Хогийг эх үүсвэрт авах',img:'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=500&q=80',desc:'Дахин боловсруулах хогийн анхны алхам нь цуглуулалт юм. Тусгайлсан хогийн савнуудаар, орон сууц болон байгууллагуудаас тогтмол цуглуулна. Улаанбаатар хотод одоогоор 200 гаруй цэг ажиллаж байна. Дахин боловсруулах хогийг нийтийн хогоос тусад нь авч явдаг тусгай машин хэрэглэнэ.',stats:[{n:'200+',l:'цуглуулах цэг'},{n:'7 хоног',l:'бүр цуглуулна'}]},
+  {title:'2. АНГИЛАХ — Автомат болон гараар',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=500&q=80',desc:'Цуглуулсан хогийг үйлдвэрт авчирч хуванцар, цаас, металл, шил гэх мэт материалын дагуу ангилна. Орчин үеийн дахин боловсруулах үйлдвэрүүд AI болон роботик технологи ашигладаг. Монголд гараар ангилах арга давамгайлдаг ч шинэ технологи нэвтэрч байна.',stats:[{n:'95%',l:'үр ашигтай'},{n:'AI',l:'технологи'}]},
+  {title:'3. ЦЭВЭРЛЭХ — Угаах, хуваалт',img:'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=500&q=80',desc:'Ангилсан материалыг цэвэрлэж, бохирдлыг арилгана. Хуванцар, шилийг усаар угаадаг бол цаасыг тусгайлан боловсруулна. Цэвэрлэх шат нь маш чухал — бохир материал боловсруулах боломжгүй болдог тул хогоо угааж хийгээрэй.',stats:[{n:'98%',l:'цэвэрлэлтийн хувь'},{n:'≤2%',l:'алдагдал'}]},
+  {title:'4. БОЛОВСРУУЛАХ — Хайлуулах, нунтаглах',img:'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=500&q=80',desc:'Цэвэрлэгдсэн материалыг үйлдвэрлэлийн аргаар боловсруулна. Хуванцарыг хайлуулж granule болгоно, цаасыг целлюлоз болгоно, металлыг хайлуулно, шилийг нунтаглана. Энэ шатанд их хэмжээний цахилгаан хэмнэнэ.',stats:[{n:'75%',l:'цахилгааны хэмнэлт'},{n:'90%',l:'ус хэмнэлт'}]},
+  {title:'5. ШИНЭ БҮТЭЭГДЭХҮҮН — Дэлгүүрт эргэж ирнэ',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=500&q=80',desc:'Боловсруулсан түүхий эдээс шинэ бүтээгдэхүүн хийгдэнэ. Хуванцар лонх дахин хуванцар лонх болно, цаас шинэ дэвтэр болно, металл шинэ хэрэгсэл болно. Хог хаянаас 60 хоногийн дотор дэлгүүрт эргэж ирж болно.',stats:[{n:'60 хоног',l:'эргэж ирнэ'},{n:'100%',l:'шинэ бүтээгдэхүүн'}]},
+];
+let activeRtl=0;
+function showRtlDetail(idx){
+  activeRtl=idx;
+  const d=RTL_DATA[idx];
+  document.getElementById('rtlTitle').textContent=d.title;
+  document.getElementById('rtlImg').src=d.img;
+  document.getElementById('rtlDesc').textContent=d.desc;
+  document.getElementById('rtlStats').innerHTML=d.stats.map(s=>`<div class="rtl-stat-chip"><span>${s.n}</span><small>${s.l}</small></div>`).join('');
+  document.getElementById('rtlDetail').classList.add('active');
+  document.querySelectorAll('.rtl-step').forEach((s,i)=>{
+    s.style.opacity=i===idx?'1':'.6';
+    s.style.transform=i===idx?'translateY(-8px)':'';
+  });
+}
+showRtlDetail(0);
+
+/* ===== GAME ===== */
+const canvas=document.getElementById('gameCanvas');
+const ctx=canvas.getContext('2d');
+(function(){
+  const dpr=window.devicePixelRatio||1;
+  const W=880,H=520;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+})();
+const GW=880,GH=520;
+
+const BACKGROUNDS=[
+  {name:'school',label:'🏫 Сургуулийн орчин',draw(c){
+    c.fillStyle='#1a1a2e';c.fillRect(0,0,GW,GH);
+    const grad=c.createLinearGradient(0,0,0,GH-80);
+    grad.addColorStop(0,'#1a1a2e');grad.addColorStop(1,'#0a0a18');
+    c.fillStyle=grad;c.fillRect(0,0,GW,GH);
+    c.fillStyle='#2d2d1a';c.fillRect(0,GH-80,GW,80);
+    c.fillStyle='#3a3a20';c.fillRect(0,GH-82,GW,4);
+    c.fillStyle='#2a2a3e';c.fillRect(80,120,260,260);
+    c.fillStyle='#1e1e30';c.fillRect(100,100,220,30);
+    for(let r=0;r<3;r++)for(let col=0;col<3;col++){
+      c.fillStyle=Math.random()>.5?'rgba(198,255,0,0.25)':'rgba(255,255,255,0.08)';
+      c.fillRect(110+col*70,140+r*65,45,45);
+      c.strokeStyle='rgba(255,255,255,0.15)';c.lineWidth=1;
+      c.strokeRect(110+col*70,140+r*65,45,45);
+    }
+    c.fillStyle='#3d2b1f';c.fillRect(185,310,50,70);
+    c.fillStyle='rgba(198,255,0,0.6)';c.fillRect(205,330,10,10);
+    c.fillStyle='rgba(198,255,0,0.9)';c.font='bold 10px Outfit';c.textAlign='center';
+    c.fillText('СУРГУУЛЬ',210,115);
+    for(const t of [380,450,520,590,650]){
+      c.fillStyle='#1a3a1a';c.fillRect(t,GH-130,14,50);
+      c.fillStyle='#2d5a2d';c.beginPath();c.arc(t+7,GH-140,24,0,Math.PI*2);c.fill();
+      c.fillStyle='#3a7a3a';c.beginPath();c.arc(t+7,GH-152,14,0,Math.PI*2);c.fill();
+    }
+    c.fillStyle='rgba(255,255,255,0.5)';
+    for(let i=0;i<50;i++)c.fillRect(Math.random()*GW,Math.random()*(GH-200),1.5,1.5);
+    c.fillStyle='#555';c.fillRect(660,GH-160,5,80);
+    c.fillStyle='#c6ff00';c.beginPath();c.arc(662,GH-162,8,0,Math.PI*2);c.fill();
+    c.fillStyle='rgba(198,255,0,0.12)';c.beginPath();c.arc(662,GH-162,32,0,Math.PI*2);c.fill();
+  }},
+  {name:'street',label:'🏙️ Хот гудамж',draw(c){
+    const sk=c.createLinearGradient(0,0,0,GH-80);
+    sk.addColorStop(0,'#050510');sk.addColorStop(1,'#0d0d25');
+    c.fillStyle=sk;c.fillRect(0,0,GW,GH);
+    c.fillStyle='#1a1a1a';c.fillRect(0,GH-80,GW,80);
+    c.fillStyle='rgba(255,255,255,0.15)';
+    for(let x=0;x<GW;x+=80)c.fillRect(x,GH-42,50,4);
+    const blds=[{x:0,y:60,w:100,h:320,col:'#111118'},{x:110,y:100,w:80,h:280,col:'#181820'},{x:200,y:40,w:120,h:340,col:'#12121c'},{x:330,y:80,w:70,h:300,col:'#1a1a22'}];
+    for(const b of blds){
+      c.fillStyle=b.col;c.fillRect(b.x,b.y,b.w,b.h);
+      for(let wy=b.y+20;wy<b.y+b.h-30;wy+=28)
+        for(let wx=b.x+8;wx<b.x+b.w-8;wx+=22){
+          c.fillStyle=Math.random()>.45?'rgba(245,166,35,0.25)':'rgba(255,255,255,0.06)';
+          c.fillRect(wx,wy,14,18);
+        }
+    }
+    const blds2=[{x:560,y:70,w:110,h:310,col:'#0d0d18'},{x:680,y:50,w:90,h:330,col:'#15151e'},{x:780,y:90,w:100,h:290,col:'#111118'}];
+    for(const b of blds2){
+      c.fillStyle=b.col;c.fillRect(b.x,b.y,b.w,b.h);
+      for(let wy=b.y+20;wy<b.y+b.h-30;wy+=28)
+        for(let wx=b.x+8;wx<b.x+b.w-8;wx+=22){
+          c.fillStyle=Math.random()>.4?'rgba(79,195,247,0.25)':'rgba(255,255,255,0.06)';
+          c.fillRect(wx,wy,14,18);
+        }
+    }
+    c.fillStyle='rgba(240,236,226,0.9)';c.beginPath();c.arc(760,60,22,0,Math.PI*2);c.fill();
+    c.fillStyle='#050510';c.beginPath();c.arc(772,54,18,0,Math.PI*2);c.fill();
+    c.fillStyle='rgba(255,255,255,0.7)';
+    for(let i=0;i<60;i++)c.fillRect(Math.random()*GW,Math.random()*(GH-180),1.5,1.5);
+    for(const lx of [120,360,600,800]){
+      c.fillStyle='#444';c.fillRect(lx,GH-160,5,80);
+      c.fillStyle='#c6ff00';c.beginPath();c.arc(lx+2,GH-162,7,0,Math.PI*2);c.fill();
+      c.fillStyle='rgba(198,255,0,0.12)';c.beginPath();c.arc(lx+2,GH-162,28,0,Math.PI*2);c.fill();
+    }
+  }},
+  {name:'park',label:'🌳 Хотын цэцэрлэг',draw(c){
+    const sk=c.createLinearGradient(0,0,0,GH);
+    sk.addColorStop(0,'#0a0a1a');sk.addColorStop(.6,'#1a1a0a');sk.addColorStop(1,'#1a2a0a');
+    c.fillStyle=sk;c.fillRect(0,0,GW,GH);
+    c.fillStyle='#1a2a0a';c.fillRect(0,GH-100,GW,100);
+    c.fillStyle='#243a10';c.fillRect(0,GH-102,GW,4);
+    const trees=[40,120,200,580,660,740,820];
+    for(const tx of trees){
+      c.fillStyle='#1a2a0a';c.fillRect(tx,GH-190,14,90);
+      c.fillStyle='#1e3a14';c.beginPath();c.arc(tx+7,GH-195,30,0,Math.PI*2);c.fill();
+      c.fillStyle='#2a5a1a';c.beginPath();c.arc(tx+7,GH-214,20,0,Math.PI*2);c.fill();
+      c.fillStyle='#3a7a2a';c.beginPath();c.arc(tx+7,GH-226,12,0,Math.PI*2);c.fill();
+    }
+    c.fillStyle='#3a2a1a';c.fillRect(270,GH-120,80,14);
+    c.fillRect(275,GH-106,6,26);c.fillRect(339,GH-106,6,26);
+    for(let i=0;i<10;i++){c.fillStyle='#c6ff00';c.beginPath();c.arc(240+i*40,GH-108,4,0,Math.PI*2);c.fill();}
+    c.fillStyle='rgba(255,255,255,0.5)';
+    for(let i=0;i<40;i++)c.fillRect(Math.random()*GW,Math.random()*(GH-220),1.5,1.5);
+    c.fillStyle='rgba(240,236,226,.85)';c.beginPath();c.arc(700,60,20,0,Math.PI*2);c.fill();
+  }},
+  {name:'market',label:'🏪 Захын орчин',draw(c){
+    c.fillStyle='#0a0a0f';c.fillRect(0,0,GW,GH);
+    c.fillStyle='#1a1a18';c.fillRect(0,GH-80,GW,80);
+    const stalls=[{x:20,col:'#2a1a0a',ac:'#f5a623'},{x:220,col:'#0a1a2a',ac:'#4fc3f7'},{x:420,col:'#1a0a1a',ac:'#c6ff00'},{x:620,col:'#0a2a0a',ac:'#7bc67e'}];
+    for(const s of stalls){
+      c.fillStyle=s.col;c.fillRect(s.x,GH-280,160,200);
+      c.fillStyle=s.ac;c.fillRect(s.x-10,GH-300,180,30);
+      for(let ss=s.x-10;ss<s.x+170;ss+=20){c.fillStyle='rgba(0,0,0,0.2)';c.fillRect(ss,GH-300,10,30);}
+      c.fillStyle='rgba(255,255,255,0.06)';
+      c.fillRect(s.x+10,GH-230,140,12);c.fillRect(s.x+10,GH-180,140,12);
+      for(let dp=0;dp<5;dp++){
+        c.fillStyle=s.ac+'88';
+        c.fillRect(s.x+15+dp*26,GH-222,18,18);c.fillRect(s.x+15+dp*26,GH-172,18,18);
+      }
+    }
+    c.fillStyle='rgba(255,255,255,0.4)';
+    for(let i=0;i<30;i++)c.fillRect(Math.random()*GW,Math.random()*(GH-300),1.5,1.5);
+  }}
+];
+
+const WASTE_ITEMS=[
+  {name:'Хуванцар лонх',emoji:'🍶',cat:'recycle',color:'#3b9eff'},
+  {name:'Картон хайрцаг',emoji:'📦',cat:'recycle',color:'#3b9eff'},
+  {name:'Ундааны лааз',emoji:'🥫',cat:'recycle',color:'#3b9eff'},
+  {name:'Сонин сэтгүүл',emoji:'📰',cat:'recycle',color:'#3b9eff'},
+  {name:'Шилэн лонх',emoji:'🫙',cat:'recycle',color:'#3b9eff'},
+  {name:'Цаас',emoji:'📄',cat:'recycle',color:'#3b9eff'},
+  {name:'Хоолны үлдэгдэл',emoji:'🍱',cat:'organic',color:'#2ecc71'},
+  {name:'Жимсний хальс',emoji:'🍌',cat:'organic',color:'#2ecc71'},
+  {name:'Навч',emoji:'🍃',cat:'organic',color:'#2ecc71'},
+  {name:'Кофены ширхэг',emoji:'☕',cat:'organic',color:'#2ecc71'},
+  {name:'Ногооны хальс',emoji:'🥦',cat:'organic',color:'#2ecc71'},
+  {name:'Батарей',emoji:'🔋',cat:'hazard',color:'#e74c3c'},
+  {name:'Гэрлийн чийдэн',emoji:'💡',cat:'hazard',color:'#e74c3c'},
+  {name:'Хуучин утас',emoji:'📱',cat:'hazard',color:'#e74c3c'},
+  {name:'Эм үлдэгдэл',emoji:'💊',cat:'hazard',color:'#e74c3c'},
+  {name:'Будаг сав',emoji:'🎨',cat:'hazard',color:'#e74c3c'},
+  {name:'Хуучин тос',emoji:'🛢️',cat:'hazard',color:'#e74c3c'},
+  {name:'Гялгар уут',emoji:'🛍️',cat:'organic',color:'#2ecc71'},
+];
+
+const BIN_W=130,BIN_H=110;
+const BINS=[
+  {x:55,y:GH-BIN_H-10,label:'ДАХИВАР',sublabel:'Цаас·Шил·Хуванцар',cat:'recycle',color:'#3b9eff',dark:'#0d3a7a',glow:'rgba(59,158,255,0.4)',icon:'♻'},
+  {x:370,y:GH-BIN_H-10,label:'ОРГАНИК',sublabel:'Хоол·Навч·Жимс',cat:'organic',color:'#2ecc71',dark:'#0d5a2a',glow:'rgba(46,204,113,0.4)',icon:'🌱'},
+  {x:685,y:GH-BIN_H-10,label:'АЮУЛТАЙ',sublabel:'Батарей·Химийн',cat:'hazard',color:'#e74c3c',dark:'#6a0d0a',glow:'rgba(231,76,60,0.4)',icon:'☣'},
+];
+
+let gs={state:'idle',score:0,lives:3,level:1,correct:0,wrong:0,trash:[],particles:[],dragging:null,mx:GW/2,my:GH/2,bgIdx:0,spawnTimer:0,spawnInterval:180,maxTrash:8,bgStatic:null,frame:0,shakeFrame:0};
+
+function cacheBg(idx){
+  const off=document.createElement('canvas');
+  off.width=GW;off.height=GH;
+  const oc=off.getContext('2d');
+  BACKGROUNDS[idx].draw(oc);
+  gs.bgStatic=off;
+}
+
+function drawBin(c,bin,highlight){
+  const {x,y,color,dark,glow,label,sublabel,icon}=bin;
+  // Shadow
+  c.fillStyle='rgba(0,0,0,0.5)';c.fillRect(x+6,y+6,BIN_W,BIN_H);
+  // Body
+  const bodyGrad=c.createLinearGradient(x,y,x+BIN_W,y+BIN_H);
+  bodyGrad.addColorStop(0,dark);bodyGrad.addColorStop(1,dark+'cc');
+  c.fillStyle=bodyGrad;c.fillRect(x,y+22,BIN_W,BIN_H-22);
+  // Lid
+  c.fillStyle=highlight?color:'#222';
+  c.fillRect(x-8,y,BIN_W+16,24);
+  c.fillRect(x+16,y-12,BIN_W-32,16);
+  // Lid color stripe
+  c.fillStyle=color;c.fillRect(x-8,y,BIN_W+16,6);
+  // Body ridges
+  c.fillStyle='rgba(255,255,255,0.08)';c.fillRect(x+16,y+28,8,BIN_H-32);
+  c.fillStyle='rgba(255,255,255,0.04)';c.fillRect(x+28,y+28,4,BIN_H-32);
+  // Border
+  c.strokeStyle=highlight?color:'rgba(255,255,255,0.12)';
+  c.lineWidth=highlight?2.5:1;
+  c.strokeRect(x,y+22,BIN_W,BIN_H-22);
+  // Glow if highlight
+  if(highlight){
+    c.shadowColor=color;c.shadowBlur=25;
+    c.strokeStyle=color;c.lineWidth=2;
+    c.strokeRect(x-8,y,BIN_W+16,24);
+    c.shadowBlur=0;
+    // Radial glow beneath
+    const rg=c.createRadialGradient(x+BIN_W/2,y+BIN_H/2,5,x+BIN_W/2,y+BIN_H/2,80);
+    rg.addColorStop(0,glow);rg.addColorStop(1,'transparent');
+    c.fillStyle=rg;c.fillRect(x-30,y-30,BIN_W+60,BIN_H+60);
+  }
+  // Icon
+  c.fillStyle='rgba(255,255,255,0.2)';
+  c.font='20px serif';c.textAlign='center';
+  c.fillText(icon,x+BIN_W/2,y+72);
+  // Labels
+  c.fillStyle=color;
+  c.font='bold 11px Bebas Neue,Outfit,sans-serif';
+  c.fillText(label,x+BIN_W/2,y+90);
+  c.fillStyle='rgba(255,255,255,0.3)';
+  c.font='7px Outfit,sans-serif';
+  c.fillText(sublabel,x+BIN_W/2,y+103);
+}
+
+function drawTrash(c,item){
+  const s=Math.min(1,item.scale);
+  const wobble=Math.sin(item.wobble)*2.5;
+  const isDragging=gs.dragging&&gs.dragging.id===item.id;
+  c.save();
+  c.translate(item.x,item.y+wobble);
+  c.scale(s,s);
+  // Shadow
+  c.fillStyle='rgba(0,0,0,0.4)';c.fillRect(-24,2,48,48);
+  // Pixel border with color
+  const bcol=isDragging?item.color:'rgba(255,255,255,0.12)';
+  c.fillStyle=isDragging?item.color+'33':'rgba(10,10,20,0.88)';
+  c.fillRect(-28,-28,56,56);
+  c.strokeStyle=bcol;c.lineWidth=isDragging?2.5:1.5;
+  c.strokeRect(-28,-28,56,56);
+  // Inner shine
+  c.fillStyle='rgba(255,255,255,0.07)';c.fillRect(-26,-26,18,18);
+  // Emoji
+  c.font='28px serif';c.textAlign='center';c.textBaseline='middle';
+  c.fillText(item.emoji,0,0);
+  c.textBaseline='alphabetic';
+  c.restore();
+  // Name label when dragging
+  if(isDragging){
+    c.font='bold 11px Outfit,sans-serif';
+    const tw=c.measureText(item.name).width;
+    c.fillStyle='rgba(8,8,16,0.95)';
+    c.fillRect(item.x-tw/2-10,item.y-52,tw+20,24);
+    c.strokeStyle=item.color;c.lineWidth=1.5;
+    c.strokeRect(item.x-tw/2-10,item.y-52,tw+20,24);
+    c.fillStyle='#f0ece2';c.textAlign='center';c.textBaseline='middle';
+    c.fillText(item.name,item.x,item.y-40);
+    c.textBaseline='alphabetic';
+  }
+}
+
+function drawParticles(c){
+  gs.particles=gs.particles.filter(p=>p.life>0);
+  for(const p of gs.particles){
+    c.save();c.globalAlpha=p.life/p.maxLife;
+    c.font=p.size+'px serif';c.textAlign='center';c.textBaseline='middle';
+    c.fillText(p.text,p.x,p.y);
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.life--;
+    c.restore();
+  }
+}
+function spawnParticles(x,y,texts){
+  for(let i=0;i<8;i++){
+    gs.particles.push({x,y,vx:(Math.random()-.5)*8,vy:-3-Math.random()*6,text:texts[Math.floor(Math.random()*texts.length)],size:22,life:50,maxLife:50});
+  }
+}
+
+function drawHUD(c){
+  // Trash bar background
+  c.fillStyle='rgba(0,0,0,0.7)';c.fillRect(8,8,190,22);
+  const pct=gs.trash.length/gs.maxTrash;
+  const barColor=pct>.75?'#e74c3c':pct>.4?'#f5a623':'#2ecc71';
+  c.fillStyle=barColor;c.fillRect(8,8,190*pct,22);
+  c.strokeStyle='rgba(255,255,255,0.15)';c.lineWidth=1;c.strokeRect(8,8,190,22);
+  c.fillStyle='#f0ece2';c.font='bold 10px Outfit,sans-serif';c.textAlign='left';
+  c.fillText('ХОГ: '+gs.trash.length+' / '+gs.maxTrash,12,23);
+  // BG indicator
+  c.fillStyle='rgba(0,0,0,0.6)';c.fillRect(GW-210,6,204,20);
+  c.fillStyle='rgba(198,255,0,0.8)';c.font='9px Outfit,sans-serif';c.textAlign='right';
+  c.fillText(BACKGROUNDS[gs.bgIdx].label,GW-8,20);
+}
+
+function drawCrosshair(c){
+  const {mx,my}=gs;
+  const col=gs.dragging?'#2ecc71':'rgba(255,255,255,0.75)';
+  c.strokeStyle=col;c.lineWidth=1.5;
+  c.beginPath();c.moveTo(mx-18,my);c.lineTo(mx+18,my);
+  c.moveTo(mx,my-18);c.lineTo(mx,my+18);c.stroke();
+  c.beginPath();c.arc(mx,my,6,0,Math.PI*2);c.stroke();
+  if(gs.dragging){
+    c.strokeStyle='rgba(46,204,113,0.3)';c.lineWidth=1;
+    c.beginPath();c.arc(mx,my,14,0,Math.PI*2);c.stroke();
+  }
+}
+
+function drawIdle(c){
+  if(gs.bgStatic)c.drawImage(gs.bgStatic,0,0,GW,GH);
+  else{c.fillStyle='#0d0d18';c.fillRect(0,0,GW,GH);}
+  c.fillStyle='rgba(0,0,0,0.75)';c.fillRect(0,0,GW,GH);
+  // Animated wave at bottom
+  const t=Date.now()/1000;
+  c.fillStyle='rgba(198,255,0,0.04)';
+  c.beginPath();c.moveTo(0,GH);
+  for(let x=0;x<=GW;x+=4)c.lineTo(x,GH-60+Math.sin(x/80+t)*20+Math.sin(x/40+t*1.5)*10);
+  c.lineTo(GW,GH);c.closePath();c.fill();
+  // Bins preview
+  for(const bin of BINS)drawBin(c,bin,false);
+  // Title
+  c.fillStyle='rgba(198,255,0,0.9)';
+  c.font='bold 40px Bebas Neue,serif';c.textAlign='center';
+  c.fillText('🦅 ХОГ АНГИЛАХ ТОГЛООМ',GW/2,GH/2-80);
+  c.fillStyle='rgba(240,236,226,0.5)';
+  c.font='14px Outfit,sans-serif';
+  c.fillText('Хогийг чирж тохирох саванд хий — НЭРИЙГ уш, өнгийг биш!',GW/2,GH/2-40);
+  const pulse=Math.sin(t*3)*4;
+  c.fillStyle=`rgba(198,255,0,${0.7+pulse/20})`;
+  c.font='bold 16px Outfit,sans-serif';
+  c.fillText('▶  "Тоглоом эхлүүлэх" товчийг дарна уу',GW/2,GH/2);
+  c.fillStyle='rgba(240,236,226,0.25)';
+  c.font='11px Outfit,sans-serif';
+  c.fillText('3 амьтай · Хог хэтэрвэл хожигдоно · Зөв ангилалт = олон оноо',GW/2,GH/2+30);
+}
+
+function drawGameOver(c){
+  if(gs.bgStatic)c.drawImage(gs.bgStatic,0,0,GW,GH);
+  c.fillStyle='rgba(0,0,0,0.85)';c.fillRect(0,0,GW,GH);
+  // Animated scan line
+  const sl=(Date.now()/8)%GH;
+  c.fillStyle='rgba(255,255,255,0.015)';c.fillRect(0,sl,GW,2);
+  c.fillStyle='#e74c3c';
+  c.font='bold 64px Bebas Neue,serif';c.textAlign='center';
+  c.fillText('ХОЖИГДЛОО',GW/2,GH/2-60);
+  c.fillStyle='#c6ff00';c.font='bold 30px Bebas Neue,serif';
+  c.fillText('НИЙТ ОНОО: '+gs.score,GW/2,GH/2-10);
+  c.fillStyle='rgba(240,236,226,0.55)';c.font='14px Outfit,sans-serif';
+  c.fillText('✓ Зөв: '+gs.correct+'  ✗ Буруу: '+gs.wrong,GW/2,GH/2+30);
+  c.fillStyle='rgba(240,236,226,0.3)';c.font='12px Outfit,sans-serif';
+  c.fillText('"Тоглоом эхлүүлэх" товчийг дарж дахин тоглоорой',GW/2,GH/2+68);
+  updateResultUI();
+}
+
+function updateResultUI(){
+  document.getElementById('rScore').textContent=gs.score;
+  document.getElementById('rCorrect').textContent=gs.correct;
+  document.getElementById('rWrong').textContent=gs.wrong;
+  const acc=gs.correct+gs.wrong>0?gs.correct/(gs.correct+gs.wrong):0;
+  let grade='F',msg='Дахин оролдоорой! 📚',col='#ff4444';
+  if(acc>=.95){grade='S+';msg='ЛЕГЕНДАР! Хогийн мастер 🏆';col='var(--acid)'}
+  else if(acc>=.85){grade='A+';msg='Гайхалтай! Маш сайн ангиллаа ⭐';col='var(--acid)'}
+  else if(acc>=.7){grade='B';msg='Сайн байна! Дадлага хийгээрэй 💪';col='#4fc3f7'}
+  else if(acc>=.5){grade='C';msg='Дунд зэрэг, сайжруулж болно! 🎯';col='#f5a623'}
+  document.getElementById('resultGrade').textContent=grade;
+  document.getElementById('resultGrade').style.color=col;
+  document.getElementById('resultMsg').textContent=msg;
+  document.getElementById('gameResult').style.display='block';
+  document.getElementById('gameResult').classList.add('show');
+}
+
+function render(){
+  // Screen shake
+  let ox=0,oy=0;
+  if(gs.shakeFrame>0){ox=(Math.random()-.5)*8;oy=(Math.random()-.5)*8;gs.shakeFrame--;}
+  ctx.save();ctx.translate(ox,oy);
+  ctx.clearRect(-10,-10,GW+20,GH+20);
+  if(gs.bgStatic)ctx.drawImage(gs.bgStatic,0,0,GW,GH);
+  else{ctx.fillStyle='#0d0d18';ctx.fillRect(0,0,GW,GH);}
+  // Scanline overlay
+  const slt=Date.now()/12%GH;
+  ctx.fillStyle='rgba(255,255,255,0.012)';ctx.fillRect(0,slt,GW,2);
+  // Bins
+  for(const bin of BINS){
+    let hl=false;
+    if(gs.dragging){
+      const dx=gs.dragging.x,dy=gs.dragging.y;
+      if(dx>bin.x&&dx<bin.x+BIN_W&&dy>bin.y-20&&dy<bin.y+BIN_H)hl=true;
+    }
+    drawBin(ctx,bin,hl);
+  }
+  // Trash items
+  for(const item of gs.trash){
+    item.wobble+=0.03;
+    item.scale=Math.min(1,item.scale+0.07);
+    drawTrash(ctx,item);
+  }
+  drawParticles(ctx);
+  if(gs.state==='playing'){drawHUD(ctx);drawCrosshair(ctx);}
+  else if(gs.state==='idle'){ctx.restore();drawIdle(ctx);return;}
+  else if(gs.state==='gameover'){ctx.restore();drawGameOver(ctx);return;}
+  ctx.restore();
+}
+
+function spawnTrash(){
+  if(gs.trash.length>=gs.maxTrash)return;
+  const t=WASTE_ITEMS[Math.floor(Math.random()*WASTE_ITEMS.length)];
+  gs.trash.push({...t,x:90+Math.random()*(GW-180),y:60+Math.random()*(GH-BIN_H-200),id:Date.now()+Math.random(),wobble:Math.random()*Math.PI*2,scale:0});
+}
+
+let _raf=null;
+function loop(){
+  gs.frame++;
+  if(gs.state==='playing'){
+    gs.spawnTimer++;
+    if(gs.spawnTimer>=gs.spawnInterval){
+      gs.spawnTimer=0;spawnTrash();
+      if(gs.level>=3)spawnTrash();
+      gs.spawnInterval=Math.max(55,200-gs.level*18);
+    }
+    if(gs.trash.length>=gs.maxTrash){endPixelGame();return;}
+  }
+  render();
+  _raf=requestAnimationFrame(loop);
+}
+
+function startPixelGame(){
+  document.getElementById('gameResult').style.display='none';
+  document.getElementById('gameResult').classList.remove('show');
+  gs.bgIdx=Math.floor(Math.random()*BACKGROUNDS.length);
+  cacheBg(gs.bgIdx);
+  gs.state='playing';gs.score=0;gs.lives=3;gs.level=1;gs.correct=0;gs.wrong=0;
+  gs.trash=[];gs.particles=[];gs.dragging=null;
+  gs.spawnTimer=150;gs.spawnInterval=200;gs.maxTrash=8;gs.frame=0;gs.shakeFrame=0;
+  updateHUDUI();
+  if(_raf)cancelAnimationFrame(_raf);
+  loop();
+}
+function stopPixelGame(){
+  if(_raf)cancelAnimationFrame(_raf);
+  gs.state='idle';gs.trash=[];gs.dragging=null;
+  cacheBg(gs.bgIdx);render();
+}
+function endPixelGame(){
+  gs.state='gameover';gs.dragging=null;
+  if(_raf)cancelAnimationFrame(_raf);
+  loop();cancelAnimationFrame(_raf);
+}
+function updateHUDUI(){
+  document.getElementById('gScore').textContent=gs.score;
+  document.getElementById('gLives').textContent='❤'.repeat(gs.lives)+'🖤'.repeat(Math.max(0,3-gs.lives));
+  document.getElementById('gLevel').textContent=gs.level;
+  document.getElementById('gTrash').textContent=gs.trash.length+'/'+gs.maxTrash;
+}
+
+function showGameToast(msg){
+  showToast(msg,2800);
+}
+
+// Mouse
+canvas.addEventListener('mousemove',e=>{
+  const r=canvas.getBoundingClientRect();
+  const sx=GW/r.width,sy=GH/r.height;
+  gs.mx=(e.clientX-r.left)*sx;
+  gs.my=(e.clientY-r.top)*sy;
+  if(gs.dragging){gs.dragging.x=gs.mx;gs.dragging.y=gs.my;}
+});
+canvas.addEventListener('mousedown',e=>{
+  if(gs.state!=='playing')return;
+  const r=canvas.getBoundingClientRect();
+  const sx=GW/r.width,sy=GH/r.height;
+  const mx=(e.clientX-r.left)*sx,my=(e.clientY-r.top)*sy;
+  for(let i=gs.trash.length-1;i>=0;i--){
+    const t=gs.trash[i];
+    if(Math.abs(mx-t.x)<32&&Math.abs(my-t.y)<32){gs.dragging=t;break;}
+  }
+});
+canvas.addEventListener('mouseup',()=>{
+  if(!gs.dragging||gs.state!=='playing'){gs.dragging=null;return;}
+  let dropped=false;
+  for(const bin of BINS){
+    if(gs.dragging.x>bin.x&&gs.dragging.x<bin.x+BIN_W&&gs.dragging.y>bin.y-20&&gs.dragging.y<bin.y+BIN_H){
+      dropped=true;
+      if(gs.dragging.cat===bin.cat){
+        gs.score+=10*gs.level;gs.correct++;
+        spawnParticles(gs.dragging.x,gs.dragging.y,['✅','⭐','♻','💚','+'+10*gs.level]);
+        showGameToast('✓ Зөв! '+gs.dragging.name+' → '+bin.label);
+        if(gs.correct%(5+gs.level)===0){
+          gs.level++;
+          gs.maxTrash=Math.min(14,8+Math.floor(gs.level/2));
+          showGameToast('🆙 Түвшин '+gs.level+'! Дараагийн үе!');
+        }
+      } else {
+        gs.lives--;gs.wrong++;gs.shakeFrame=8;
+        spawnParticles(gs.dragging.x,gs.dragging.y,['❌','💥','✗','😱']);
+        showGameToast('✗ Буруу! '+gs.dragging.name+' бол '+gs.dragging.cat+' ангилал!');
+        if(gs.lives<=0){gs.dragging=null;endPixelGame();return;}
+      }
+      gs.trash=gs.trash.filter(t=>t.id!==gs.dragging.id);
+      updateHUDUI();break;
+    }
+  }
+  if(!dropped){
+    gs.dragging.x=90+Math.random()*(GW-180);
+    gs.dragging.y=60+Math.random()*(GH-BIN_H-200);
+  }
+  gs.dragging=null;updateHUDUI();
+});
+// Touch support
+canvas.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];canvas.dispatchEvent(new MouseEvent('mousedown',{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];canvas.dispatchEvent(new MouseEvent('mousemove',{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
+canvas.addEventListener('touchend',e=>{e.preventDefault();canvas.dispatchEvent(new MouseEvent('mouseup'));},{passive:false});
+
+// Init game idle
+cacheBg(0);render();
+</script>
+</body>
+</html>
