@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hazy Days — Survive the Smog</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  :root {
+    --sky-clean: #a8d8ea;
+    --sky-dirty: #8b7355;
+    --ground: #4a3728;
+    --pixel: 4px;
+    --good: #7ecf6a;
+    --bad: #c0392b;
+    --warning: #e67e22;
+    --ui-bg: rgba(10,8,6,0.82);
+    --ui-border: #f5c518;
+    --text: #f5e6c8;
+    --lung-pink: #e8a0a0;
+    --lung-dark: #c06060;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: pixelated; }
+
+  body {
+    background: #1a1208;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+  }
+
+  #game-wrapper {
+    position: relative;
+    width: 480px;
+    max-width: 100vw;
+  }
+
+  #canvas {
+    display: block;
+    width: 480px;
+    height: 480px;
+    max-width: 100vw;
+    cursor: pointer;
+    border: 4px solid #f5c518;
+    box-shadow: 0 0 0 4px #1a1208, 0 0 0 8px #8b6914, 0 0 40px rgba(245,197,24,0.3);
+    image-rendering: pixelated;
+  }
+
+  #ui-bar {
+    background: var(--ui-bg);
+    border: 4px solid #8b6914;
+    border-top: none;
+    padding: 10px 14px 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 480px;
+    max-width: 100vw;
+  }
+
+  .ui-label {
+    font-size: 6px;
+    color: #a08840;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .bar-wrap { flex: 1; }
+
+  .bar-track {
+    height: 10px;
+    background: #2a2016;
+    border: 2px solid #5a4a20;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    transition: width 0.1s, background 0.3s;
+    image-rendering: pixelated;
+  }
+
+  /* Pixelated bar pattern */
+  .bar-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 4px, transparent 4px, transparent 8px);
+  }
+
+  #health-fill { background: #e84040; }
+  #lung-fill   { background: #7ecf6a; }
+  #smog-fill   { background: #8b7040; }
+
+  #score-box {
+    text-align: right;
+    min-width: 80px;
+  }
+
+  #score-val {
+    font-size: 14px;
+    color: var(--ui-border);
+  }
+
+  /* Overlay screens */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,8,6,0.88);
+    gap: 18px;
+    z-index: 10;
+  }
+
+  .overlay h1 {
+    font-size: 18px;
+    color: var(--ui-border);
+    text-align: center;
+    line-height: 1.6;
+    text-shadow: 3px 3px 0 #8b6914;
+  }
+
+  .overlay h2 {
+    font-size: 10px;
+    color: var(--text);
+    text-align: center;
+    line-height: 2;
+  }
+
+  .overlay p {
+    font-size: 7px;
+    color: #a09070;
+    text-align: center;
+    line-height: 2.2;
+    max-width: 340px;
+  }
+
+  .pixel-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    padding: 12px 24px;
+    background: var(--ui-border);
+    color: #1a1208;
+    border: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #8b6914;
+    transition: transform 0.05s, box-shadow 0.05s;
+    margin-top: 6px;
+  }
+
+  .pixel-btn:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 #8b6914; }
+  .pixel-btn:active { transform: translate(4px,4px); box-shadow: none; }
+
+  .day-badge {
+    font-size: 8px;
+    color: #a08840;
+    border: 2px solid #5a4a20;
+    padding: 4px 10px;
+  }
+
+  /* Pixel scanline effect */
+  #canvas-wrap { position: relative; }
+  #canvas-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 2px);
+    pointer-events: none;
+    z-index: 5;
+  }
+</style>
+</head>
+<body>
+
+<div id="game-wrapper">
+  <div id="canvas-wrap">
+    <canvas id="canvas" width="120" height="120"></canvas>
+
+    <!-- Start screen -->
+    <div class="overlay" id="screen-start">
+      <h1>HAZY DAYS</h1>
+      <h2>SURVIVE THE SMOG</h2>
+      <p>
+        Collect CLEAN AIR (green) to breathe.<br>
+        Avoid SMOG PARTICLES (red/grey).<br>
+        Pollution gets worse every 30 seconds.<br>
+        How long can you survive?
+      </p>
+      <button class="pixel-btn" onclick="startGame()">▶ START</button>
+      <p>
+        ARROW KEYS or WASD to move<br>
+        (or tap/click on mobile)
+      </p>
+
+    </div>
+
+    <!-- Game over screen -->
+    <div class="overlay" id="screen-over" style="display:none">
+      <h1>YOU COLLAPSED</h1>
+      <div class="day-badge" id="over-day">DAY 1</div>
+      <h2 id="over-score">SCORE: 0</h2>
+      <p id="over-msg">The smog was too thick today.</p>
+      <button class="pixel-btn" onclick="startGame()">↺ TRY AGAIN</button>
+    </div>
+  </div>
+
+  <div id="ui-bar">
+    <div class="bar-wrap">
+      <span class="ui-label">health</span>
+      <div class="bar-track"><div class="bar-fill" id="health-fill" style="width:100%"></div></div>
+    </div>
+    <div class="bar-wrap">
+      <span class="ui-label">lungs</span>
+      <div class="bar-track"><div class="bar-fill" id="lung-fill" style="width:100%"></div></div>
+    </div>
+    <div class="bar-wrap">
+      <span class="ui-label">smog</span>
+      <div class="bar-track"><div class="bar-fill" id="smog-fill" style="width:0%"></div></div>
+    </div>
+    <div id="score-box">
+      <span class="ui-label">score</span>
+      <div id="score-val">0</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// --- CONFIG ---
+const W = 120, H = 120; // canvas logical pixels (pixel art res)
+const TILE = 4;          // 1 logical px = rendered at 4px via CSS
+
+// --- STATE ---
+let state = {};
+let animId = null;
+let lastTime = 0;
+let keys = {};
+
+// Touch / click direction
+let touchDir = {x:0,y:0};
+
+// --- PIXEL ART SPRITES (drawn procedurally) ---
+
+function drawPlayer(x, y, breathPhase) {
+  const px = Math.floor(x);
+  const py = Math.floor(y);
+  // Body - little character
+  // Head
+  ctx.fillStyle = '#f5c89a';
+  ctx.fillRect(px-3, py-10, 6, 5);
+  // Hair
+  ctx.fillStyle = '#2a1a0a';
+  ctx.fillRect(px-3, py-11, 6, 2);
+  ctx.fillRect(px-4, py-10, 1, 2);
+  // Eyes
+  ctx.fillStyle = '#1a1208';
+  ctx.fillRect(px-2, py-8, 1, 1);
+  ctx.fillRect(px+1, py-8, 1, 1);
+  // Mask (pollution mask)
+  ctx.fillStyle = '#e0e0e0';
+  ctx.fillRect(px-3, py-7, 6, 3);
+  ctx.fillStyle = '#b0b0b0';
+  ctx.fillRect(px-2, py-6, 4, 1);
+  // Body
+  ctx.fillStyle = '#3a6ea8';
+  ctx.fillRect(px-3, py-5, 6, 6);
+  // Legs
+  ctx.fillStyle = '#2a2a50';
+  ctx.fillRect(px-3, py+1, 2, 4);
+  ctx.fillRect(px+1, py+1, 2, 4);
+  // Arms animate with breathing
+  const armOff = breathPhase > 0.5 ? 1 : 0;
+  ctx.fillStyle = '#3a6ea8';
+  ctx.fillRect(px-5, py-5+armOff, 2, 4);
+  ctx.fillRect(px+3, py-5+armOff, 2, 4);
+  // Shoes
+  ctx.fillStyle = '#1a1208';
+  ctx.fillRect(px-3, py+5, 3, 2);
+  ctx.fillRect(px+1, py+5, 3, 2);
+}
+
+function drawCleanParticle(x, y, pulse) {
+  const r = 3 + pulse * 1;
+  const px = Math.floor(x), py = Math.floor(y);
+  ctx.fillStyle = '#7ecf6a';
+  ctx.fillRect(px-r, py-1, r*2, 2);
+  ctx.fillRect(px-1, py-r, 2, r*2);
+  ctx.fillStyle = '#aef09a';
+  ctx.fillRect(px-1, py-1, 2, 2);
+  // Glow halo
+  ctx.fillStyle = 'rgba(126,207,106,0.18)';
+  ctx.fillRect(px-r-2, py-r-2, (r+2)*2, (r+2)*2);
+}
+
+function drawSmogParticle(x, y, type) {
+  const px = Math.floor(x), py = Math.floor(y);
+  if(type === 0) {
+    // Round smog blob
+    ctx.fillStyle = '#8b7040';
+    ctx.fillRect(px-3, py-2, 6, 4);
+    ctx.fillRect(px-2, py-3, 4, 6);
+    ctx.fillStyle = '#6b5030';
+    ctx.fillRect(px-1, py-1, 2, 2);
+  } else if(type === 1) {
+    // Toxic drop
+    ctx.fillStyle = '#c04040';
+    ctx.fillRect(px-2, py-3, 4, 5);
+    ctx.fillRect(px-1, py-4, 2, 1);
+    ctx.fillRect(px-3, py-1, 6, 2);
+    ctx.fillStyle = '#ff6060';
+    ctx.fillRect(px-1, py-2, 1, 1);
+  } else {
+    // Factory smoke chunk
+    ctx.fillStyle = '#555045';
+    ctx.fillRect(px-4, py-2, 8, 4);
+    ctx.fillRect(px-2, py-4, 4, 8);
+    ctx.fillRect(px-3, py-3, 6, 6);
+    ctx.fillStyle = '#3a3530';
+    ctx.fillRect(px-1, py-1, 2, 2);
+  }
+}
+
+function drawBackground(smogLevel) {
+  // Sky — interpolate clean to dirty
+  const t = Math.min(smogLevel / 100, 1);
+  const r = Math.round(168 + (139-168)*t);
+  const g = Math.round(216 + (115-216)*t);
+  const b = Math.round(234 + (85-234)*t);
+  ctx.fillStyle = `rgb(${r},${g},${b})`;
+  ctx.fillRect(0, 0, W, H*0.65);
+
+  // Sun (fades with smog)
+  const sunAlpha = 1 - t * 0.85;
+  ctx.fillStyle = `rgba(255,230,80,${sunAlpha})`;
+  ctx.fillRect(90, 8, 12, 12);
+  ctx.fillStyle = `rgba(255,200,40,${sunAlpha*0.6})`;
+  ctx.fillRect(88, 6, 16, 16);
+  ctx.fillRect(92, 2, 8, 24);
+  ctx.fillRect(82, 10, 28, 8);
+
+  // Smog haze overlay
+  if(smogLevel > 10) {
+    ctx.fillStyle = `rgba(139,112,64,${t * 0.45})`;
+    ctx.fillRect(0, 0, W, H*0.65);
+  }
+
+  // Buildings (silhouette)
+  ctx.fillStyle = `rgba(40,30,20,${0.6 + t*0.3})`;
+  // Building 1
+  ctx.fillRect(0, 44, 18, 32);
+  ctx.fillRect(2, 40, 4, 4);
+  ctx.fillRect(7, 42, 4, 2);
+  // Building 2
+  ctx.fillRect(22, 50, 24, 26);
+  ctx.fillRect(28, 46, 8, 4);
+  // Building 3
+  ctx.fillRect(60, 42, 20, 34);
+  ctx.fillRect(62, 38, 6, 4);
+  ctx.fillRect(70, 40, 6, 2);
+  // Building 4
+  ctx.fillRect(88, 48, 32, 28);
+  ctx.fillRect(92, 44, 8, 4);
+  // Windows (lit)
+  ctx.fillStyle = `rgba(255,230,120,${0.7 - t*0.4})`;
+  for(let bx of [2,6,10,24,28,32,36,62,66,70,74,90,94,98,102,106]) {
+    for(let by of [48,54,60,66]) {
+      if((bx+by)%7 !== 0) ctx.fillRect(bx+1, by, 2, 2);
+    }
+  }
+
+  // Ground
+  ctx.fillStyle = '#3a2a1a';
+  ctx.fillRect(0, H*0.65, W, H*0.35);
+  // Pavement
+  ctx.fillStyle = '#4a3a28';
+  ctx.fillRect(0, H*0.65, W, 8);
+  // Pavement tiles
+  ctx.fillStyle = '#5a4a35';
+  for(let tx = 0; tx < W; tx += 12) ctx.fillRect(tx, H*0.65, 1, 8);
+
+  // Road markings
+  ctx.fillStyle = '#a09060';
+  for(let tx = 0; tx < W; tx += 16) ctx.fillRect(tx, H*0.65+9, 8, 2);
+}
+
+function drawSmogCloud(sc) {
+  ctx.fillStyle = `rgba(100,85,50,${sc.a})`;
+  ctx.fillRect(sc.x-sc.r, sc.y-sc.r/2, sc.r*2, sc.r);
+  ctx.fillRect(sc.x-sc.r/2, sc.y-sc.r, sc.r, sc.r*2);
+  ctx.fillStyle = `rgba(80,65,35,${sc.a*0.5})`;
+  ctx.fillRect(sc.x-1, sc.y-1, 2, 2);
+}
+
+// --- GAME LOGIC ---
+function createState() {
+  return {
+    player: { x: 60, y: 78, speed: 24 },
+    health: 100,
+    lungHealth: 100,
+    smogLevel: 0,
+    score: 0,
+    day: 1,
+    elapsed: 0,
+    breathPhase: 0,
+    particles: [],
+    smogClouds: [],
+    spawnTimer: 0,
+    cloudTimer: 0,
+    particleSpawnRate: 1.2,
+    smogSpawnRate: 0.8,
+    running: true,
+    flashTimer: 0,
+    dayTimer: 30,
+  };
+}
+
+function spawnParticle(s) {
+  const isClean = Math.random() > (s.smogLevel / 180);
+  const side = Math.floor(Math.random()*4);
+  let x, y;
+  if(side===0){x=Math.random()*W;y=-6;}
+  else if(side===1){x=W+6;y=Math.random()*H*0.85;}
+  else if(side===2){x=Math.random()*W;y=H*0.85+6;}
+  else{x=-6;y=Math.random()*H*0.85;}
+  const angle = Math.atan2(s.player.y - y, s.player.x - x) + (Math.random()-0.5)*1.2;
+  const speed = isClean ? (8 + Math.random()*4) : (6 + Math.random()*8 + s.smogLevel*0.04);
+  s.particles.push({
+    x, y,
+    vx: Math.cos(angle)*speed,
+    vy: Math.sin(angle)*speed,
+    clean: isClean,
+    type: Math.floor(Math.random()*3),
+    pulse: 0,
+    life: 1,
+  });
+}
+
+function spawnSmogCloud(s) {
+  s.smogClouds.push({
+    x: Math.random()*W,
+    y: Math.random()*(H*0.55),
+    r: 8 + Math.random()*14,
+    vx: (Math.random()-0.5)*3,
+    a: 0.12 + Math.random()*0.2,
+    life: 1,
+  });
+}
+
+function update(dt, s) {
+  s.elapsed += dt;
+  s.dayTimer -= dt;
+  s.breathPhase = (s.breathPhase + dt*2) % 1;
+  if(s.flashTimer > 0) s.flashTimer -= dt;
+
+  // Day progression
+  if(s.dayTimer <= 0) {
+    s.day++;
+    s.dayTimer = 30;
+    s.smogSpawnRate += 0.25;
+    s.particleSpawnRate += 0.1;
+  }
+
+  // Smog level creeps up
+  s.smogLevel = Math.min(100, s.smogLevel + dt * (2 + s.day * 0.5));
+
+  // Player movement
+  let dx = 0, dy = 0;
+  if(keys['ArrowLeft']||keys['a']||keys['A']) dx -= 1;
+  if(keys['ArrowRight']||keys['d']||keys['D']) dx += 1;
+  if(keys['ArrowUp']||keys['w']||keys['W']) dy -= 1;
+  if(keys['ArrowDown']||keys['s']||keys['S']) dy += 1;
+  // Touch
+  dx += touchDir.x; dy += touchDir.y;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  if(len > 0) { dx /= len; dy /= len; }
+  s.player.x = Math.max(4, Math.min(W-4, s.player.x + dx * s.player.speed * dt));
+  s.player.y = Math.max(H*0.55, Math.min(H*0.82, s.player.y + dy * s.player.speed * dt));
+
+  // Spawn
+  s.spawnTimer += dt;
+  if(s.spawnTimer > 1/s.particleSpawnRate) { spawnParticle(s); s.spawnTimer = 0; }
+  s.cloudTimer += dt;
+  if(s.cloudTimer > 1/s.smogSpawnRate && s.smogLevel > 15) { spawnSmogCloud(s); s.cloudTimer = 0; }
+
+  // Update particles
+  for(let i = s.particles.length-1; i >= 0; i--) {
+    const p = s.particles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.pulse = (p.pulse + dt*4) % 1;
+    // Out of bounds
+    if(p.x < -10||p.x > W+10||p.y < -10||p.y > H+10) { s.particles.splice(i,1); continue; }
+    // Collision with player
+    const dist = Math.hypot(p.x - s.player.x, p.y - s.player.y);
+    if(dist < 6) {
+      if(p.clean) {
+        s.lungHealth = Math.min(100, s.lungHealth + 8);
+        s.score += 10;
+      } else {
+        s.health = Math.max(0, s.health - (5 + s.smogLevel*0.05));
+        s.lungHealth = Math.max(0, s.lungHealth - 4);
+        s.flashTimer = 0.15;
+        s.score = Math.max(0, s.score - 2);
+      }
+      s.particles.splice(i,1);
+    }
+  }
+
+  // Smog clouds drift
+  for(let i = s.smogClouds.length-1; i>=0; i--) {
+    const sc = s.smogClouds[i];
+    sc.x += sc.vx * dt;
+    sc.life -= dt * 0.08;
+    sc.a = sc.life * 0.3;
+    if(sc.life <= 0 || sc.x < -30 || sc.x > W+30) s.smogClouds.splice(i,1);
+  }
+
+  // Passive lung drain from smog
+  s.lungHealth = Math.max(0, s.lungHealth - dt * (0.5 + s.smogLevel * 0.025));
+  // Health drain if lungs critical
+  if(s.lungHealth < 20) s.health = Math.max(0, s.health - dt * 3);
+  // Passive score
+  s.score += dt * 5;
+
+  if(s.health <= 0) s.running = false;
+}
+
+function render(s) {
+  ctx.clearRect(0, 0, W, H);
+  drawBackground(s.smogLevel);
+
+  // Smog clouds
+  for(const sc of s.smogClouds) drawSmogCloud(sc);
+
+  // Particles
+  for(const p of s.particles) {
+    if(p.clean) drawCleanParticle(p.x, p.y, Math.sin(p.pulse*Math.PI));
+    else drawSmogParticle(p.x, p.y, p.type);
+  }
+
+  // Player
+  drawPlayer(s.player.x, s.player.y, s.breathPhase);
+
+  // Damage flash
+  if(s.flashTimer > 0) {
+    ctx.fillStyle = `rgba(200,40,20,${s.flashTimer * 3})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Day counter (top left in-game)
+  ctx.fillStyle = 'rgba(10,8,6,0.6)';
+  ctx.fillRect(2, 2, 38, 10);
+  ctx.fillStyle = '#f5c518';
+  ctx.font = '4px "Press Start 2P"';
+  ctx.fillText('DAY ' + s.day, 4, 9);
+
+  // Time left till next day
+  ctx.fillStyle = '#a08840';
+  ctx.fillText(Math.ceil(s.dayTimer)+'s', 4, 16);
+}
+
+// --- BARS ---
+function updateUI(s) {
+  document.getElementById('health-fill').style.width = s.health + '%';
+  document.getElementById('lung-fill').style.width = s.lungHealth + '%';
+  document.getElementById('smog-fill').style.width = s.smogLevel + '%';
+  document.getElementById('score-val').textContent = Math.floor(s.score);
+
+  // Color coding
+  const hf = document.getElementById('health-fill');
+  hf.style.background = s.health > 50 ? '#e84040' : s.health > 25 ? '#e07020' : '#e04040';
+  const lf = document.getElementById('lung-fill');
+  lf.style.background = s.lungHealth > 50 ? '#7ecf6a' : s.lungHealth > 25 ? '#cfb040' : '#cf5040';
+  const sf = document.getElementById('smog-fill');
+  sf.style.background = s.smogLevel < 40 ? '#8b7040' : s.smogLevel < 70 ? '#b05030' : '#c03020';
+}
+
+// --- GAME OVER ---
+const msgs = [
+  "The smog was too thick today.",
+  "Your lungs gave out on the way to school.",
+  "Another casualty of the grey city.",
+  "The air won this time.",
+  "Even the mask couldn't save you.",
+];
+
+function showGameOver(s) {
+  document.getElementById('over-day').textContent = 'DAY ' + s.day;
+  document.getElementById('over-score').textContent = 'SCORE: ' + Math.floor(s.score);
+  document.getElementById('over-msg').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+  document.getElementById('screen-over').style.display = 'flex';
+}
+
+// --- LOOP ---
+function loop(ts) {
+  if(!state.running) { showGameOver(state); return; }
+  const dt = Math.min((ts - lastTime)/1000, 0.05);
+  lastTime = ts;
+  update(dt, state);
+  render(state);
+  updateUI(state);
+  animId = requestAnimationFrame(loop);
+}
+
+function startGame() {
+  document.getElementById('screen-start').style.display = 'none';
+  document.getElementById('screen-over').style.display = 'none';
+  if(animId) cancelAnimationFrame(animId);
+  state = createState();
+  lastTime = performance.now();
+  animId = requestAnimationFrame(loop);
+}
+
+// --- INPUT ---
+document.addEventListener('keydown', e => { keys[e.key] = true; e.preventDefault(); });
+document.addEventListener('keyup',   e => { keys[e.key] = false; });
+
+// Touch / swipe
+let touchStart = null;
+canvas.addEventListener('touchstart', e => {
+  touchStart = {x: e.touches[0].clientX, y: e.touches[0].clientY};
+  e.preventDefault();
+}, {passive:false});
+canvas.addEventListener('touchmove', e => {
+  if(!touchStart) return;
+  const dx = e.touches[0].clientX - touchStart.x;
+  const dy = e.touches[0].clientY - touchStart.y;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  if(len > 6) { touchDir = {x: dx/len, y: dy/len}; }
+  e.preventDefault();
+}, {passive:false});
+canvas.addEventListener('touchend', () => { touchDir = {x:0,y:0}; touchStart = null; });
+
+// Click to move toward click point
+canvas.addEventListener('click', e => {
+  if(!state.running) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const cx = (e.clientX - rect.left) * scaleX;
+  const cy = (e.clientY - rect.top) * scaleY;
+  const dx = cx - state.player.x, dy = cy - state.player.y;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  if(len > 2) { touchDir = {x: dx/len, y: dy/len}; setTimeout(()=>touchDir={x:0,y:0}, 300); }
+});
+</script>
+</body>
+</html>
