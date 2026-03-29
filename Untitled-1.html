@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🗑️ Хог Ангилах Тоглоом · Улаанбаатар</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #040C1A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    cursor: none;
+    overflow: hidden;
+  }
+  #gameCanvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    border: 3px solid #C9820A;
+    box-shadow:
+      0 0 0 1px #8B5E08,
+      0 0 40px rgba(201,130,10,0.45),
+      0 0 80px rgba(201,130,10,0.15);
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  ХОГ АНГИЛАХ ТОГЛООМ  ·  Waste Sorting Game  ·  Улаанбаатар
+// ══════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+canvas.width  = 900;
+canvas.height = 580;
+const W = canvas.width, H = canvas.height;
+ctx.imageSmoothingEnabled = false;
+
+// ── Pixel unit ────────────────────────────────────────────────────
+const P = 5; // 1 pixel-art unit = 5 real pixels
+
+// ── Layout constants ─────────────────────────────────────────────
+const HUD_H    = 52;
+const GROUND_Y = H - 175;   // ground surface Y
+const BIN_Y    = GROUND_Y + 10;
+const BIN_H    = 155;
+const BIN_W    = 130;
+
+// ── Bin positions ─────────────────────────────────────────────────
+const RECYCLE   = 'recycle';
+const GENERAL   = 'general';
+const HAZARDOUS = 'hazardous';
+
+const BINS = [
+  { type:RECYCLE,   label:'ДАХИВАР',    sub:'Recyclable',
+    x:60,      y:BIN_Y, w:BIN_W, h:BIN_H,
+    dark:'#0A2A6E', mid:'#1155CC', light:'#3D8FFF',
+    lid:'#0D3688', slot:'#081F54', glow:'rgba(61,143,255,0.35)' },
+  { type:GENERAL,   label:'ЭНГИЙН ХОГ', sub:'General Waste',
+    x:W/2-65,  y:BIN_Y, w:BIN_W, h:BIN_H,
+    dark:'#0D4020', mid:'#2E7D32', light:'#60B767',
+    lid:'#1B5E20', slot:'#0A3018', glow:'rgba(96,183,103,0.35)' },
+  { type:HAZARDOUS, label:'АЮУЛТАЙ',    sub:'Hazardous',
+    x:W-190,   y:BIN_Y, w:BIN_W, h:BIN_H,
+    dark:'#5C0000', mid:'#B71C1C', light:'#FF5252',
+    lid:'#7F0000', slot:'#3D0000', glow:'rgba(255,82,82,0.35)' },
+];
+
+// ── Waste definitions ─────────────────────────────────────────────
+const WASTE_DEFS = [
+  { id:'plastic_bottle', name:'Хуванцар сав',       bin:RECYCLE,
+    fact:'Хуванцар савыг 10 дахин хүртэл дахин боловсруулж болно!' },
+  { id:'newspaper',      name:'Сонин хэвлэл',       bin:RECYCLE,
+    fact:'Цаасыг 7 удаа дахин боловсруулж болдог.' },
+  { id:'metal_can',      name:'Металл лааз',         bin:RECYCLE,
+    fact:'Хөнгөн цагааныг дахин боловсруулах нь 95% эрчим хүч хэмнэнэ!' },
+  { id:'cardboard',      name:'Зузаан цаас',         bin:RECYCLE,
+    fact:'Картон хайрцгийг дахивар цуглуулах цэгт өгнө.' },
+  { id:'glass_bottle',   name:'Шилэн сав',           bin:RECYCLE,
+    fact:'Шилийг 100% дахин боловсруулж болно.' },
+  { id:'food_waste',     name:'Хоолны үлдэгдэл',    bin:GENERAL,
+    fact:'Хоолны хогийг компост болгож, хөрсний бордоо болгоно.' },
+  { id:'tissue',         name:'Нэг удаагийн цаас',  bin:GENERAL,
+    fact:'Ашигласан цаасны алчуурыг энгийн хогонд хийнэ.' },
+  { id:'cigarette',      name:'Тамхины иш',          bin:GENERAL,
+    fact:'Тамхины ишийг энгийн хогонд хийнэ.' },
+  { id:'plastic_bag',    name:'Хуванцар уут',        bin:GENERAL,
+    fact:'Нэг удаагийн уутны оронд даавуун уут хэрэглэцгээе!' },
+  { id:'broken_ceramic', name:'Хагарсан шаазан',     bin:GENERAL,
+    fact:'Хагарсан шааздайг энгийн хогонд болгоомжтой хийнэ.' },
+  { id:'battery',        name:'Зай батерей',         bin:HAZARDOUS,
+    fact:'⚠ Зай нь хүнцэл, хар тугалга агуулна. Тусгай цэгт өгнө!' },
+  { id:'medicine',       name:'Хуучирсан эм',        bin:HAZARDOUS,
+    fact:'⚠ Хуучирсан эмийг ойр дахь эмийн санд буцааж өгнө.' },
+  { id:'paint_can',      name:'Будгийн хуучин сав',  bin:HAZARDOUS,
+    fact:'⚠ Будаг нь химийн бодис агуулна. Тусгай устгалт хэрэгтэй.' },
+  { id:'motor_oil',      name:'Машины хуучин тос',   bin:HAZARDOUS,
+    fact:'⚠ Машины тос хортой. Автосервист буцааж өгнө.' },
+  { id:'fluor_lamp',     name:'Флюресцент чийдэн',  bin:HAZARDOUS,
+    fact:'⚠ Мөнгөн ус агуулна! Тусгай цуглуулах цэгт өгнө.' },
+];
+
+// ── Waste pixel art sizes (in P-units) ───────────────────────────
+const WSIZES = {
+  plastic_bottle:{ w:6,  h:10 }, newspaper:      { w:7,  h:8  },
+  metal_can:     { w:6,  h:9  }, cardboard:      { w:7,  h:6  },
+  glass_bottle:  { w:6,  h:11 }, food_waste:     { w:7,  h:8  },
+  tissue:        { w:7,  h:5  }, cigarette:      { w:11, h:4  },
+  plastic_bag:   { w:6,  h:8  }, broken_ceramic: { w:7,  h:7  },
+  battery:       { w:7,  h:10 }, medicine:       { w:6,  h:9  },
+  paint_can:     { w:6,  h:10 }, motor_oil:      { w:6,  h:11 },
+  fluor_lamp:    { w:12, h:6  },
+};
+
+// ─── Pixel block helper ───────────────────────────────────────────
+function pb(c, rx, ry, rw, rh, ox, oy) {
+  ctx.fillStyle = c;
+  ctx.fillRect(Math.round(ox+rx*P), Math.round(oy+ry*P), Math.round(rw*P), Math.round(rh*P));
+}
+
+// ── Waste pixel art functions ─────────────────────────────────────
+const ART = {
+  plastic_bottle(ox,oy){ 
+    pb('#1565C0',2,0,2,1,ox,oy);       // cap
+    pb('#90CAF9',1.5,1,3,1,ox,oy);     // neck
+    pb('#5B9BD5',0,2,6,7,ox,oy);       // body
+    pb('#90CAF9',0.5,2.5,5,6,ox,oy);   // body mid
+    pb('#1565C0',0.5,4,5,1,ox,oy);     // label
+    pb('#1976D2',0.5,5.5,5,.5,ox,oy);  // label2
+    pb('#BBDEFB',1,2.5,1,6,ox,oy);     // highlight
+    pb('#42A5F5',0.5,9,5,.5,ox,oy);    // bottom
+    pb('#0D47A1',0.5,9.5,5,.5,ox,oy);
+  },
+  newspaper(ox,oy){
+    pb('#ECEFF1',0,0,7,8,ox,oy);
+    pb('#37474F',0.5,.5,6,1.2,ox,oy);  // headline
+    pb('#90A4AE',0.5,2.2,6,.4,ox,oy);
+    pb('#90A4AE',0.5,3.2,6,.4,ox,oy);
+    pb('#90A4AE',0.5,4.2,6,.4,ox,oy);
+    pb('#90A4AE',0.5,5.2,4,.4,ox,oy);
+    pb('#90A4AE',0.5,6.2,5,.4,ox,oy);
+    pb('#546E7A',0,0,7,.4,ox,oy);
+    pb('#546E7A',0,7.6,7,.4,ox,oy);
+    pb('#546E7A',0,0,.4,8,ox,oy);
+    pb('#546E7A',6.6,0,.4,8,ox,oy);
+  },
+  metal_can(ox,oy){
+    pb('#78909C',1,0,4,.5,ox,oy);
+    pb('#B0BEC5',0,.5,6,8,ox,oy);
+    pb('#CFD8DC',.5,.5,5,8,ox,oy);
+    pb('#ECEFF1',1,.5,4,8,ox,oy);
+    pb('#78909C',0,2,6,.4,ox,oy);
+    pb('#78909C',0,7,6,.4,ox,oy);
+    pb('#FFFFFF',1.5,.5,1.5,7.5,ox,oy);
+    pb('#78909C',1,8.5,4,.5,ox,oy);
+    pb('#546E7A',0,0,6,.5,ox,oy);
+  },
+  cardboard(ox,oy){
+    pb('#6D4C41',0,0,7,6,ox,oy);
+    pb('#8D6E63',.5,.5,6,5,ox,oy);
+    pb('#BCAAA4',1,1,5,4,ox,oy);
+    pb('#5D4037',0,2.8,7,.4,ox,oy);
+    pb('#5D4037',3.5,0,.4,6,ox,oy);
+    pb('#FFF9C4',2,0,3,.7,ox,oy);
+  },
+  glass_bottle(ox,oy){
+    pb('#1B5E20',2,0,2,1,ox,oy);
+    pb('#2E7D32',1.5,1,3,2,ox,oy);
+    pb('#388E3C',0,3,6,7,ox,oy);
+    pb('#43A047',.5,3.5,5,6,ox,oy);
+    pb('#4CAF50',1,4,4,5.5,ox,oy);
+    pb('#A5D6A7',1,4,1.2,5,ox,oy);
+    pb('#1B5E20',.5,10,5,.5,ox,oy);
+  },
+  food_waste(ox,oy){
+    pb('#4E342E',0,4,7,4,ox,oy);
+    pb('#6D4C41',.5,4.5,6,3.5,ox,oy);
+    pb('#8BC34A',.5,1.5,2.5,3,ox,oy);
+    pb('#FF8F00',2,1,2.5,3.5,ox,oy);
+    pb('#795548',4,2,2.5,3,ox,oy);
+    pb('#558B2F',1,0,2,2,ox,oy);
+    pb('#F44336',4,.5,2,2,ox,oy);
+    pb('#FDD835',1.5,2,1,1,ox,oy);
+  },
+  tissue(ox,oy){
+    pb('#F5F5F5',0,0,7,5,ox,oy);
+    pb('#FAFAFA',.5,.5,6,4,ox,oy);
+    pb('#E0E0E0',1,2.2,5,.4,ox,oy);
+    pb('#E8E8E8',2,.5,.4,4,ox,oy);
+    pb('#E8E8E8',4.6,.5,.4,4,ox,oy);
+    pb('#EEEEEE',0,4.3,7,.7,ox,oy);
+  },
+  cigarette(ox,oy){
+    pb('#FF8F00',0,1,2,2,ox,oy);
+    pb('#FAFAFA',2,1,7,2,ox,oy);
+    pb('#FF7043',9,.5,1.5,1.5,ox,oy);
+    pb('#9E9E9E',8.5,1,1.5,2,ox,oy);
+    pb('#E0E0E0',2,1,.4,2,ox,oy);
+    pb('#E0E0E0',4.5,1,.4,2,ox,oy);
+    pb('#E0E0E0',7,1,.4,2,ox,oy);
+  },
+  plastic_bag(ox,oy){
+    pb('#CE93D8',1,0,1,2,ox,oy);
+    pb('#CE93D8',4,0,1,2,ox,oy);
+    pb('#CE93D8',0,2,6,6,ox,oy);
+    pb('#E1BEE7',.5,2.5,5,5.5,ox,oy);
+    pb('#AB47BC',2,1.5,2,1,ox,oy);
+    pb('#BA68C8',2,3.5,2,.4,ox,oy);
+  },
+  broken_ceramic(ox,oy){
+    pb('#FFAB91',0,3,4,4,ox,oy);
+    pb('#FFAB91',.5,2,3,2,ox,oy);
+    pb('#FF7043',.5,2,3,.8,ox,oy);
+    pb('#FF8A65',4,4,3,3,ox,oy);
+    pb('#FF7043',4,4,3,.7,ox,oy);
+    pb('#BF360C',2,2,.4,5,ox,oy);
+    pb('#BF360C',4,4,.4,3,ox,oy);
+  },
+  battery(ox,oy){
+    pb('#FFD54F',2,0,3,1,ox,oy);
+    pb('#FFD54F',3,0,1,2,ox,oy);
+    pb('#212121',0,1,7,9,ox,oy);
+    pb('#424242',.5,1.5,6,8,ox,oy);
+    pb('#FFEB3B',1,2,1,5.5,ox,oy);
+    pb('#FFEB3B',3,2,1,5.5,ox,oy);
+    pb('#FFEB3B',5,2,1,5.5,ox,oy);
+    pb('#FFD54F',1.5,3.5,4,2,ox,oy);
+    pb('#1A1A1A',2,4,3,1,ox,oy);
+    pb('#FFD54F',0,9.5,7,.5,ox,oy);
+  },
+  medicine(ox,oy){
+    pb('#E91E63',1.5,0,3,.5,ox,oy);
+    pb('#EF9A9A',1,.5,4,1.2,ox,oy);
+    pb('#FFCDD2',0,1.7,6,7,ox,oy);
+    pb('#EF9A9A',.5,2.2,5,6,ox,oy);
+    pb('#C62828',2.5,3,1,3.5,ox,oy);
+    pb('#C62828',1.5,4,3,1,ox,oy);
+    pb('#B71C1C',1,2.2,4,.6,ox,oy);
+    pb('#C62828',0,8.7,6,.4,ox,oy);
+  },
+  paint_can(ox,oy){
+    pb('#795548',1,0,1,1,ox,oy);
+    pb('#795548',4,0,1,1,ox,oy);
+    pb('#795548',1.5,0,3,.4,ox,oy);
+    pb('#BF360C',0,1,6,.7,ox,oy);
+    pb('#E64A19',0,1.7,6,8,ox,oy);
+    pb('#FF7043',.5,2.2,5,7,ox,oy);
+    pb('#FF8A65',1,2.5,4,6,ox,oy);
+    pb('#FF5722',1,3,1,5.5,ox,oy);
+    pb('#FFC107',3,2.5,1,5,ox,oy);
+    pb('#F44336',5,4,.5,5,ox,oy);
+  },
+  motor_oil(ox,oy){
+    pb('#3E2723',2,0,2,1,ox,oy);
+    pb('#4E342E',1.5,1,3,1,ox,oy);
+    pb('#3E2723',0,2,6,8,ox,oy);
+    pb('#4E342E',.5,2.5,5,7,ox,oy);
+    pb('#FF5722',1,3.5,4,2.5,ox,oy);
+    pb('#FFEB3B',2,4,2,1,ox,oy);
+    pb('#212121',2.5,10,1,1.5,ox,oy);
+    pb('#212121',2,11,2,.5,ox,oy);
+  },
+  fluor_lamp(ox,oy){
+    pb('#E0E0E0',0,1,12,4,ox,oy);
+    pb('#B39DDB',.5,1.5,11,3,ox,oy);
+    pb('#E8EAF6',1,1.5,10,1.2,ox,oy);
+    pb('#546E7A',0,1,1,4,ox,oy);
+    pb('#546E7A',11,1,1,4,ox,oy);
+    pb('#6200EA',5,3.5,2,.5,ox,oy);
+    pb('#7C4DFF',4.5,2.5,.5,.5,ox,oy);
+    pb('#7C4DFF',7,2.5,.5,.5,ox,oy);
+  },
+};
+
+// ── Audio ──────────────────────────────────────────────────────────
+let _actx = null;
+function act() {
+  if (!_actx) _actx = new (window.AudioContext||window.webkitAudioContext)();
+  return _actx;
+}
+function tone(f1,f2,dur,type='square',vol=0.14){
+  try{
+    const ac=act(), o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type=type; o.frequency.value=f1;
+    if(f2) o.frequency.linearRampToValueAtTime(f2, ac.currentTime+dur*0.6);
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+    o.start(); o.stop(ac.currentTime+dur);
+  }catch(e){}
+}
+function sfxPickup(){ tone(480,560,0.08,'square',0.1); }
+function sfxDrag(type){
+  if(type===HAZARDOUS) tone(120,100,0.12,'sawtooth',0.06);
+  else if(type===RECYCLE) tone(380,420,0.08,'square',0.06);
+  else tone(260,280,0.08,'triangle',0.06);
+}
+function sfxDrop(){ tone(300,260,0.12,'square',0.08); }
+function sfxCorrect(){
+  tone(523,523,0.08,'square',0.14);
+  setTimeout(()=>tone(659,659,0.08,'square',0.12),100);
+  setTimeout(()=>tone(784,784,0.15,'square',0.1),200);
+}
+function sfxWrong(){
+  tone(200,160,0.18,'sawtooth',0.2);
+  setTimeout(()=>tone(140,110,0.25,'sawtooth',0.18),180);
+}
+function sfxSpawn(){ tone(330,440,0.06,'sine',0.05); }
+
+// ── Game state ────────────────────────────────────────────────────
+const MAXWASTES = 8;
+let G = {};
+function resetGame(){
+  G = {
+    screen:'title',       // 'title'|'playing'|'gameover'|'info'
+    lives:3, score:0,
+    correct:0, wrong:0,
+    wastes:[], dragging:null,
+    mx:W/2, my:H/2,
+    hover:-1,
+    effects:[],
+    lastSpawn:0,
+    spawnInt:5000,
+    gameOverReason:'',
+    lastDragSfx:0,
+    fact:'', factTimer:0,
+    nid:0,
+  };
+}
+resetGame();
+
+// ── Spawn ─────────────────────────────────────────────────────────
+function spawnWaste(){
+  if(G.wastes.length >= MAXWASTES) return;
+  const def = WASTE_DEFS[Math.floor(Math.random()*WASTE_DEFS.length)];
+  const sz  = WSIZES[def.id];
+  const pw  = sz.w*P, ph = sz.h*P;
+  const margin = 55;
+  // avoid middle area if bins are there
+  let x = margin + Math.random()*(W-2*margin-pw);
+  // keep x away from bins (bottom area not spawn area anyway)
+  const yMin = HUD_H + 20;
+  const yMax = GROUND_Y - ph - 10;
+  const y = yMin + Math.random()*(yMax-yMin);
+  G.wastes.push({ id:G.nid++, def, x, y, sz, spawnTime:Date.now() });
+  sfxSpawn();
+}
+
+// ── Hit tests ─────────────────────────────────────────────────────
+function wasteAt(mx,my){
+  for(let i=G.wastes.length-1;i>=0;i--){
+    const w=G.wastes[i];
+    if(mx>=w.x && mx<=w.x+w.sz.w*P && my>=w.y && my<=w.y+w.sz.h*P) return i;
+  }
+  return -1;
+}
+function binAt(mx,my){
+  for(let i=0;i<BINS.length;i++){
+    const b=BINS[i];
+    if(mx>=b.x && mx<=b.x+b.w && my>=b.y && my<=b.y+b.h) return i;
+  }
+  return -1;
+}
+function stopBtnHit(mx,my){ return mx>=8&&mx<=92&&my>=10&&my<=42; }
+function startBtnHit(mx,my){ return mx>=W/2-120&&mx<=W/2+120&&my>=482&&my<=534; }
+function infoBtnHit(mx,my){ return mx>=W-145&&mx<=W-5&&my>=H-60&&my<=H-15; }
+function restartBtnHit(mx,my){ return mx>=W/2-145&&mx<=W/2-5&&my>=494&&my<=540; }
+function goInfoBtnHit(mx,my){ return mx>=W/2+5&&mx<=W/2+145&&my>=494&&my<=540; }
+function backBtnHit(mx,my){ return mx>=W/2-90&&mx<=W/2+90&&my>=H-60&&my<=H-12; }
+
+// ── Input ──────────────────────────────────────────────────────────
+canvas.addEventListener('mousemove', e=>{
+  const r=canvas.getBoundingClientRect();
+  G.mx = (e.clientX-r.left)*(W/r.width);
+  G.my = (e.clientY-r.top)*(H/r.height);
+  if(G.screen==='playing' && G.dragging===null){
+    G.hover = wasteAt(G.mx, G.my);
+  }
+  // drag sound throttled
+  if(G.screen==='playing' && G.dragging!==null){
+    const now=Date.now();
+    if(now - G.lastDragSfx > 350){
+      G.lastDragSfx = now;
+      sfxDrag(G.wastes[G.dragging.idx]?.def?.bin);
+    }
+  }
+});
+
+canvas.addEventListener('mousedown', e=>{
+  const r=canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width);
+  const my=(e.clientY-r.top)*(H/r.height);
+  try{ act(); }catch(ex){}
+
+  if(G.screen==='title'){
+    if(startBtnHit(mx,my)) startGame();
+    if(infoBtnHit(mx,my)) G.screen='info';
+    return;
+  }
+  if(G.screen==='gameover'){
+    if(restartBtnHit(mx,my)) startGame();
+    if(goInfoBtnHit(mx,my)) G.screen='info';
+    return;
+  }
+  if(G.screen==='info'){
+    if(backBtnHit(mx,my)) G.screen = G.gameOver ? 'gameover':'title';
+    return;
+  }
+  if(G.screen==='playing'){
+    if(stopBtnHit(mx,my)){ G.screen='title'; return; }
+    const idx = wasteAt(mx,my);
+    if(idx>=0){
+      const w=G.wastes[idx];
+      G.dragging = { idx, offX:mx-w.x, offY:my-w.y };
+      G.hover=-1;
+      sfxPickup();
+    }
+  }
+});
+
+canvas.addEventListener('mouseup', e=>{
+  if(G.screen!=='playing' || G.dragging===null) return;
+  const r=canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width);
+  const my=(e.clientY-r.top)*(H/r.height);
+
+  const w = G.wastes[G.dragging.idx];
+  if(!w){ G.dragging=null; return; }
+
+  const cx = mx - G.dragging.offX + w.sz.w*P/2;
+  const cy = my - G.dragging.offY + w.sz.h*P/2;
+  const bi = binAt(cx, cy);
+
+  if(bi>=0){
+    const bin=BINS[bi];
+    if(bin.type===w.def.bin){
+      sfxCorrect();
+      G.score += 10;
+      G.correct++;
+      fx(cx, BIN_Y-20, '+10', '#69F0AE');
+      fx(cx, BIN_Y+10, '✓ ЗӨВЛӨВ!', '#A5D6A7');
+      G.fact = w.def.fact;
+      G.factTimer = 220;
+      G.wastes.splice(G.dragging.idx, 1);
+    } else {
+      sfxWrong();
+      G.lives--;
+      G.wrong++;
+      fx(cx, BIN_Y-20, '-1 ♥', '#FF5252');
+      fx(cx, BIN_Y+10, '✗ БУРУУ!', '#EF9A9A');
+      // put waste back on ground
+      w.x = Math.max(10, Math.min(W-w.sz.w*P-10, mx-G.dragging.offX));
+      w.y = GROUND_Y - w.sz.h*P - 4;
+      if(G.lives<=0){ endGame('Амьд дуусав!'); G.dragging=null; return; }
+    }
+  } else {
+    sfxDrop();
+    w.x = Math.max(10, Math.min(W-w.sz.w*P-10, mx-G.dragging.offX));
+    w.y = Math.max(HUD_H+5, Math.min(GROUND_Y - w.sz.h*P - 4, my-G.dragging.offY));
+  }
+  G.dragging=null;
+});
+
+// ── Effects ───────────────────────────────────────────────────────
+function fx(x,y,text,color){
+  G.effects.push({ x,y,text,color, life:70, vy:-1.2 });
+}
+function updateFx(){
+  G.effects = G.effects.filter(e=>e.life>0);
+  G.effects.forEach(e=>{ e.life--; e.y+=e.vy; });
+  if(G.factTimer>0) G.factTimer--;
+}
+function drawFx(){
+  G.effects.forEach(e=>{
+    const a = e.life/70;
+    ctx.globalAlpha=a;
+    ctx.fillStyle=e.color;
+    ctx.font=`bold ${P*2.2}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(e.text, e.x, e.y);
+  });
+  ctx.globalAlpha=1;
+}
+
+// ── Game flow ─────────────────────────────────────────────────────
+function startGame(){
+  G.lives=3; G.score=0; G.correct=0; G.wrong=0;
+  G.wastes=[]; G.dragging=null; G.effects=[];
+  G.lastSpawn=Date.now()-4000;
+  G.spawnInt=5000; G.gameOverReason='';
+  G.fact=''; G.factTimer=0; G.hover=-1;
+  G.screen='playing';
+  G.gameOver=false;
+  G.nid=0;
+}
+function endGame(reason){
+  G.gameOver=true; G.screen='gameover';
+  G.gameOverReason=reason; G.dragging=null;
+}
+
+// ── Drawing: Background ───────────────────────────────────────────
+const STARS = [];
+for(let i=0;i<60;i++) STARS.push([Math.random()*W, HUD_H+Math.random()*(GROUND_Y-HUD_H-60), Math.random()*2+1]);
+
+function drawBg(){
+  // Sky
+  const sk = ctx.createLinearGradient(0,HUD_H,0,GROUND_Y);
+  sk.addColorStop(0,'#060D1F');
+  sk.addColorStop(0.4,'#0F2545');
+  sk.addColorStop(1,'#1A3F75');
+  ctx.fillStyle=sk; ctx.fillRect(0,HUD_H,W,GROUND_Y-HUD_H);
+
+  // Stars twinkle
+  const t = Date.now()/1000;
+  STARS.forEach(([sx,sy,sr])=>{
+    const bright = 0.4+0.6*Math.abs(Math.sin(t*0.7+sx));
+    ctx.globalAlpha = bright;
+    ctx.fillStyle = '#E8F4FD';
+    ctx.fillRect(sx,sy,sr,sr);
+  });
+  ctx.globalAlpha=1;
+
+  // Moon
+  drawMoon(820, 85);
+
+  // City buildings (silhouette)
+  drawCity();
+
+  // Ground strip
+  ctx.fillStyle='#1C1208';
+  ctx.fillRect(0,GROUND_Y,W,H-GROUND_Y);
+  ctx.fillStyle='#CEC9B8'; // snow
+  ctx.fillRect(0,GROUND_Y,W,9);
+  ctx.fillStyle='#A9A394';
+  ctx.fillRect(0,GROUND_Y+9,W,5);
+  // road lines
+  ctx.fillStyle='#5A5040';
+  for(let rx=90;rx<W;rx+=130) ctx.fillRect(rx,GROUND_Y+20,70,4);
+}
+
+function drawMoon(mx,my){
+  const pixels=[[2,0],[3,0],[1,1],[2,1],[3,1],[4,1],[0,2],[1,2],[2,2],[3,2],[4,2],
+    [0,3],[1,3],[2,3],[3,3],[4,3],[1,4],[2,4],[3,4],[2,5]];
+  ctx.fillStyle='#FFF9C4';
+  pixels.forEach(([px,py])=>ctx.fillRect(mx+px*5,my+py*5,5,5));
+  // moon glow
+  const mg=ctx.createRadialGradient(mx+17,my+18,0,mx+17,my+18,40);
+  mg.addColorStop(0,'rgba(255,249,196,0.12)');
+  mg.addColorStop(1,'rgba(255,249,196,0)');
+  ctx.fillStyle=mg; ctx.fillRect(mx-25,my-25,90,90);
+}
+
+const BLDG=[
+  {x:0,   w:75, h:175, win:[[10,20],[42,20],[10,55],[42,55],[10,90],[42,90],[10,125],[42,125],[10,155],[42,155]]},
+  {x:83,  w:55, h:115, win:[[10,20],[33,20],[10,50],[33,50],[10,80],[33,80]]},
+  {x:148, w:95, h:195, win:[[10,20],[38,20],[65,20],[10,55],[38,55],[65,55],[10,90],[38,90],[65,90],[10,125],[38,125],[65,125],[10,155],[38,155],[65,155]]},
+  {x:252, w:65, h:130, win:[[10,20],[38,20],[10,50],[38,50],[10,80],[38,80],[10,110],[38,110]]},
+  {x:325, w:50, h:90,  win:[[10,20],[30,20],[10,50],[30,50],[10,70],[30,70]]},
+  // gap 375-535 (play zone)
+  {x:540, w:75, h:155, win:[[10,20],[45,20],[10,55],[45,55],[10,90],[45,90],[10,125],[45,125]]},
+  {x:623, w:55, h:100, win:[[10,20],[33,20],[10,50],[33,50],[10,75],[33,75]]},
+  {x:686, w:85, h:175, win:[[10,20],[40,20],[62,20],[10,55],[40,55],[62,55],[10,90],[40,90],[62,90],[10,125],[40,125],[62,125],[10,152],[40,152]]},
+  {x:779, w:70, h:140, win:[[10,20],[43,20],[10,50],[43,50],[10,80],[43,80],[10,110],[43,110]]},
+  {x:857, w:43, h:110, win:[[8,20],[27,20],[8,50],[27,50],[8,78],[27,78]]},
+];
+
+const _winState = new Map();
+function getBldgColor(bx){ return ['#0D1829','#121E30','#0F1A2B'][bx%3]; }
+
+function drawCity(){
+  const t=Date.now()/2500;
+  BLDG.forEach((b,bi)=>{
+    const by=GROUND_Y-b.h;
+    ctx.fillStyle=getBldgColor(bi);
+    ctx.fillRect(b.x,by,b.w,b.h);
+    // pixel scanlines
+    ctx.fillStyle='rgba(0,0,0,0.25)';
+    for(let gy=0;gy<b.h;gy+=8) ctx.fillRect(b.x,by+gy,b.w,1);
+    // roof detail
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    ctx.fillRect(b.x,by,b.w,3);
+    // windows
+    b.win.forEach(([wx,wy])=>{
+      const key=`${bi}_${wx}_${wy}`;
+      if(!_winState.has(key)) _winState.set(key,Math.random());
+      const seed=_winState.get(key);
+      const lit = Math.sin(t+seed*10) > -0.3;
+      ctx.fillStyle = lit ? '#FFD54F' : '#081220';
+      ctx.fillRect(b.x+wx, by+wy, 13, 10);
+      if(lit){
+        ctx.fillStyle='rgba(255,213,79,0.25)';
+        ctx.fillRect(b.x+wx-2,by+wy-2,17,14);
+      }
+    });
+  });
+}
+
+// ── Drawing: Bins ────────────────────────────────────────────────
+function drawBins(){
+  BINS.forEach((b,i)=>{
+    const {x,y,w,h}=b;
+
+    // glow
+    const rg=ctx.createRadialGradient(x+w/2,y+h/2,10,x+w/2,y+h/2,w*0.9);
+    rg.addColorStop(0,b.glow);
+    rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg; ctx.fillRect(x-20,y-20,w+40,h+40);
+
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(x+5,y+5,w,h);
+
+    // body
+    ctx.fillStyle=b.dark; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=b.mid;  ctx.fillRect(x+3,y+3,w-6,h-6);
+
+    // horizontal texture lines
+    for(let ly=y+6;ly<y+h-3;ly+=14){
+      ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(x+3,ly,w-6,2);
+    }
+
+    // highlight side
+    ctx.fillStyle='rgba(255,255,255,0.07)';
+    ctx.fillRect(x+3,y+3,6,h-6);
+
+    // lid
+    ctx.fillStyle=b.lid; ctx.fillRect(x,y,w,26);
+    ctx.fillStyle=b.mid; ctx.fillRect(x+3,y+4,w-6,18);
+
+    // slot
+    ctx.fillStyle=b.slot; ctx.fillRect(x+w/2-22,y+7,44,12);
+    // slot shine
+    ctx.fillStyle='rgba(255,255,255,0.08)'; ctx.fillRect(x+w/2-20,y+8,44,4);
+
+    // pixel border
+    ctx.fillStyle=b.light;
+    ctx.fillRect(x,y,2,h);
+    ctx.fillRect(x+w-2,y,2,h);
+    ctx.fillRect(x,y,w,2);
+    ctx.fillRect(x,y+h-2,w,2);
+
+    // icon
+    drawBinIcon(b, x+w/2, y+60);
+
+    // label
+    ctx.textAlign='center';
+    ctx.font=`bold ${P*1.7}px 'Press Start 2P',monospace`;
+    ctx.fillStyle='rgba(0,0,0,0.8)';
+    ctx.fillText(b.label, x+w/2+1, y+h-12+1);
+    ctx.fillStyle='#FFFFFF';
+    ctx.fillText(b.label, x+w/2, y+h-12);
+  });
+}
+
+function drawBinIcon(b,cx,cy){
+  const c=b.light;
+  if(b.type===RECYCLE){
+    ctx.fillStyle=c;
+    // simplified recycle arrows (3 bent arrows pixel-art)
+    [[0,-16,20,4],[10,8,-12,16],[-10,8,-8,-20]].forEach(([ax,ay,bx,by])=>{
+      ctx.fillRect(cx+ax-2,cy+ay,8,4);
+      ctx.fillRect(cx+ax,cy+ay,4,8);
+    });
+    ctx.fillStyle=b.light;
+    ctx.strokeStyle=b.light; ctx.lineWidth=3;
+    // draw proper recycle symbol
+    ctx.beginPath();
+    ctx.arc(cx,cy,14,0,Math.PI*2*0.33);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx,cy,14,Math.PI*2/3,Math.PI*4/3);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx,cy,14,Math.PI*4/3,Math.PI*2);
+    ctx.stroke();
+  } else if(b.type===GENERAL){
+    ctx.fillStyle=c;
+    ctx.fillRect(cx-13,cy-8,26,20);
+    ctx.fillRect(cx-16,cy-14,32,8);
+    ctx.fillRect(cx-9,cy-18,18,6);
+    ctx.fillStyle='rgba(0,0,0,0.3)';
+    ctx.fillRect(cx-7,cy-8,5,20);
+    ctx.fillRect(cx+2,cy-8,5,20);
+  } else {
+    // hazard triangle pixel
+    ctx.fillStyle='#FFEB3B';
+    ctx.beginPath();
+    ctx.moveTo(cx,cy-18); ctx.lineTo(cx+18,cy+12); ctx.lineTo(cx-18,cy+12);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#212121';
+    ctx.font=`bold ${P*3}px Arial`;
+    ctx.textAlign='center';
+    ctx.fillText('!',cx,cy+10);
+  }
+}
+
+// ── Drawing: Wastes ───────────────────────────────────────────────
+function drawWastes(){
+  const t=Date.now()/1000;
+  G.wastes.forEach((w,i)=>{
+    if(G.dragging && G.dragging.idx===i) return;
+    const age=(Date.now()-w.spawnTime)/1000;
+    const hov=(G.hover===i);
+
+    // age warning flash
+    if(age>12){
+      const fl=Math.sin(Date.now()/250)>0;
+      if(fl){ ctx.fillStyle='rgba(255,30,30,0.18)';
+        ctx.fillRect(w.x-5,w.y-5,w.sz.w*P+10,w.sz.h*P+10); }
+    }
+
+    // shadow
+    ctx.fillStyle='rgba(0,0,0,0.35)';
+    ctx.fillRect(w.x+4,w.y+5,w.sz.w*P,w.sz.h*P);
+
+    // draw pixel art
+    if(ART[w.def.id]) ART[w.def.id](w.x,w.y);
+
+    // hover outline
+    if(hov){
+      ctx.strokeStyle='#FFD700'; ctx.lineWidth=2.5;
+      ctx.strokeRect(w.x-4,w.y-4,w.sz.w*P+8,w.sz.h*P+8);
+      drawTooltip(w.def.name, w.x+w.sz.w*P/2, w.y-14);
+    }
+  });
+
+  // Draw dragged item
+  if(G.dragging!==null){
+    const w=G.wastes[G.dragging.idx];
+    if(w){
+      const dx=G.mx-G.dragging.offX, dy=G.my-G.dragging.offY;
+      ctx.fillStyle='rgba(0,0,0,0.4)';
+      ctx.fillRect(dx+6,dy+7,w.sz.w*P,w.sz.h*P);
+      if(ART[w.def.id]) ART[w.def.id](dx,dy);
+      drawTooltip(w.def.name, dx+w.sz.w*P/2, dy-14);
+
+      // highlight matching bin
+      const cx=dx+w.sz.w*P/2, cy=dy+w.sz.h*P/2;
+      BINS.forEach(b=>{
+        if(b.type===w.def.bin){
+          ctx.strokeStyle=b.light; ctx.lineWidth=3;
+          ctx.setLineDash([6,4]);
+          ctx.strokeRect(b.x-3,b.y-3,b.w+6,b.h+6);
+          ctx.setLineDash([]);
+        }
+      });
+    }
+  }
+}
+
+function drawTooltip(txt,cx,cy){
+  ctx.font=`${P*1.5}px 'Press Start 2P',monospace`;
+  const tw=ctx.measureText(txt).width;
+  const tx=Math.max(5,Math.min(W-tw-14,cx-tw/2-7));
+  const ty=Math.max(HUD_H+5,cy-26);
+  ctx.fillStyle='rgba(5,15,35,0.92)'; ctx.fillRect(tx,ty,tw+14,24);
+  ctx.fillStyle='#D4A017'; ctx.fillRect(tx,ty,tw+14,2);
+  ctx.fillStyle='#FFFFFF'; ctx.textAlign='left';
+  ctx.fillText(txt,tx+7,ty+17);
+  ctx.textAlign='center';
+}
+
+// ── Drawing: HUD ─────────────────────────────────────────────────
+function drawHUD(){
+  // bar
+  ctx.fillStyle='rgba(4,12,26,0.96)'; ctx.fillRect(0,0,W,HUD_H);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(0,HUD_H-2,W,2);
+
+  // stop button
+  ctx.fillStyle='#4A0000'; ctx.fillRect(8,9,86,34);
+  ctx.fillStyle='#7F0000'; ctx.fillRect(10,11,82,30);
+  ctx.fillStyle='#C62828'; ctx.fillRect(10,11,82,13);
+  ctx.fillStyle='#FFFFFF';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.textAlign='center';
+  ctx.fillText('■ ЗОГСООХ',51,32);
+
+  // lives
+  ctx.font=`${P*1.4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#D4A017'; ctx.textAlign='left';
+  ctx.fillText('АМЬД:',115,30);
+  for(let i=0;i<3;i++) drawHeart(220+i*30,16, i<G.lives ? '#FF1744':'#3A1A1A');
+
+  // score
+  ctx.fillStyle='#D4A017';
+  ctx.font=`${P*1.6}px 'Press Start 2P',monospace`;
+  ctx.textAlign='right';
+  ctx.fillText(`${G.score} ОН`,W-10,31);
+
+  // waste count bar
+  const wc=G.wastes.length;
+  if(wc>=5){
+    const fl=Math.sin(Date.now()/350)>0;
+    ctx.fillStyle=fl?'#FF1744':'#E53935';
+    ctx.font=`${P*1.2}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(`⚠ ХОГ: ${wc}/${MAXWASTES}  – ХЭТ ОЛОН!`,W/2,HUD_H-6);
+  }
+
+  // fact banner
+  if(G.factTimer>0){
+    const a=Math.min(1,G.factTimer/30);
+    ctx.globalAlpha=a;
+    ctx.fillStyle='rgba(0,30,10,0.88)'; ctx.fillRect(0,GROUND_Y-38,W,38);
+    ctx.fillStyle='#69F0AE';
+    ctx.font=`${P*1.2}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(G.fact, W/2, GROUND_Y-14);
+    ctx.globalAlpha=1;
+  }
+}
+
+function drawHeart(cx,cy,color){
+  const s=4;
+  const px=[[1,0],[2,0],[4,0],[5,0],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],
+    [0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[1,3],[2,3],[3,3],[4,3],[5,3],
+    [2,4],[3,4],[4,4],[3,5]];
+  ctx.fillStyle=color;
+  px.forEach(([x,y])=>ctx.fillRect(cx-10+x*s,cy+y*s,s,s));
+}
+
+// ── Drawing: Crosshair ────────────────────────────────────────────
+function drawCrosshair(){
+  const {mx,my}=G, size=18, gap=6;
+  ctx.strokeStyle='#FF1744'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(mx,my,11,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx,my-gap); ctx.lineTo(mx,my-size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx,my+gap); ctx.lineTo(mx,my+size); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx-gap,my); ctx.lineTo(mx-size,my); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx+gap,my); ctx.lineTo(mx+size,my); ctx.stroke();
+  ctx.fillStyle='#FF1744'; ctx.fillRect(mx-1.5,my-1.5,3,3);
+  // Mongolian ornament corners
+  ctx.strokeStyle='#D4A017'; ctx.lineWidth=1.5;
+  const co=22;
+  [[mx-co,my-co],[mx+co-5,my-co],[mx-co,my+co-5],[mx+co-5,my+co-5]].forEach(([ox,oy])=>{
+    ctx.strokeRect(ox,oy,5,5);
+  });
+}
+
+// ── Drawing: Screens ──────────────────────────────────────────────
+function drawTitleScreen(){
+  ctx.fillStyle='rgba(4,10,24,0.88)'; ctx.fillRect(0,0,W,H);
+
+  // Panel
+  ctx.fillStyle='rgba(12,28,60,0.9)'; ctx.fillRect(W/2-320,80,640,400);
+  ctx.strokeStyle='#C9820A'; ctx.lineWidth=3;
+  ctx.strokeRect(W/2-320,80,640,400);
+  ctx.strokeStyle='#1A3A7A'; ctx.lineWidth=1;
+  ctx.strokeRect(W/2-315,85,630,390);
+
+  // Title
+  ctx.textAlign='center';
+  ctx.font=`bold ${P*3.8}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#C9820A'; ctx.fillText('ХОГ АНГИЛАХ',W/2+2,148);
+  ctx.fillStyle='#FFFFFF';  ctx.fillText('ХОГ АНГИЛАХ',W/2,146);
+  ctx.font=`bold ${P*2.8}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#C9820A'; ctx.fillText('ТОГЛООМ',W/2+2,198);
+  ctx.fillStyle='#E0E0E0';  ctx.fillText('ТОГЛООМ',W/2,196);
+
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#5B8DD9';
+  ctx.fillText('Waste Sorting Game · Улаанбаатар хот',W/2,225);
+
+  // Bin preview
+  const bprev=[{c:'#1155CC',t:'ДАХИВАР',s:'Recyclable'},{c:'#2E7D32',t:'ЭНГИЙН',s:'General'},{c:'#B71C1C',t:'АЮУЛТАЙ',s:'Hazardous'}];
+  bprev.forEach((b,i)=>{
+    const bx=W/2-165+i*120, by=245, bw=110, bh=55;
+    ctx.fillStyle=b.c; ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.fillRect(bx,by,bw,16);
+    ctx.fillStyle='#FFFFFF';
+    ctx.font=`bold ${P*1.3}px 'Press Start 2P',monospace`;
+    ctx.fillText(b.t, bx+bw/2, by+22);
+    ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+    ctx.fillStyle='rgba(255,255,255,0.7)';
+    ctx.fillText(b.s, bx+bw/2, by+40);
+  });
+
+  // Instructions
+  ctx.fillStyle='#CFD8DC';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillText('Хогийг зохих саванд чирж ангилаарай',W/2,335);
+  ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#78909C';
+  ctx.fillText('♥ ♥ ♥  Буруу хийх бүрд 1 амьд хасагдана',W/2,360);
+  ctx.fillText(`${MAXWASTES} ба дээш хог хуримтлагдвал тоглоом дуусна`,W/2,382);
+
+  // Start button
+  const pulse=Math.sin(Date.now()/600)*4;
+  ctx.fillStyle='#7B5200'; ctx.fillRect(W/2-121+pulse/2,482-pulse/2,242-pulse,54+pulse);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(W/2-119+pulse/2,484-pulse/2,238-pulse,50+pulse);
+  ctx.fillStyle='#0A1628';
+  ctx.font=`bold ${P*2}px 'Press Start 2P',monospace`;
+  ctx.fillText('▶  ТОГЛООМ ЭХЛЭХ',W/2,515);
+
+  // Info button
+  ctx.fillStyle='#0D3688'; ctx.fillRect(W-145,H-62,140,47);
+  ctx.fillStyle='#1565C0'; ctx.fillRect(W-143,H-60,136,43);
+  ctx.fillStyle='#FFFFFF';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillText('ℹ МЭДЭЭЛЭЛ',W-75,H-32);
+}
+
+function drawGameOver(){
+  ctx.fillStyle='rgba(4,10,24,0.92)'; ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle='rgba(40,0,0,0.8)'; ctx.fillRect(W/2-320,70,640,200);
+  ctx.strokeStyle='#FF1744'; ctx.lineWidth=2; ctx.strokeRect(W/2-320,70,640,200);
+
+  ctx.textAlign='center';
+  ctx.font=`bold ${P*4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#FF1744';
+  ctx.fillText('ТОГЛООМ',W/2,140);
+  ctx.fillText('ДУУСЛАА',W/2,195);
+
+  ctx.font=`${P*1.5}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#EF9A9A';
+  ctx.fillText(G.gameOverReason,W/2,238);
+
+  // Stats panel
+  ctx.fillStyle='rgba(12,28,60,0.85)'; ctx.fillRect(W/2-280,280,560,110);
+  ctx.strokeStyle='#C9820A'; ctx.lineWidth=2; ctx.strokeRect(W/2-280,280,560,110);
+
+  ctx.font=`${P*2}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#FFD700';
+  ctx.fillText(`ОНОО: ${G.score}`,W/2,315);
+  ctx.font=`${P*1.4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#69F0AE';
+  ctx.fillText(`✓ Зөв ангилсан: ${G.correct}`,W/2,348);
+  ctx.fillStyle='#FF5252';
+  ctx.fillText(`✗ Буруу ангилсан: ${G.wrong}`,W/2,374);
+
+  // Hazardous info banner
+  ctx.fillStyle='rgba(50,25,0,0.85)'; ctx.fillRect(W/2-330,410,660,80);
+  ctx.strokeStyle='#FF8F00'; ctx.lineWidth=1.5; ctx.strokeRect(W/2-330,410,660,80);
+  ctx.fillStyle='#FFB300';
+  ctx.font=`${P*1.3}px 'Press Start 2P',monospace`;
+  ctx.fillText('⚠  АЮУЛТАЙ ХОГ ТУХАЙ',W/2,435);
+  ctx.fillStyle='#ECEFF1';
+  ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+  ctx.fillText('Тэсрэмтгий, шатамхай, хортой бодисыг тусгай',W/2,458);
+  ctx.fillText('зөвшөөрөл бүхий байгууллагаар устгуулна.',W/2,476);
+
+  // Buttons
+  ctx.fillStyle='#7B5200'; ctx.fillRect(W/2-145,494,140,48);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(W/2-143,496,136,44);
+  ctx.fillStyle='#0A1628';
+  ctx.font=`${P*1.5}px 'Press Start 2P',monospace`;
+  ctx.fillText('↺  ДАХИН',W/2-75,525);
+
+  ctx.fillStyle='#0A2A6E'; ctx.fillRect(W/2+5,494,140,48);
+  ctx.fillStyle='#1155CC'; ctx.fillRect(W/2+7,496,136,44);
+  ctx.fillStyle='#FFFFFF';
+  ctx.fillText('ℹ  МЭДЭЭЛЭЛ',W/2+75,525);
+}
+
+function drawInfo(){
+  ctx.fillStyle='rgba(4,10,24,0.97)'; ctx.fillRect(0,0,W,H);
+
+  ctx.textAlign='center';
+  ctx.font=`bold ${P*2.4}px 'Press Start 2P',monospace`;
+  ctx.fillStyle='#FF5722';
+  ctx.fillText('⚠  АЮУЛТАЙ ХОГ ХАЯГДАЛ',W/2,55);
+
+  const rows=[
+    {t:'Аюултай хог гэж юу вэ?', c:'#FFB300', sz:1.8, bold:true},
+    {t:'Хүний эрүүл мэнд, байгаль орчинд хор хөнөөл',   c:'#ECEFF1',sz:1.25},
+    {t:'учруулдаг бодисуудыг хэлнэ:',   c:'#ECEFF1',sz:1.25},
+    {t:'• Тэсрэмтгий  • Шатамхай  • Идэмхий',  c:'#FF8A65',sz:1.25},
+    {t:'• Исэлдүүлэгч  • Хортой бодисууд',      c:'#FF8A65',sz:1.25},
+    {t:'Хаана өгөх вэ?', c:'#FFB300',sz:1.8,bold:true},
+    {t:'► Зай батерей  →  Дэлгүүр, цэнэглэх газрын цэг', c:'#A5D6A7',sz:1.2},
+    {t:'► Хуучин эм  →  Эмийн санд буцааж өгнө',          c:'#A5D6A7',sz:1.2},
+    {t:'► Будаг, химийн бодис  →  Тусгай цуглуулах цэг',  c:'#A5D6A7',sz:1.2},
+    {t:'► Машины тос  →  Автосервис, тусгай цэгт',          c:'#A5D6A7',sz:1.2},
+    {t:'► Флюресцент чийдэн  →  Тусгай цуглуулах цэгт',   c:'#A5D6A7',sz:1.2},
+    {t:'Монгол Улсад аюултай хогийг устгах тусгай', c:'#90CAF9',sz:1.15},
+    {t:'журам, зөвшөөрөл бүхий байгууллагууд ажилладаг.',c:'#90CAF9',sz:1.15},
+    {t:'УБЦТС / Хотын хог хаягдлын удирдлагын газар', c:'#B39DDB',sz:1.15},
+    {t:'Утас: 7011-7007  ·  1800-ХОГХАЯГ',               c:'#B39DDB',sz:1.15},
+  ];
+
+  let ry=90;
+  rows.forEach(r=>{
+    ctx.fillStyle=r.c;
+    ctx.font=`${r.bold?'bold ':''} ${P*r.sz}px 'Press Start 2P',monospace`;
+    ctx.fillText(r.t,W/2,ry);
+    ry += r.bold ? 36 : 24;
+  });
+
+  // Bin key
+  const bkeys=[{c:'#1155CC',t:'ДАХИВАР'},{c:'#2E7D32',t:'ЭНГИЙН'},{c:'#B71C1C',t:'АЮУЛТАЙ'}];
+  bkeys.forEach((b,i)=>{
+    ctx.fillStyle=b.c; ctx.fillRect(W/2-175+i*120,H-90,110,28);
+    ctx.fillStyle='#FFF';
+    ctx.font=`${P*1.1}px 'Press Start 2P',monospace`;
+    ctx.fillText(b.t,W/2-120+i*120,H-70);
+  });
+
+  // back button
+  ctx.fillStyle='#7B5200'; ctx.fillRect(W/2-90,H-52,180,44);
+  ctx.fillStyle='#C9820A'; ctx.fillRect(W/2-88,H-50,176,40);
+  ctx.fillStyle='#0A1628';
+  ctx.font=`${P*1.7}px 'Press Start 2P',monospace`;
+  ctx.fillText('← БУЦАХ',W/2,H-22);
+}
+
+// ── Main loop ─────────────────────────────────────────────────────
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  drawBg();
+
+  if(G.screen==='title'){
+    drawTitleScreen();
+  } else if(G.screen==='playing'){
+    // spawn logic
+    const now=Date.now();
+    if(now-G.lastSpawn > G.spawnInt){
+      G.lastSpawn=now;
+      if(G.wastes.length < MAXWASTES) spawnWaste();
+      else endGame('Хог хэтэрхий хуримтлагдлаа!');
+      G.spawnInt = Math.max(2200, G.spawnInt - 80);
+    }
+    drawBins();
+    drawWastes();
+    updateFx(); drawFx();
+    drawHUD();
+  } else if(G.screen==='gameover'){
+    drawGameOver();
+  } else if(G.screen==='info'){
+    drawInfo();
+  }
+
+  drawCrosshair();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
